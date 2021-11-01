@@ -26,8 +26,6 @@ public class MecanumDrive {
     private static final double pulsesPerRevolution = 28; // pulses per revolution for the unreducted motor
     private static final double ticksPerInch = ((pulsesPerRevolution * gearboxReduction) / wheelDiameterInches) / Math.PI;
 
-    public double leftMotorIsBroken = 8;
-
     public MecanumDrive(HardwareMap hardwareMap){
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
         leftRear = hardwareMap.get(DcMotor.class, "left_rear");
@@ -58,7 +56,7 @@ public class MecanumDrive {
         leftRear.setTargetPosition((int) (leftRear.getCurrentPosition() - (inches * ticksPerInch))); // should be divided by 4 times pi times 20 times 7
         rightRear.setTargetPosition((int) (rightRear.getCurrentPosition() + (inches * ticksPerInch))); // should be divided by 4 times pi times 20 times 7
 
-        leftFront.setPower(power * leftMotorIsBroken);
+        leftFront.setPower(power);
         rightFront.setPower(power);
         leftRear.setPower(power);
         rightRear.setPower(power);
@@ -102,12 +100,12 @@ public class MecanumDrive {
         leftRear.setTargetPosition(leftRearTarget);
         rightFront.setTargetPosition(rightFrontTarget);
         rightRear.setTargetPosition(rightRearTarget);
-        if(turnRight){
+        if (turnRight) {
             leftFront.setPower(-power);
             leftRear.setPower(-power);
             rightFront.setPower(power);
             rightRear.setPower(power);
-        }else{
+        } else {
             leftFront.setPower(power);
             leftRear.setPower(power);
             rightFront.setPower(-power);
@@ -157,10 +155,10 @@ public class MecanumDrive {
         final double v3 = power * Math.sin(angle) + turn;
         final double v4 = power * Math.cos(angle) - turn;
 
-        leftFront.setPower(-0.8 * v1);
-        rightFront.setPower(-0.8 * v2);
-        leftRear.setPower(-0.8 * v3);
-        rightRear.setPower(-0.8 * v4);
+        leftFront.setPower(-v1);
+        rightFront.setPower(-v2);
+        leftRear.setPower(-v3);
+        rightRear.setPower(-v4);
     }
     public void brake(){
         leftFront.setPower(0);
