@@ -276,7 +276,9 @@ public class Webcam extends LinearOpMode
             for(int i = 0; i < boundRect.length; i++){
                 Imgproc.rectangle(input, boundRect[i], new Scalar(0.5, 76.9, 89.8));
             }
-            
+
+			// now what we're planning to do is separaating the image into 3 thirds so we can look at the third where
+            // the shipping element is
 
             /**
              * NOTE: to see how to get data from your pipeline to your OpMode as well as how
