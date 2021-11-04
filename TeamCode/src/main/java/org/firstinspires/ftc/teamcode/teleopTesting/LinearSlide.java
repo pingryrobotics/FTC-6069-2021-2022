@@ -31,12 +31,16 @@ public class LinearSlide {
 	public void extend() { // continuously extend linear slide
 
 	}
+	
+	public void retract() { // continuously retract linear slide
+
+	}
 
 	public void dump() { // dump stuff in bucket
 
 	}
 
-	public void retract() { // pull bucket back after dumping
+	public void undump() { // pull bucket back after dumping
 
 	}
 

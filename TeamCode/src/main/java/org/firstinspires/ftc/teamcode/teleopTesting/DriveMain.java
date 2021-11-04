@@ -90,6 +90,9 @@ public class DriveMain extends OpMode
 
 	//private ElapsedTime runtime;
 	private MecanumDrive mecanumDrive;
+	private Intake intake;
+	private Carousel carousel;
+	private LinearSlide linearSlide;
 	private int offsetAngle;
 	private int direc; // variable to determine which direction to move the robot, 1 to go forward and -1 for backwards
 	private boolean[] previousButtonStates;
@@ -103,6 +106,10 @@ public class DriveMain extends OpMode
 		telemetry.addData("Status", "Initializing");
 		mecanumDrive = new MecanumDrive(hardwareMap);
 		// class initializations go here
+		intake = new Intake(hardwareMap);
+		carousel = new Carousel(hardwareMap);
+		linearSlide = new LinearSlide(hardwareMap);
+		
 		offsetAngle = 0;
 		direc = 1;
 		previousButtonStates = updateButtonList();
@@ -161,37 +168,48 @@ public class DriveMain extends OpMode
 		telemetry.update();
 
 
-		if (previousButtonStates[0] != currentButtonStates[0]) { // functions only when the button is held
-																// ex: move linear slide up while button is held
+		if (previousButtonStates[0] != currentButtonStates[0]) { // intake goes only when trigger pressed
 			if (currentButtonStates[0]) {
+				intake.takeIn();
 			} else {
+				intake.stop();
 			}
-		} if (previousButtonStates[1] != currentButtonStates[1]) {
+		} if (previousButtonStates[1] != currentButtonStates[1]) { 
 			if (currentButtonStates[1]) {
 			} else {
 			}
 		}
-		if (previousButtonStates[2] != currentButtonStates[2]) { // toggles the function/single sided function 
-																// ex: turning flywheel on/off or turning intake on
+		if (previousButtonStates[2] != currentButtonStates[2]) { // dumps, then undumps
 			if (currentButtonStates[2]) {
+				linearSlide.dump();
+				sleep(1000);
+				linearSlide.undump();
 			}
 		} if(previousButtonStates[3] != currentButtonStates[3]) {
 			if (currentButtonStates[3]) {
 			}
-		} if (previousButtonStates[4] != currentButtonStates[4]) {
+		} if (previousButtonStates[4] != currentButtonStates[4]) { // linearslide goes only when left bumper pressed
 			if (currentButtonStates[4]){
+				linearSlide.extend();
 			} else {
+				linearSlide.stop();
 			}
-		} if (previousButtonStates[5] != currentButtonStates[5]) {
+		} if (previousButtonStates[5] != currentButtonStates[5]) { // linearslide retracts only when right bumper pressed
 			if (currentButtonStates[5]) {
+				linearSlide.retract();
 			} else {
+				linearSlide.stop();
 			}
 		} if (previousButtonStates[6] != currentButtonStates[6]) { 
 			if (currentButtonStates[6]){
-			}
+				carousel.power += 1;
+				carousel.power %= 2;
+			} 
 		} if (previousButtonStates[7] != currentButtonStates[7]) {
 			if (currentButtonStates[7]) {
-			}
+				carousel.power -= 1;
+				carousel.power %= 2;
+			} 
 		} if (previousButtonStates[8] != currentButtonStates[8]) {
 			if (currentButtonStates[8]) {
 			} else {
@@ -240,7 +258,7 @@ public class DriveMain extends OpMode
 	*/
 	public boolean[] updateButtonList() {
 		// Array with Button values order
-		// Left Trigger, Right trigger, x, y, left_bumper, right_bumper, b, back
+		// Left Trigger, Right trigger, x, y, left_bumper, right_bumper, a, b, down
 		boolean[] buttonList = {
 			// main controls
 			(gamepad2.left_trigger > 0), // insert command here (ex: start intake or move slide)
