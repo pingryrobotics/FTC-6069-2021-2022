@@ -265,20 +265,41 @@ public class Webcam extends LinearOpMode
             Mat hierarchy = new Mat();
             Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-            MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[contours.size()];
-            Rect[] boundRect = new Rect[contours.size()]; // contains bounding rectangles for each coutour (object in 2d form)
-            for (int i = 0; i < contours.size(); i++) {
+			int sz = contours.size();
+
+            MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[sz];
+            Rect[] boundRect = new Rect[sz]; // contains bounding rectangles for each coutour (object in 2d form)
+            for (int i = 0; i < sz; i++) {
                 contoursPoly[i] = new MatOfPoint2f();
                 Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
                 boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
             }
 
-            for(int i = 0; i < boundRect.length; i++){
-                Imgproc.rectangle(input, boundRect[i], new Scalar(0.5, 76.9, 89.8));
-            }
 
-			// now what we're planning to do is separaating the image into 3 thirds so we can look at the third where
-            // the shipping element is
+			// now what we're planning to do is looking at the relative positions of the contours we've found
+			// there should be 2 since there are 3 squares in the barcode and one is covered by shipping element
+			// then we can look at which thirds of the picture the contours are in, so we can find the square
+			// which the shipping element is on by process of elimination
+
+			int shippingElementLoc = 3; // start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
+										// that we find so we're left with the index of the shipping element's square
+			for (int i = 0; i < sz; i++) {
+				// look at center of each bounding rectangle, see which thirds of the picture they should be in
+				
+				// rectangle is represented in terms of top left point, width, and height
+				int rectCenterX = boundRect[i].x + width/2;
+				int imgWidth = mat.width();
+				if (rectCenterX < imgWidth/3) { // leftmost third
+					continue;
+				} else if (rectCenterX >= imgWidth/3 && rectCenterX <= (2 * imgWidth)/3) { // middle third
+					shippingElementLoc -= 1;
+				} else { // rightmost third
+					shippingElementLoc -= 2;
+				}
+			}
+
+			objLevel = shippingElementLoc;
+			
 
             /**
              * NOTE: to see how to get data from your pipeline to your OpMode as well as how
