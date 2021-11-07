@@ -16,7 +16,7 @@ public class Intake {
 
 	}
 
-	public void intakeOut() {
+	public void intakeOut() { // outtake
 	}
 	
 	public void stop() {
