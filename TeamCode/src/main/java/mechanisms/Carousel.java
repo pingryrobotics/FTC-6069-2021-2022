@@ -15,8 +15,14 @@ public class Carousel {
 		DcMotor.setPowerFloat(power)
 	}
 
+<<<<<<< Updated upstream
 	public void stop() { //stop the motor
 		DcMotor.setPowerFloat(0) 
+=======
+	public void stop() {
+//idek
+
+>>>>>>> Stashed changes
 	}
 }//hjkgbczjhfkglh;gjfhdgsf
 
