@@ -13,14 +13,13 @@ public class Intake {
 	}
 
 	public void intakeIn() { // intake
-		intakeMotor.setPower(power);
+
 	}
 
-	public void intakeOut() { // reverse intake in case smth gets stuck
-		intakeMotor.setPower(-1 * power);
+	public void intakeOut() {
 	}
 	
 	public void stop() {
-		intakeMotor.setPower(0);
+
 	}
 }
