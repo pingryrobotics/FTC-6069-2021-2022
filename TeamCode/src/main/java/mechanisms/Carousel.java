@@ -12,11 +12,7 @@ public class Carousel {
 		power = 1.0;
 	}
 
-<<<<<<< Updated upstream
 	public void spin() { // spin at speed designated by "power"
-=======
-	public void spin() { // spin at speed designated by "power";
->>>>>>> Stashed changes
 		carouselMotor.setPowerFloat(power);
 	}
 
