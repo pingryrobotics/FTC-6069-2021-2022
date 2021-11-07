@@ -18,4 +18,5 @@ public class Carousel {
 	public void stop() { //stop the motor
 		DcMotor.setPowerFloat(0) 
 	}
-}//test
+}//hjkgbczjhfkglh;gjfhdgsf
+
