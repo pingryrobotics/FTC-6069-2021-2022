@@ -11,7 +11,7 @@ public class Carousel {
         carouselMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 	}
 
-	public void spin(int power) { // spin at speed designated by "power"
+	public void spin() { // spin at speed designated by "power"
 		carouselMotor.setPowerFloat(power);
 	}
 
