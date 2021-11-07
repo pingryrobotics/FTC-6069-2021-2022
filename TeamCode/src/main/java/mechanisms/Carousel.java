@@ -13,10 +13,10 @@ public class Carousel {
 	}
 
 	public void spin() { // spin at speed designated by "power"
-		carouselMotor.setPowerFloat(power);
+		carouselMotor.setPower(power);
 	}
 
 	public void stop() { //stop the motor
-		carouselMotor.setPowerFloat(0);
+		carouselMotor.setPower(0);
 	}
 }
