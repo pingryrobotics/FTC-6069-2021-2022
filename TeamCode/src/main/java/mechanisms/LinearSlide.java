@@ -9,11 +9,11 @@ public class LinearSlide {
 	private Servo bucketServo;
 
 	public LinearSlide(HardwareMap hardwareMap) {
-		slideMotor = hardwareMap.get(Dcmotor.class, "slideMotor");
+		slideMotor = hardwareMap.get(DcMotor.class, "slideMotor");
 		slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		bucketServo = hardwareMap.get(Servo.class, "bucketServo");
 		bucketServo.setDirection(Servo.Direction.FORWARD);
-		servo.scaleRange(0, .4);
+		bucketServo.scaleRange(0, .4);
 	}
 
 	public void level1() { // extend linear slide to level appropriate for the bottom level of shipping hub

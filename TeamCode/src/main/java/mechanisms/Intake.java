@@ -1,5 +1,6 @@
 package mechanisms;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
 	private DcMotor intakeMotor;
