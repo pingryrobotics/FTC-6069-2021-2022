@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package mechanisms;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo; //only if we need the additional feeder.

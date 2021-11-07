@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package mechanisms;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -80,7 +80,7 @@ public class MecanumDrive {
         if(inches < 0){
             power *= -1;
         }
-        leftFront.setPower(power * leftMotorIsBroken);
+        leftFront.setPower(power);
         rightFront.setPower(power);
         leftRear.setPower(power);
         rightRear.setPower(power);
@@ -150,7 +150,7 @@ public class MecanumDrive {
     }
 
     public void polarMove(double angle, double turn, double power){
-        final double v1 = (power * leftMotorIsBroken) * Math.cos(angle) + turn;
+        final double v1 = (power) * Math.cos(angle) + turn;
         final double v2 = power * Math.sin(angle) - turn;
         final double v3 = power * Math.sin(angle) + turn;
         final double v4 = power * Math.cos(angle) - turn;
