@@ -6,6 +6,8 @@ public class Carousel {
 	private DcMotor carouselMotor;
 	public int power;
 
+	// Test
+
 	public Carousel(HardwareMap hardwareMap) {
 		carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
         carouselMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
