@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Carousel {
 	private DcMotor carouselMotor;
-	public int power = 1;
+	public int power;
 
 	public Carousel(HardwareMap hardwareMap) {
 		carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
         carouselMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		power = 1.0;
+		power = 1;
 	}
 
 	public void spin() { // spin at speed designated by "power"
