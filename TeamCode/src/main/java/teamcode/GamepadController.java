@@ -67,10 +67,11 @@ public class GamepadController {
     public void updateToggleButtonStates() {
         /*
         Update state values
-         if controller state is inactive and button is on, state is down
-         if controller state is down and button is on, state is hold
-         if state is down/hold and button is up, state is up
-         if state is up and button is up, state is inactive
+		Essentially contains transitions between button states, and hold down/hold up
+         if controller state is inactive and button is on, state is down since it was up before but is now down
+         if controller state is down and button is on, state is hold since nothing changed and button is still down
+         if state is down/hold and button is up, state is up since it was down before but is now up
+         if state is up and button is up, state is inactive since nothing changed and button is still up
          */
         for (ToggleButton toggleButton : toggleButtonList) {
             boolean buttonVal = gamepadToggleValues.get(toggleButton);
