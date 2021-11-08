@@ -2,11 +2,9 @@ package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import mechanisms.DriveControl;
 import teamcode.GamepadController;
-import teamcode.GamepadController.FloatButton;
 import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
 
@@ -28,12 +26,7 @@ public class DriveControlOpMode extends OpMode {
     @Override
     public void init() {
         movementController = new GamepadController(gamepad1);
-
-        DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        DcMotor leftRear = hardwareMap.get(DcMotor.class, "leftRear");
-        DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        DcMotor rightRear = hardwareMap.get(DcMotor.class, "rightRear");
-        driveControl = new DriveControl(leftFront, leftRear, rightFront, rightRear);
+        driveControl = new DriveControl(hardwareMap);
 
     }
 
@@ -89,14 +82,9 @@ public class DriveControlOpMode extends OpMode {
         }
 
         if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-            driveControl.setTargetInches(12);
-            driveControl.runToPosition();
+            driveControl.moveXDist(12, .5);
         }
 
-        if (movementController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
-            driveControl.setMotorTarget(1000);
-            driveControl.runToPosition();
-        }
     }
 
 
