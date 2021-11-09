@@ -84,8 +84,6 @@ public class DriveControlOpMode extends OpMode {
         robotAngle += offsetAngle / 180.0 * Math.PI;
         driveControl.polarMove(robotAngle, -rightStickX, 0.5 * direc * velocity * magnitude);
 
-		telemetry.update();
-
         // do something when A is pressed
         if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
             driveControl.runAtSpeed(velocity);
@@ -141,6 +139,21 @@ public class DriveControlOpMode extends OpMode {
 			linearSlide.retract();
 		} else if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_UP) {
 			linearSlide.stop();
+		}
+
+		// dpad down: linearslide goes to first level
+		if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
+			linearSlide.level1();
+		}
+
+		// dpad left: linearslide goes to second level
+		if (mechanismController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
+			linearSlide.level2();
+		}
+
+		// dpad up: linearslide goes to third level
+		if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
+			linearSlide.level3();
 		}
 
 		// X button; linear slide dumps and then undumps once it's pressed
