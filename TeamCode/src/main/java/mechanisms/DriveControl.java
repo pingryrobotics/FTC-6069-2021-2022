@@ -77,7 +77,15 @@ public class DriveControl {
     }
 
     public void polarMove() {
+		final double v1 = (power) * Math.cos(angle) + turn;
+        final double v2 = power * Math.sin(angle) - turn;
+        final double v3 = power * Math.sin(angle) + turn;
+        final double v4 = power * Math.cos(angle) - turn;
 
+        leftFront.setPower(-v1);
+        rightFront.setPower(-v2);
+        leftRear.setPower(-v3);
+        rightRear.setPower(-v4);
     }
 
     /**
