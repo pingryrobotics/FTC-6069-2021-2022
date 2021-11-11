@@ -46,9 +46,16 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-public static class Pipeline extends OpenCvPipeline {
+public class ContourPipeline extends OpenCvPipeline {
 	public boolean viewportPaused;
 	private int objLevel;
+	private int location;
+	private int width;
+	private OpenCvCamera webcam;
+
+	public ContourPipeline(OpenCvCamera webcam) {
+		this.webcam = webcam;
+	}
 
 	/*
 		* NOTE: if you wish to use additional Mat objects in your processing pipeline, it is
@@ -95,8 +102,8 @@ public static class Pipeline extends OpenCvPipeline {
 		// We create a HSV range for yellow to detect regular stones
 		// NOTE: In OpenCV's implementation,
 		// Hue values are half the real value
-		Scalar lowHSV = new Scalar(2.125, 47.458, 69.416); // lower bound HSV for red
-		Scalar highHSV = new Scalar(2.125, 65.875, 50.2916); // higher bound HSV for red
+		Scalar lowHSV = new Scalar(0, 70, 50); // lower bound HSV for red
+		Scalar highHSV = new Scalar(10, 255, 255); // higher bound HSV for red
 		Mat thresh = new Mat();
 
 		// We'll get a black and white image. The white regions represent the regular stones.
@@ -134,6 +141,7 @@ public static class Pipeline extends OpenCvPipeline {
 		int shippingElementLoc = 3; // start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
 									// that we find so we're left with the index of the shipping element's square
 		for (int i = 0; i < sz; i++) {
+			Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
 			// look at center of each bounding rectangle, see which thirds of the picture they should be in
 			
 			// rectangle is represented in terms of top left point, width, and height
@@ -187,7 +195,9 @@ public static class Pipeline extends OpenCvPipeline {
 		}
 	}
 
-	public int getObjLevel() {
-		return objLevel;
+	public static int getObjLevel() {
+
+//		return objLevel;
+		return 0;
 	}
 }

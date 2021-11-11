@@ -3,7 +3,10 @@ package opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import mechanisms.Carousel;
 import mechanisms.DriveControl;
+import mechanisms.Intake;
+import mechanisms.LinearSlide;
 import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
@@ -73,15 +76,15 @@ public class DriveControlOpMode extends OpMode {
 		mechanismController.updateButtonStates();
 
 		// polarmove calculations
-		double leftStickX = movementController.getButtonState(FloatButton.LEFT_STICK_X);
-		double leftStickY = movementController.getButtonState(FloatButton.LEFT_STICK_Y);
-		double rightStickX = movementController.getButtonState(FloatButton.RIGHT_STICK_X);
-		double rightStickY = movementController.getButtonState(FloatButton.RIGHT_STICK_Y);
+		double leftStickX = movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_X);
+		double leftStickY = movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_Y);
+		double rightStickX = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_X);
+		double rightStickY = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_Y);
 
 		double magnitude = Math.hypot(-leftStickX, leftStickY);
         double robotAngle = Math.atan2(leftStickY, -leftStickX) - Math.PI / 4;
         telemetry.addData("robot angle", robotAngle);
-        robotAngle += offsetAngle / 180.0 * Math.PI;
+//        robotAngle += offsetAngle / 180.0 * Math.PI;
         driveControl.polarMove(robotAngle, -rightStickX, 0.5 * direc * velocity * magnitude);
 
         // do something when A is pressed
@@ -159,7 +162,7 @@ public class DriveControlOpMode extends OpMode {
 		// X button; linear slide dumps and then undumps once it's pressed
 		if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
 			linearSlide.dump();
-			sleep(1000);
+//			sleep(1000);
 			linearSlide.undump();
 		}
 
@@ -172,7 +175,7 @@ public class DriveControlOpMode extends OpMode {
 
 		// B button: carousel spins counterclockwise while button is pressed
 		if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-			carousel.spinReverse();
+//			carousel.spinReverse();
 		} else if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_UP) {
 			carousel.stop();
 		}

@@ -37,7 +37,7 @@ public class LinearSlide {
 		slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		slideMotor.setPower(power);
 		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		int asdf = gfhkjl;
+//		int asdf = gfhkjl;
 
 	}
 	

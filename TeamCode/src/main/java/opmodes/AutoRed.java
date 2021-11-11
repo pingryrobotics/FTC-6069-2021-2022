@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -42,22 +42,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+
+import mechanisms.Carousel;
+import mechanisms.DriveControl;
+import mechanisms.Intake;
+import mechanisms.LinearSlide;
+import vision.ContourPipeline;
 
 /**
  * TODO:
@@ -163,7 +169,7 @@ public class AutoRed extends LinearOpMode {
 	private LinearSlide linearSlide;
 	private Carousel carousel;
 
-    @Override 
+    @Override
 	public void runOpMode() {
         driveControl = new DriveControl(hardwareMap);
 		intake = new Intake(hardwareMap);
@@ -172,7 +178,7 @@ public class AutoRed extends LinearOpMode {
 		webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 		int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 		OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-		webcam.setPipeline(new Pipeline());
+		webcam.setPipeline(new ContourPipeline(webcam));
 		webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
 		webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
 		{
@@ -191,10 +197,10 @@ public class AutoRed extends LinearOpMode {
 		});
 		waitForStart();
 
-		if (OpModeIsActive()) {
-			telemetry.addData("Level found", Pipeline.getObjLevel());
+		if (opModeIsActive()) {
+			telemetry.addData("Level found", ContourPipeline.getObjLevel());
 		}
-		while (OpModeIsActive()) {
+		while (opModeIsActive()) {
 
 			telemetry.update();
 			sleep(100);
