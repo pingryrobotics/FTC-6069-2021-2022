@@ -191,10 +191,11 @@ public class AutoRed extends LinearOpMode {
 		});
 		waitForStart();
 
-		int objLevel;
 		if (OpModeIsActive()) {
 			telemetry.addData("Level found", Pipeline.getObjLevel());
-			objLevel = Pipeline.getObjLevel();
+			int objLevel = Pipeline.getObjLevel();
+
+			// move to linear slide and put square on level
 			driveControl.moveYDist(1, 100); // change
 			driveControl.turnAngle(20, 100); // change
 			if (objLevel == 0) {
@@ -204,6 +205,20 @@ public class AutoRed extends LinearOpMode {
 			} else {
 				linearSlide.level3();
 			}
+			linearSlide.dump();
+			sleep(1000);
+			linearSlide.undump();
+
+			// move to carousel and spin it
+			driveControl.turnAngle(-100, 100); // change
+			driveControl.moveYDist(1, 100); // change
+			carousel.spinAngle(360);
+
+			// park in warehouse
+			driveControl.turnAngle(80, 100); // change
+			driveControl.moveYDist(1, 100); // change
+
+			telemetry.update();
 		}
 		while (OpModeIsActive()) {
 			
