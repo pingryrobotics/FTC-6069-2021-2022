@@ -191,11 +191,22 @@ public class AutoRed extends LinearOpMode {
 		});
 		waitForStart();
 
+		int objLevel;
 		if (OpModeIsActive()) {
 			telemetry.addData("Level found", Pipeline.getObjLevel());
+			objLevel = Pipeline.getObjLevel();
+			driveControl.moveYDist(1, 100); // change
+			driveControl.turnAngle(20, 100); // change
+			if (objLevel == 0) {
+				linearSlide.level1();
+			} else if (objLevel == 1) {
+				linearSlide.level2();
+			} else {
+				linearSlide.level3();
+			}
 		}
 		while (OpModeIsActive()) {
-
+			
 			telemetry.update();
 			sleep(100);
 		}
