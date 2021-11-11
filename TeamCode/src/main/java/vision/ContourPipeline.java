@@ -102,13 +102,22 @@ public class ContourPipeline extends OpenCvPipeline {
 		// We create a HSV range for yellow to detect regular stones
 		// NOTE: In OpenCV's implementation,
 		// Hue values are half the real value
-		Scalar lowHSV = new Scalar(0, 70, 50); // lower bound HSV for red
-		Scalar highHSV = new Scalar(10, 255, 255); // higher bound HSV for red
+
+		// red hsv's wrap around from 170 to 10 so we need to create 2 and kinda merge them
+		Scalar lowHSV1 = new Scalar(0, 70, 50); // lower bound HSV #1 for red
+		Scalar highHSV1 = new Scalar(10, 255, 255); // higher bound HSV for red
+		Scalar lowHSV2 = new Scalar(170, 70, 50); // lower bound HSV #2 for red
+		Scalar highHSV2 = new Scalar(180, 255, 255); // higher bound HSV for red
 		Mat thresh = new Mat();
+		Mat thresh1 = new Mat();
+		Mat thresh2 = new Mat();
 
 		// We'll get a black and white image. The white regions represent the regular stones.
 		// inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
-		Core.inRange(mat, lowHSV, highHSV, thresh); // goes through image, filters out color based on low&high hsv's
+		Core.inRange(mat, lowHSV1, highHSV1, thresh1); // goes through image, filters out color based on low&high hsv's
+		Core.inRange(mat, lowHSV2, highHSV2, thresh2); // goes through image, filters out color based on low&high hsv's
+
+		thresh = thresh1 | thresh2;
 
 		// Use Canny Edge Detection to find edges
 		// you might have to tune the thresholds for hysteresis
