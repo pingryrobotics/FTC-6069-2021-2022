@@ -78,17 +78,29 @@ public class ColorPipeline extends OpenCvPipeline {
 		// first third is the first top left to first bottom right point,
 		// the second third is the first bottom right to the third top left,
 		// and the third third is the third top left to the third bottom right
-		double lengthOfThird = input.rows()/3.0;
+		double thirdColWidth = input.cols()/3.0;
+//
+//		double firstThirdColumn = 0;
+//		double secondThirdColumn = thirdColWidth;
+//		double thirdThirdColumn = thirdColWidth*2;
+//		double endColumn = input.cols();
+//
+//		double rowTop = 0;
+//		double rowBottom = input.rows();
 
 		Point firstTopLeft = new Point(0, 0);
-		Point firstBottomRight = new Point(lengthOfThird, input.cols());
-		Point thirdTopLeft = new Point(lengthOfThird*2, 0);
-		Point thirdBottomRight = new Point(input.rows(), input.cols());
+		Point firstBottomRight = new Point(thirdColWidth, input.rows());
+		Point thirdTopLeft = new Point(thirdColWidth*2, 0);
+		Point thirdBottomRight = new Point(input.cols(), input.rows());
 
 		Rect firstThird = new Rect(firstTopLeft, firstBottomRight);
 		Rect secondThird = new Rect(firstBottomRight, thirdTopLeft);
 		Rect thirdThird = new Rect(thirdTopLeft, thirdBottomRight);
-		Rect entireScreen = new Rect(new Point(0, 0), new Point(input.rows(), input.cols()));
+		Rect entireScreen = new Rect(new Point(0, 0), new Point(input.cols(), input.rows()));
+
+		Mat thirdOneMat = new Mat(input, firstThird);
+		Mat thirdTwoMat = new Mat(input, secondThird);
+		Mat thirdThreeMat = new Mat(input, thirdThird);
 
 		Imgproc.rectangle(input, firstThird, new Scalar(0, 255, 0), 4);
 		Imgproc.rectangle(input, secondThird, new Scalar(255, 0, 0), 4);
@@ -105,6 +117,13 @@ public class ColorPipeline extends OpenCvPipeline {
 
 		return input;
 	}
+//
+//	public double determineColorAmount(Mat mat) {
+//		Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2HSV);
+//
+//
+//
+//	}
 
 	@Override
 	public void onViewportTapped()

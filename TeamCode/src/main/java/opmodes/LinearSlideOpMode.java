@@ -5,6 +5,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import mechanisms.LinearSlide;
 import teamcode.GamepadController;
 
 import teamcode.GamepadController.ToggleButton;
@@ -12,8 +13,8 @@ import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.FloatButton;
 
 
-@TeleOp(name="Template: Template OpMode", group="Testing")
-public class TemplateOpMode extends OpMode {
+@TeleOp(name="Testing: Slide OpMode", group="Testing")
+public class LinearSlideOpMode extends OpMode {
     // tag is used in logcat logs (Log.d()) to identify where the log is coming from
     // logcat is basically like System.out.print (standard output) except through adb
     private static final String TAG = "teamcode.test_opmode"; // put the name of the opmode

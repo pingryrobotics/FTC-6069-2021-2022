@@ -117,7 +117,7 @@ public class ContourPipeline extends OpenCvPipeline {
 		Core.inRange(mat, lowHSV1, highHSV1, thresh1); // goes through image, filters out color based on low&high hsv's
 		Core.inRange(mat, lowHSV2, highHSV2, thresh2); // goes through image, filters out color based on low&high hsv's
 
-		thresh = thresh1 | thresh2;
+//		thresh = thresh1 | thresh2;
 
 		// Use Canny Edge Detection to find edges
 		// you might have to tune the thresholds for hysteresis
