@@ -15,6 +15,12 @@ public class Carousel {
 	public void spin() { // spin at speed designated by "power"
 		carouselMotor.setPower(power);
 	}
+	
+	public void spinAngle(int angle) { // in radians
+		carouselMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		carouselMotor.setTargetPosition((double)(angle * 384.5)/(2*Math.pi)); // check motor PPR and change
+		carouselMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+	}
 
 	public void reverseSpin() {
 		carouselMotor.setPower(-power);
