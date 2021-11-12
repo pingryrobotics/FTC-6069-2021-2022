@@ -153,8 +153,13 @@ public class DriveControlOpMode extends OpMode {
 			linearSlide.stop();
 		}
 
-		// dpad down: linearslide goes to first level
+		// dpad down: linearslide goes to ground level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
+			linearSlide.level0();
+		}
+
+		// dpad right: linearslide goes to first level
+		if (mechanismController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
 			linearSlide.level1();
 		}
 
