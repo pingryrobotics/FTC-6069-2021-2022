@@ -114,7 +114,7 @@ public class LinearSlide {
 	}
 
 	public void stop() {
-		slideMotor.setTargetPosition(0); // goes back to base state
-		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // not sure if needed but sets base state to 0
+		slideMotor.setPower(0); // goes back to base state
 	}
 }
