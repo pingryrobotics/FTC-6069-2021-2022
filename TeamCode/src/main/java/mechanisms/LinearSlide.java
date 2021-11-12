@@ -49,15 +49,15 @@ public class LinearSlide {
 
 	public void level2() { // extend linear slide to level appropriate for the middle level of shipping hub
 		if(level == 0) {
-			slideMotor.setTargetPosition(4000);
+			slideMotor.setTargetPosition(40000);
 		}
 
 		else if(level == 1){
-			slideMotor.setTargetPosition(2000);
+			slideMotor.setTargetPosition(20000);
 		}
 
 		else if(level == 3){
-			slideMotor.setTargetPosition(-2000);
+			slideMotor.setTargetPosition(-20000);
 		}
 
 		else {
@@ -70,15 +70,15 @@ public class LinearSlide {
 
 	public void level3() { // extend linear slide to level appropriate for the top level of shipping hub
 		if(level == 0) {
-			slideMotor.setTargetPosition(6000);
+			slideMotor.setTargetPosition(60000);
 		}
 
 		else if(level == 1){
-			slideMotor.setTargetPosition(4000);
+			slideMotor.setTargetPosition(40000);
 		}
 
 		else if(level == 2){
-			slideMotor.setTargetPosition(2000);
+			slideMotor.setTargetPosition(20000);
 		}
 
 		else {
@@ -90,15 +90,15 @@ public class LinearSlide {
 
 	public void level0(){
 		if(level == 1) {
-			slideMotor.setTargetPosition(-2000);
+			slideMotor.setTargetPosition(-20000);
 		}
 
 		else if(level == 2){
-			slideMotor.setTargetPosition(-4000);
+			slideMotor.setTargetPosition(-40000);
 		}
 
 		else if(level == 3){
-			slideMotor.setTargetPosition(-6000);
+			slideMotor.setTargetPosition(-60000);
 		}
 
 		else {
@@ -128,6 +128,6 @@ public class LinearSlide {
 	}
 
 	public void stop() {
-		slideMotor.setPower(0); // goes back to base state
+		slideMotor.setPower(0); // stop
 	}
 }
