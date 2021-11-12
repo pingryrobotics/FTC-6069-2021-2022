@@ -27,15 +27,15 @@ public class LinearSlide {
 
 	public void level1() { // extend linear slide to level appropriate for the bottom level of shipping hub
 		if(level == 0) {
-			slideMotor.setTargetPosition(2000);
+			slideMotor.setTargetPosition(20000);
 		}
 
 		else if(level == 2){
-			slideMotor.setTargetPosition(-2000);
+			slideMotor.setTargetPosition(-20000);
 		}
 
 		else if(level == 3){
-			slideMotor.setTargetPosition(-4000);
+			slideMotor.setTargetPosition(-40000);
 		}
 
 		else {
