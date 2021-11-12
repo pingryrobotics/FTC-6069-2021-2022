@@ -13,6 +13,7 @@ import teamcode.GamepadController.ToggleButton;
 
 
 
+
 @TeleOp(name="Drive: Drive Control OpMode", group="Testing")
 public class DriveControlOpMode extends OpMode {
     // tag is used in logcat logs (Log.d()) to identify where the log is coming from
@@ -170,7 +171,10 @@ public class DriveControlOpMode extends OpMode {
 		// X button; linear slide dumps and then undumps once it's pressed
 		if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
 			linearSlide.dump();
-//			sleep(1000);
+		}
+
+		// Y button; linear slide dumps and then undumps once it's pressed
+		if (mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
 			linearSlide.undump();
 		}
 

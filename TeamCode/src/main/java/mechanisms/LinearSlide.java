@@ -39,6 +39,10 @@ public class LinearSlide {
 			slideMotor.setTargetPosition(-4000);
 		}
 
+		else {
+			slideMotor.setTargetPosition(0);
+		}
+
 		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		level = 1;
 		 // i have no idea what it should be this is an estimate tho
@@ -57,6 +61,11 @@ public class LinearSlide {
 		else if(level == 3){
 			slideMotor.setTargetPosition(-200);
 		}
+
+		else {
+			slideMotor.setTargetPosition(0);
+		}
+
 		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		level = 2;
 	}
@@ -73,6 +82,10 @@ public class LinearSlide {
 
 		else if(level == 2){
 			slideMotor.setTargetPosition(200);
+		}
+
+		else {
+			slideMotor.setTargetPosition(0);
 		}
 		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		level = 3;
@@ -91,6 +104,11 @@ public class LinearSlide {
 		else if(level == 3){
 			slideMotor.setTargetPosition(-600);
 		}
+
+		else {
+			slideMotor.setTargetPosition(0);
+		}
+
 		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		level = 0;
 	}
