@@ -17,7 +17,7 @@ public class LinearSlide {
 		slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // not sure if needed but sets base state to 0
 		//slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		bucketServo = hardwareMap.get(Servo.class, "bucketServo");
-		bucketServo.setDirection(Servo.Direction.FORWARD);
+		bucketServo.setDirection(Servo.Direction.REVERSE);
 		//bucketServo.scaleRange(0, .4);
 
 		slideMotor.setPower(1);
