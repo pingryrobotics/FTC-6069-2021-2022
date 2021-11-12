@@ -33,6 +33,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
@@ -152,7 +153,7 @@ public class ContourPipeline extends OpenCvPipeline {
 		int shippingElementLoc = 3; // start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
 									// that we find so we're left with the index of the shipping element's square
 		for (int i = 0; i < sz; i++) {
-			if (boundRect[i].area() < mat.width() * mat.length()/400) { // incorrectly detected
+			if (boundRect[i].area() < mat.width() * (double)mat.cols()/400) { // incorrectly detected
 				continue;
 			}
 			Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
