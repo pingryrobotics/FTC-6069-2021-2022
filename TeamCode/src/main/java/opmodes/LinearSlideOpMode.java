@@ -5,6 +5,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import mechanisms.Carousel;
 import mechanisms.LinearSlide;
 import teamcode.GamepadController;
 
@@ -22,6 +23,7 @@ public class LinearSlideOpMode extends OpMode {
     // put any outside classes you need to use here
     private GamepadController mechanismController;
 	private LinearSlide linearSlide;
+	private Carousel carousel;
 
 
     // put any measurements here
@@ -38,6 +40,7 @@ public class LinearSlideOpMode extends OpMode {
     public void init() {
         mechanismController = new GamepadController(gamepad1);
 		linearSlide = new LinearSlide(hardwareMap);
+		carousel = new Carousel(hardwareMap);
     }
 
     // code to loop after init is pressed and before start is pressed
@@ -86,6 +89,10 @@ public class LinearSlideOpMode extends OpMode {
 
 		if(mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN){
             linearSlide.retract();
+        }
+
+		if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+		    carousel.spin();
         }
     }
 

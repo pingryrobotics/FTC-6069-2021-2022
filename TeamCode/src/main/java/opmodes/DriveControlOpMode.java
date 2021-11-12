@@ -183,7 +183,7 @@ public class DriveControlOpMode extends OpMode {
 
 		// B button: carousel spins counterclockwise while button is pressed
 		if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-//			carousel.spinReverse();
+			carousel.reverseSpin();
 		} else if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_UP) {
 			carousel.stop();
 		}
