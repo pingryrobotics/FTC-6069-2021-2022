@@ -10,6 +10,7 @@ public class LinearSlide {
 	private final DcMotor slideMotor;
 	private final Servo bucketServo;
 	public double power;
+	private int level;
 
 	public LinearSlide(HardwareMap hardwareMap) {
 		slideMotor = hardwareMap.get(DcMotor.class, "slideMotor");
@@ -18,19 +19,72 @@ public class LinearSlide {
 		bucketServo = hardwareMap.get(Servo.class, "bucketServo");
 		bucketServo.setDirection(Servo.Direction.FORWARD);
 		bucketServo.scaleRange(0, .4);
-		power = 1.0;
+		power = 0.2;
+		level = 0;
 	}
 
 	public void level1() { // extend linear slide to level appropriate for the bottom level of shipping hub
-		slideMotor.setTargetPosition(200); // i have no idea what it should be this is an estimate tho
+		if(level == 0) {
+			slideMotor.setTargetPosition(200);
+		}
+
+		else if(level == 2){
+			slideMotor.setTargetPosition(-200);
+		}
+
+		else if(level == 3){
+			slideMotor.setTargetPosition(-400);
+		}
+
+		level = 1;
+		 // i have no idea what it should be this is an estimate tho
 	}
 
 	public void level2() { // extend linear slide to level appropriate for the middle level of shipping hub 
-		slideMotor.setTargetPosition(400);
+		if(level == 0) {
+			slideMotor.setTargetPosition(400);
+		}
+
+		else if(level == 1){
+			slideMotor.setTargetPosition(200);
+		}
+
+		else if(level == 3){
+			slideMotor.setTargetPosition(-200);
+		}
+
+		level = 2;
 	}
 
 	public void level3() { // extend linear slide to level appropriate for the top level of shipping hub
-		slideMotor.setTargetPosition(600);
+		if(level == 0) {
+			slideMotor.setTargetPosition(600);
+		}
+
+		else if(level == 1){
+			slideMotor.setTargetPosition(400);
+		}
+
+		else if(level == 2){
+			slideMotor.setTargetPosition(200);
+		}
+
+		level = 3;
+	}
+
+	public void level0(){
+		if(level == 1) {
+			slideMotor.setTargetPosition(-200);
+		}
+
+		else if(level == 2){
+			slideMotor.setTargetPosition(-400);
+		}
+
+		else if(level == 3){
+			slideMotor.setTargetPosition(-600);
+		}
+		level = 0;
 	}
 
 	public void extend() { // continuously extend linear slide

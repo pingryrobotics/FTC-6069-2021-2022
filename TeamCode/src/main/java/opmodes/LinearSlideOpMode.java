@@ -83,6 +83,10 @@ public class LinearSlideOpMode extends OpMode {
 		if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
 			linearSlide.level3();
 		}
+
+		if(mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN){
+            linearSlide.level0();
+        }
     }
 
 
