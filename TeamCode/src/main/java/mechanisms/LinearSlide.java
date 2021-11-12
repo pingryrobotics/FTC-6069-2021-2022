@@ -15,7 +15,7 @@ public class LinearSlide {
 	public LinearSlide(HardwareMap hardwareMap) {
 		slideMotor = hardwareMap.get(DcMotor.class, "linearSlideMotor");
 		slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // not sure if needed but sets base state to 0
-//		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		bucketServo = hardwareMap.get(Servo.class, "bucketServo");
 		bucketServo.setDirection(Servo.Direction.FORWARD);
 		bucketServo.scaleRange(0, .4);
@@ -24,6 +24,8 @@ public class LinearSlide {
 	}
 
 	public void level1() { // extend linear slide to level appropriate for the bottom level of shipping hub
+		slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		if(level == 0) {
 			slideMotor.setTargetPosition(200);
 		}
@@ -41,6 +43,8 @@ public class LinearSlide {
 	}
 
 	public void level2() { // extend linear slide to level appropriate for the middle level of shipping hub 
+		slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		if(level == 0) {
 			slideMotor.setTargetPosition(400);
 		}
@@ -57,6 +61,8 @@ public class LinearSlide {
 	}
 
 	public void level3() { // extend linear slide to level appropriate for the top level of shipping hub
+		slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		if(level == 0) {
 			slideMotor.setTargetPosition(600);
 		}
@@ -73,6 +79,8 @@ public class LinearSlide {
 	}
 
 	public void level0(){
+		slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		if(level == 1) {
 			slideMotor.setTargetPosition(-200);
 		}
@@ -108,6 +116,6 @@ public class LinearSlide {
 	}
 
 	public void stop() {
-		slideMotor.setTargetPosition(0); // goes back to base state
+		slideMotor.setPower(0);
 	}
 }
