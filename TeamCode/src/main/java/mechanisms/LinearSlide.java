@@ -18,7 +18,7 @@ public class LinearSlide {
 		//slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		bucketServo = hardwareMap.get(Servo.class, "bucketServo");
 		bucketServo.setDirection(Servo.Direction.REVERSE);
-		bucketServo.scaleRange(0, .4);
+		bucketServo.scaleRange(0, .2);
 
 		slideMotor.setPower(1);
 		power = 1;
@@ -124,11 +124,11 @@ public class LinearSlide {
 	}
 
 	public void dump() { // dump stuff in bucket
-		bucketServo.setPosition(1.0);
+		bucketServo.setPosition(0.0);
 	}
 
 	public void undump() { // pull bucket back after dumping
-		bucketServo.setPosition(0.0);
+		bucketServo.setPosition(1.0);
 	}
 
 	public void stop() {
