@@ -12,8 +12,10 @@ import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
 
 
-@TeleOp(name="Drive: Fake Teleop Drive Control OpMode", group="Testing")
-public class FakeTeleopOpMode extends OpMode {
+
+
+@TeleOp(name="Drive: Drive Control OpMode", group="Testing")
+public class DriveControlOpMode extends OpMode {
     // tag is used in logcat logs (Log.d()) to identify where the log is coming from
     // logcat is basically like System.out.print (standard output) except through adb
     private static final String TAG = "teamcode.drive-opmode"; // put the name of the opmode
@@ -76,6 +78,24 @@ public class FakeTeleopOpMode extends OpMode {
         movementController.updateButtonStates();
 		mechanismController.updateButtonStates();
 
+		// polarmove calculations
+		double leftStickX = movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_X);
+		double leftStickY = movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_Y);
+		double rightStickX = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_X);
+		double rightStickY = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_Y);
+
+		double speed = 0.2;
+		//if(gamepad1.right_trigger > 0.5){
+		//    speed += (1-speed)*(2*(gamepad1.right_trigger - 0.5));
+		//}
+
+		double magnitude = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+		double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+		telemetry.addData("robot angle", robotAngle);
+		robotAngle += offsetAngle / 180.0 * Math.PI;
+		double rightX = -gamepad1.right_stick_x;
+		driveControl.polarMove(robotAngle, rightX, 0.5 * direc * speed * magnitude);
+
         // do something when A is pressed
         if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
             driveControl.runAtSpeed(velocity);
@@ -133,8 +153,13 @@ public class FakeTeleopOpMode extends OpMode {
 			linearSlide.stop();
 		}
 
-		// dpad down: linearslide goes to first level
+		// dpad down: linearslide goes to ground level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
+			linearSlide.level0();
+		}
+
+		// dpad right: linearslide goes to first level
+		if (mechanismController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
 			linearSlide.level1();
 		}
 
@@ -151,7 +176,10 @@ public class FakeTeleopOpMode extends OpMode {
 		// X button; linear slide dumps and then undumps once it's pressed
 		if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
 			linearSlide.dump();
-//			sleep(1000);
+		}
+
+		// Y button; linear slide dumps and then undumps once it's pressed
+		if (mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
 			linearSlide.undump();
 		}
 
@@ -164,7 +192,7 @@ public class FakeTeleopOpMode extends OpMode {
 
 		// B button: carousel spins counterclockwise while button is pressed
 		if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-//			carousel.spinReverse();
+			carousel.reverseSpin();
 		} else if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_UP) {
 			carousel.stop();
 		}

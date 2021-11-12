@@ -17,8 +17,8 @@ public class Carousel {
 	}
 	
 	public void spinAngle(int angle) { // in radians
-		carouselMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//		carouselMotor.setTargetPosition((double)(angle * 384.5)/(2*Math.pi)); // check motor PPR and change
+        carouselMotor.setTargetPosition((int)((angle * 384.5)/(2*Math.PI))); // check motor PPR and change
+        carouselMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		carouselMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 	}
 
