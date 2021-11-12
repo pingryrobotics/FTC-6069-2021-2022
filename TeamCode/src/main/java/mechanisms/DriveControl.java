@@ -1,9 +1,11 @@
 package mechanisms;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 /**
@@ -22,6 +24,13 @@ public class DriveControl {
     private final DcMotor leftRear;
     private final DcMotor rightFront;
     private final DcMotor rightRear;
+    private final BNO055IMU imu;
+
+    private double lastAngle = 0;
+    private double averageVelocity = 0;
+    private double averageGoal = 0;
+    private ElapsedTime t;
+
 
     // gobilda yellowjacket 312 rpm, technically 537.7 but yk
     private static final int ENCODER_ROTATION_312RPM = 538;
@@ -39,6 +48,13 @@ public class DriveControl {
         DcMotor leftRear = hardwareMap.get(DcMotor.class, "leftRear");
         DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         DcMotor rightRear = hardwareMap.get(DcMotor.class, "rightRear");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        imu.initialize(parameters);
+
 
         this.leftFront = leftFront;
         this.leftRear = leftRear;
@@ -46,6 +62,7 @@ public class DriveControl {
         this.rightRear = rightRear;
 
         setMotorDirection(DcMotorSimple.Direction.FORWARD);
+        setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -140,7 +157,7 @@ public class DriveControl {
      * A positive tick value moves forwards, negative goes backwards
      * @param targetEncoderTicks the encoder ticks to move at
      */
-    private void setStraightTarget(int targetEncoderTicks) {
+    public void setStraightTarget(int targetEncoderTicks) {
         setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFront.setTargetPosition(targetEncoderTicks);
         leftRear.setTargetPosition(targetEncoderTicks);
@@ -165,7 +182,7 @@ public class DriveControl {
      * Set the motor mode for all drive motors
      * @param runMode the runmode to set
      */
-    private void setMotorMode(DcMotor.RunMode runMode) {
+    public void setMotorMode(DcMotor.RunMode runMode) {
         leftFront.setMode(runMode);
         leftRear.setMode(runMode);
         rightFront.setMode(runMode);
@@ -177,7 +194,7 @@ public class DriveControl {
      * might not be necessary if run to position disregards power sign
      * @param velocity the velocity to set
      */
-    private void setStraightVelocity(double velocity) {
+    public void setStraightVelocity(double velocity) {
         leftFront.setPower(velocity);
         leftRear.setPower(velocity);
         rightFront.setPower(-velocity);
@@ -217,6 +234,58 @@ public class DriveControl {
         leftRear.setDirection(direction);
         rightFront.setDirection(direction);
         rightRear.setDirection(direction);
+    }
+
+    /**
+     * Drive the robot using gyro strafe correction
+     * @param direction Angle to strafe at (0 is forward, Pi/2 is left...?)
+     * @param rotation Value between -1 and 1 representing power to turn at
+     * @param magnitude Speed to strafe at
+     */
+    public void drive(double direction, double magnitude, double rotation){
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //Get the current gyro angle
+        double gyroAngle = imu.getAngularOrientation().firstAngle;
+        //Find the change since our last angle
+        double dAngle = (lastAngle - gyroAngle);
+        //Find the change in time since out last measurement
+        double dTime = t.seconds();
+        t.reset();
+        //Find the change in angle over time (angular velocity)
+        double velocity = dAngle/dTime;
+
+        //Find the AVERAGE velocity (just a smoothed out velocity that has been averaged to minimize static noise and improve accuracy)
+        averageVelocity = (averageVelocity * 3 + velocity)/4;
+
+        //Find the AVERAGE rotational goal (smoothed out)
+        averageGoal = (averageGoal * 3 + rotation)/4.0;
+
+        //Update the last angle
+        lastAngle = gyroAngle;
+
+        //Update the rotational goal to compensate for how off we are from the goal.
+        //Dividing by 300 to convert the degrees per second into power for a motor. We found that about 300 degrees per second is a 1 in turning power.
+        //The 1.5x is a multiplier to make sure the offset is applied 2enough to have an actual effect.
+
+        //Commented for now to make drivable (find a new value instead of 300.0 and then uncomment to enable)
+        rotation += (averageGoal - averageVelocity / 120.0);
+
+
+        direction += Math.PI/4.0;  //Strafe direction needs to be offset so that forwards has everything go at the same power
+
+        final double v1 = magnitude * Math.cos(direction) + rotation;
+        final double v2 = magnitude * Math.sin(direction) - rotation;
+        final double v3 = magnitude * Math.sin(direction) + rotation;
+        final double v4 = magnitude * Math.cos(direction) - rotation;
+
+        leftFront.setPower(v1);
+        rightFront.setPower(v2);
+        leftRear.setPower(v3);
+        rightRear.setPower(v4);
     }
 
 
