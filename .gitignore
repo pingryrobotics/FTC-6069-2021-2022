@@ -86,3 +86,5 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 *.xml
+.settings/org.eclipse.buildship.core.prefs
+.settings/org.eclipse.buildship.core.prefs

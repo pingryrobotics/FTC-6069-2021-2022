@@ -117,7 +117,9 @@ public class ContourPipeline extends OpenCvPipeline {
 		Core.inRange(mat, lowHSV1, highHSV1, thresh1); // goes through image, filters out color based on low&high hsv's
 		Core.inRange(mat, lowHSV2, highHSV2, thresh2); // goes through image, filters out color based on low&high hsv's
 
-//		thresh = thresh1 | thresh2;
+
+		Core.addWeighted(thresh2, 1, thresh1, 1, 0, thresh);
+		Imgproc.GaussianBlur(thresh, thresh, new Size(9, 9), 2, 2); // should smooth out some stuff; if not then it should be caught later
 
 		// Use Canny Edge Detection to find edges
 		// you might have to tune the thresholds for hysteresis
@@ -150,6 +152,9 @@ public class ContourPipeline extends OpenCvPipeline {
 		int shippingElementLoc = 3; // start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
 									// that we find so we're left with the index of the shipping element's square
 		for (int i = 0; i < sz; i++) {
+			if (boundRect[i].area() < mat.width() * mat.length()/400) { // incorrectly detected
+				continue;
+			}
 			Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
 			// look at center of each bounding rectangle, see which thirds of the picture they should be in
 			
