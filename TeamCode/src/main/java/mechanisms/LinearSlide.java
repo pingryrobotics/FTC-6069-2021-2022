@@ -18,7 +18,7 @@ public class LinearSlide {
 		//slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		bucketServo = hardwareMap.get(Servo.class, "bucketServo");
 		bucketServo.setDirection(Servo.Direction.REVERSE);
-		//bucketServo.scaleRange(0, .4);
+		bucketServo.scaleRange(0, .4);
 
 		slideMotor.setPower(1);
 		power = 1;
@@ -73,7 +73,7 @@ public class LinearSlide {
 	public void level3() { // extend linear slide to level appropriate for the top level of shipping hub
 		slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		if(level == 0) {
-			slideMotor.setTargetPosition(60000);
+			slideMotor.setTargetPosition(34097);
 		}
 
 		else if(level == 1){
