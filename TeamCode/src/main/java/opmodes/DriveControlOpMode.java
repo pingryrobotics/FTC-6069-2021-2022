@@ -28,6 +28,7 @@ public class DriveControlOpMode extends OpMode {
 	private Carousel carousel;
     private double velocity = 0;
 	private int direc = 1;
+	private int offsetAngle;
 
 
     // code to run once when driver hits init on phone
@@ -39,6 +40,7 @@ public class DriveControlOpMode extends OpMode {
 		intake = new Intake(hardwareMap);
 		linearSlide = new LinearSlide(hardwareMap);
 		carousel = new Carousel(hardwareMap);
+		offsetAngle = 0;
 
     }
 
@@ -81,11 +83,17 @@ public class DriveControlOpMode extends OpMode {
 		double rightStickX = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_X);
 		double rightStickY = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_Y);
 
-		double magnitude = Math.hypot(-leftStickX, leftStickY);
-        double robotAngle = Math.atan2(leftStickY, -leftStickX) - Math.PI / 4;
-        telemetry.addData("robot angle", robotAngle);
-//        robotAngle += offsetAngle / 180.0 * Math.PI;
-        driveControl.polarMove(robotAngle, -rightStickX, 0.5 * direc * velocity * magnitude);
+		double speed = 0.2;
+		//if(gamepad1.right_trigger > 0.5){
+		//    speed += (1-speed)*(2*(gamepad1.right_trigger - 0.5));
+		//}
+
+		double magnitude = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+		double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+		telemetry.addData("robot angle", robotAngle);
+		robotAngle += offsetAngle / 180.0 * Math.PI;
+		double rightX = -gamepad1.right_stick_x;
+		driveControl.polarMove(robotAngle, rightX, 0.5 * direc * speed * magnitude);
 
         // do something when A is pressed
         if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
