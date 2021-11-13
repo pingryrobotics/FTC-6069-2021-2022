@@ -75,25 +75,26 @@ public class LinearSlideOpMode extends OpMode {
         // button states need to be updated each loop for controls to work
         mechanismController.updateButtonStates();
 
-		if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
-			linearSlide.level1();
+		if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
+			linearSlide.extend();
 		}
 
-		if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-			linearSlide.stop();
+		if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_DOWN) {
+			linearSlide.retract();
 		}
+
+        if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
+            linearSlide.stop();
+        }
 
 		if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-			linearSlide.level0();
+			linearSlide.resetEncoder();
 		}
 
-		if(mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN){
-            linearSlide.level3();
+		if(mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_HOLD){
+            telemetry.addData("ticks", linearSlide.getTicks());
         }
 
-		if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
-		    linearSlide.level2();
-        }
     }
 
 

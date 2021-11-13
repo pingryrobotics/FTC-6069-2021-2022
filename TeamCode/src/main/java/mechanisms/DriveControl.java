@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 /**
  * Class for controlling drive motors
  *
@@ -69,20 +70,24 @@ public class DriveControl {
 //        setMotorDirection(DcMotorSimple.Direction.FORWARD);
         setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+
         t = new ElapsedTime();
     }
 
     /**
-     * Drive a set distance straight (forwards & backwards) and then stop
+     * Drive a set distance straight (forwards & backwards
+     * and then stop
      * A positive distance is forward, negative is backwards
      * @param targetInches the distance to move, in inches
      * @param percentSpeed the fraction of the motor's max speed to move, as a decimal
      */
-    public void moveYDist(double targetInches, double percentSpeed) {
+    public int moveYDist(double targetInches, double percentSpeed) {
         int ticks = calculateDirectTicks(targetInches);
-        System.out.println("Ticks: " + ticks);
         setStraightTarget(ticks);
         runToStraightPosition(percentSpeed);
+        return ticks;
     }
 
     /**
@@ -106,23 +111,23 @@ public class DriveControl {
         int leftRearTarget = (int) (leftRear.getCurrentPosition() - (inches * ticksPerInch));
         int rightFrontTarget = (int) (rightFront.getCurrentPosition() + (inches * ticksPerInch));
         int rightRearTarget = (int) (rightRear.getCurrentPosition() + (inches * ticksPerInch));
-        System.out.println("Left Front Target" + leftFrontTarget);
 
         leftFront.setTargetPosition(leftFrontTarget);
         leftRear.setTargetPosition(leftRearTarget);
         rightFront.setTargetPosition(rightFrontTarget);
         rightRear.setTargetPosition(rightRearTarget);
-        if (turnRight) {
+        if(turnRight){
             leftFront.setPower(-power);
             leftRear.setPower(-power);
             rightFront.setPower(power);
             rightRear.setPower(power);
-        } else {
+        }else{
             leftFront.setPower(power);
             leftRear.setPower(power);
             rightFront.setPower(-power);
             rightRear.setPower(-power);
         }
+
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -157,9 +162,7 @@ public class DriveControl {
     private int calculateDirectTicks(double targetInches) {
         double targetMM = targetInches * INCH_TO_MM;
         double targetRotations = targetMM/WHEEL_CIRCUMFERENCE_MM;
-        System.out.println("Target Rotations " + targetRotations);
         double encoderTicks = targetRotations*ENCODER_ROTATION_312RPM;
-        System.out.println("Enconder Ticks" + encoderTicks);
         return (int)Math.round(encoderTicks);
     }
 
@@ -197,10 +200,10 @@ public class DriveControl {
      */
     public void setStraightTarget(int targetEncoderTicks) {
         setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFront.setTargetPosition(leftFront.getCurrentPosition() + targetEncoderTicks);
-        leftRear.setTargetPosition(leftRear.getCurrentPosition() + targetEncoderTicks);
-        rightFront.setTargetPosition(rightFront.getCurrentPosition() -targetEncoderTicks);
-        rightRear.setTargetPosition(rightRear.getCurrentPosition()-targetEncoderTicks);
+        leftFront.setTargetPosition(targetEncoderTicks);
+        leftRear.setTargetPosition(targetEncoderTicks);
+        rightFront.setTargetPosition(targetEncoderTicks);
+        rightRear.setTargetPosition(targetEncoderTicks);
     }
 
     /**
@@ -235,8 +238,8 @@ public class DriveControl {
     public void setStraightVelocity(double velocity) {
         leftFront.setPower(velocity);
         leftRear.setPower(velocity);
-        rightFront.setPower(-velocity);
-        rightRear.setPower(-velocity);
+        rightFront.setPower(velocity);
+        rightRear.setPower(velocity);
     }
 
     /**
@@ -310,7 +313,11 @@ public class DriveControl {
         //The 1.5x is a multiplier to make sure the offset is applied 2enough to have an actual effect.
 
         //Commented for now to make drivable (find a new value instead of 300.0 and then uncomment to enable)
-//        rotation += (averageGoal - averageVelocity / 120.0);
+        rotation += (averageGoal - averageVelocity / 120.0);
+
+//        if (rotation < .2 || rotation > -.2) {
+//            rotation = 0;
+//        }
 
 
         direction += Math.PI/4.0;  //Strafe direction needs to be offset so that forwards has everything go at the same power
@@ -325,4 +332,26 @@ public class DriveControl {
         leftRear.setPower(v3);
         rightRear.setPower(v4);
     }
+
+    public double getGyroAngle(){
+        return imu.getAngularOrientation().firstAngle;
+    }
+
+    public void gyroTurn(double angle, double power){
+        power = Math.abs(power);
+
+        double gyroAngle = getGyroAngle();
+        double driveAngle = power*Math.max(-1, Math.min(1, (gyroAngle - angle)/20.0));
+
+        System.out.println("Angle: "+gyroAngle);
+        System.out.println("Turn power: "+driveAngle);
+        drive(0, 0, driveAngle);
+    }
+
+
+
+
+
+
+
 }

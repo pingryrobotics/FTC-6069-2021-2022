@@ -66,6 +66,7 @@ public class AutoDriveControlOpMode extends OpMode {
         telemetry.update();
     }
 
+    int ticks = -1;
     /**
      * Updates buttons and does controls when buttons are pressed
      */
@@ -97,7 +98,7 @@ public class AutoDriveControlOpMode extends OpMode {
                 velocity -= .1;
         }
 
-        if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
+        if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
             driveControl.moveXDist(12, .5);
         }
 
@@ -107,6 +108,16 @@ public class AutoDriveControlOpMode extends OpMode {
             driveControl.setStraightVelocity(.5);
             driveControl.setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        }
+
+        if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
+            ticks = driveControl.moveYDist(12, .5);
+            telemetry.addData("ticks", ticks);
+        }
+
+        if (movementController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
+            driveControl.setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            driveControl.gyroTurn(90, .5);
         }
 
 
