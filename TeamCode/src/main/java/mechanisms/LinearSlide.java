@@ -147,4 +147,8 @@ public class LinearSlide {
     public void stop() {
         slideMotor.setPower(0); // stop
     }
+
+    public void resetEncoder() {
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
 }
