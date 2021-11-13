@@ -85,7 +85,8 @@ public class DriveControlOpMode extends OpMode {
 		double rightStickX = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_X);
 		double rightStickY = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_Y);
 
-		double theta = Math.atan2(-leftStickY, leftStickX) - Math.PI/4; // go back to subtracting 90?
+//		double theta = Math.atan2(-leftStickY, leftStickX) - Math.PI/4; // go back to subtracting 90?
+		double theta = Math.atan2(-leftStickY, -leftStickX); // go back to subtracting 90?
 		double magnitude = Math.sqrt(Math.pow(leftStickX, 2) + Math.pow(leftStickY, 2));
 		double turn = Range.clip(gamepad1.right_stick_x, -1, 1);
 
@@ -208,7 +209,7 @@ public class DriveControlOpMode extends OpMode {
 			carousel.stop();
 		}
 		if (mechanismController.getButtonState(ToggleButton.LEFT_STICK_BUTTON) == ButtonState.KEY_DOWN) {
-			linearSlide.resetEncoder();
+//			linearSlide.resetEncoder();
 		}
 
 		// B button: carousel spins counterclockwise while button is pressed
