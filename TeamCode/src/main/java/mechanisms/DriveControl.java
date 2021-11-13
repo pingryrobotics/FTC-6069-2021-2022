@@ -110,6 +110,7 @@ public class DriveControl {
         int rightFrontTarget = (int) (rightFront.getCurrentPosition() + (inches * ticksPerInch));
         int rightRearTarget = (int) (rightRear.getCurrentPosition() + (inches * ticksPerInch));
 
+        setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFront.setTargetPosition(leftFrontTarget);
         leftRear.setTargetPosition(leftRearTarget);
         rightFront.setTargetPosition(rightFrontTarget);
@@ -125,10 +126,7 @@ public class DriveControl {
             rightFront.setPower(-power);
             rightRear.setPower(-power);
         }
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void polarMove(double angle, double turn, double power) {
@@ -159,7 +157,7 @@ public class DriveControl {
     private int calculateDirectTicks(double targetInches) {
         double targetMM = targetInches * INCH_TO_MM;
         double targetRotations = targetMM/WHEEL_CIRCUMFERENCE_MM;
-        double encoderTicks = targetRotations/ENCODER_ROTATION_312RPM;
+        double encoderTicks = targetRotations * ENCODER_ROTATION_312RPM;
         return (int)Math.round(encoderTicks);
     }
 
