@@ -123,6 +123,10 @@ public class DriveControlOpMode extends OpMode {
 			direc *= -1;
 		}
 
+		if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
+			driveControl.turnAngle(20, 1);
+		}
+
 
 		// mechanismController button state executions
 
@@ -188,6 +192,9 @@ public class DriveControlOpMode extends OpMode {
 			carousel.spin();
 		} else if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_UP) {
 			carousel.stop();
+		}
+		if (mechanismController.getButtonState(ToggleButton.LEFT_STICK_BUTTON) == ButtonState.KEY_DOWN) {
+			linearSlide.resetEncoder();
 		}
 
 		// B button: carousel spins counterclockwise while button is pressed
