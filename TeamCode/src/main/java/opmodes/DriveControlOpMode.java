@@ -127,7 +127,7 @@ public class DriveControlOpMode extends OpMode {
         }
 
         if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-            driveControl.moveXDist(12, .5);
+            driveControl.turnAngle(20, 1);
         }
 
 		if (movementController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) { // reverse robot
@@ -135,11 +135,11 @@ public class DriveControlOpMode extends OpMode {
 		}
 
 		if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
-			driveControl.turnAngle(20, 1);
+			driveControl.moveXDist(12, 0.5);
 		}
 
 		if(movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN){
-			driveControl.moveYDist(10, 0.5);
+			driveControl.moveYDist(12, 0.5);
 		}
 
 		// mechanismController button state executions
