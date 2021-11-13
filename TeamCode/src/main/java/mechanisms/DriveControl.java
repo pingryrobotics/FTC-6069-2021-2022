@@ -38,6 +38,12 @@ public class DriveControl {
     // 2 pi r
     private static final double WHEEL_CIRCUMFERENCE_MM = 2 * Math.PI * (WHEEL_DIAMETER_96MM/2.0);
     private static final double INCH_TO_MM = 25.4;
+    private static final double CM_PER_INCH = 2.54;
+    private static final double wheelDiameterCentimeters = 10; // diameter of wheel in cm, check specs
+    private static final double wheelDiameterInches = wheelDiameterCentimeters / CM_PER_INCH; // cm to Inches
+    private static final double gearboxReduction = 19.2; // reduction of gearbox, check specs
+    private static final double pulsesPerRevolution = 28; // pulses per revolution for the unreducted motor
+    private static final double ticksPerInch = ((pulsesPerRevolution * gearboxReduction) / wheelDiameterInches) / Math.PI;
 
     /**
      * Initialize the drive controller
@@ -94,8 +100,31 @@ public class DriveControl {
         runToStrafePosition(percentSpeed);
     }
 
-    public void turnAngle(double newAngle, double percentSpeed) {
+    public void turnAngle(double degrees, double power) {
+        boolean turnRight = degrees > 0;
+        power = Math.abs(power);
 
+        double inches = degrees/180 * Math.PI * 11.5;
+        int leftFrontTarget = (int) (leftFront.getCurrentPosition() - (inches * ticksPerInch));
+        int leftRearTarget = (int) (leftRear.getCurrentPosition() - (inches * ticksPerInch));
+        int rightFrontTarget = (int) (rightFront.getCurrentPosition() + (inches * ticksPerInch));
+        int rightRearTarget = (int) (rightRear.getCurrentPosition() + (inches * ticksPerInch));
+
+        leftFront.setTargetPosition(leftFrontTarget);
+        leftRear.setTargetPosition(leftRearTarget);
+        rightFront.setTargetPosition(rightFrontTarget);
+        rightRear.setTargetPosition(rightRearTarget);
+        if(turnRight){
+            leftFront.setPower(-power);
+            leftRear.setPower(-power);
+            rightFront.setPower(power);
+            rightRear.setPower(power);
+        }else{
+            leftFront.setPower(power);
+            leftRear.setPower(power);
+            rightFront.setPower(-power);
+            rightRear.setPower(-power);
+        }
     }
 
     public void polarMove(double angle, double turn, double power) {

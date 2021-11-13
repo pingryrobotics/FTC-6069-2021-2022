@@ -199,6 +199,34 @@ public class AutoRed extends LinearOpMode {
 
 		if (opModeIsActive()) {
 			telemetry.addData("Level found", ContourPipeline.getObjLevel());
+            int objLevel = ContourPipeline.getObjLevel();
+
+            // move to linear slide and put square on level
+            driveControl.moveYDist(1, 100); // change
+            driveControl.turnAngle(20, 100); // change
+//            if (objLevel == 0) {
+//                linearSlide.level1();
+//            } else if (objLevel == 1) {
+//                linearSlide.level2();
+//            } else if (objLevel == 2){
+//                linearSlide.level3();
+//            } else {
+//
+//            }
+            linearSlide.dump();
+            sleep(1000);
+            linearSlide.undump();
+
+            // move to carousel and spin it
+            driveControl.turnAngle(-100, 100); // change
+            driveControl.moveYDist(1, 100); // change
+            carousel.spinAngle(360);
+
+            // park in warehouse
+            driveControl.turnAngle(80, 100); // change
+            driveControl.moveYDist(1, 100); // change
+
+            telemetry.update();
 		}
 		while (opModeIsActive()) {
 
