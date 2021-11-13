@@ -2,6 +2,7 @@ package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import mechanisms.Carousel;
@@ -65,7 +66,16 @@ public class ManualDriveOpMode extends OpMode {
         double theta = Math.atan2(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
         double magnitude = Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2));
         double turn = -Range.clip(gamepad1.right_stick_x, -1, 1);
+
+        telemetry.addData("angle", theta);
+        telemetry.addData("magnitude", magnitude);
+        telemetry.addData("rotation", turn);
+
         driveControl.drive(theta, magnitude, turn);
+
+        if (movementController.getButtonState(GamepadController.ToggleButton.B) == GamepadController.ButtonState.KEY_HOLD) {
+            driveControl.setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
 
     }
 
