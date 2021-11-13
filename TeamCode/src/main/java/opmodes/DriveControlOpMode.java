@@ -127,6 +127,9 @@ public class DriveControlOpMode extends OpMode {
 			driveControl.turnAngle(20, 1);
 		}
 
+		if(movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN){
+			driveControl.moveYDist(10, 0.5);
+		}
 
 		// mechanismController button state executions
 
