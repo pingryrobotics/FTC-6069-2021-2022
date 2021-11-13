@@ -107,10 +107,11 @@ public class DriveControl {
         power = Math.abs(power);
 
         double inches = degrees/180 * Math.PI * 11.5;
-        int leftFrontTarget = (int) (leftFront.getCurrentPosition() - (inches * ticksPerInch));
-        int leftRearTarget = (int) (leftRear.getCurrentPosition() - (inches * ticksPerInch));
-        int rightFrontTarget = (int) (rightFront.getCurrentPosition() + (inches * ticksPerInch));
-        int rightRearTarget = (int) (rightRear.getCurrentPosition() + (inches * ticksPerInch));
+        setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int leftFrontTarget = (int) (inches * ticksPerInch);
+        int leftRearTarget = (int) (inches * ticksPerInch);
+        int rightFrontTarget = (int) (inches * ticksPerInch);
+        int rightRearTarget = (int) (inches * ticksPerInch);
 
         leftFront.setTargetPosition(leftFrontTarget);
         leftRear.setTargetPosition(leftRearTarget);
@@ -127,11 +128,7 @@ public class DriveControl {
             rightFront.setPower(-power);
             rightRear.setPower(-power);
         }
-
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void polarMove(double angle, double turn, double power) {
