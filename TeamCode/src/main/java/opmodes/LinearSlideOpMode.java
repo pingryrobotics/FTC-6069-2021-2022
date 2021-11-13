@@ -91,10 +91,6 @@ public class LinearSlideOpMode extends OpMode {
 			linearSlide.resetEncoder();
 		}
 
-		if(mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_HOLD){
-            telemetry.addData("ticks", linearSlide.getTicks());
-        }
-
     }
 
 

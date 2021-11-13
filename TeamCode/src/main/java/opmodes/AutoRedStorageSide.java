@@ -146,35 +146,35 @@ public class AutoRedStorageSide extends LinearOpMode {
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap);
         carousel = new Carousel(hardwareMap);
-        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        webcam.setPipeline(new ContourPipeline(webcam));
-        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-            }
-            @Override
-            public void onError(int errorCode)
-            {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
-            }
-        });
+//        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+//        webcam.setPipeline(new ContourPipeline(webcam));
+//        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
+//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+//        {
+//            @Override
+//            public void onOpened()
+//            {
+//                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+//            }
+//            @Override
+//            public void onError(int errorCode)
+//            {
+//                /*
+//                 * This will be called if the camera could not be opened
+//                 */
+//            }
+//        });
         waitForStart();
 
         if (opModeIsActive()) {
-            telemetry.addData("Level found", ContourPipeline.getObjLevel());
-            int objLevel = ContourPipeline.getObjLevel();
+//            telemetry.addData("Level found", ContourPipeline.getObjLevel());
+//            int objLevel = ContourPipeline.getObjLevel();
 
-            driveControl.moveXDist(-4, 0.5);
-            sleep(1000);
-            driveControl.moveYDist(60, 0.5);
+            driveControl.moveXDist(-20, 0.5);
+            sleep(1500);
+            driveControl.moveYDist(90, 0.5);
 
             // move to linear slide and put square on level
 //            driveControl.moveYDist(20, 1); // change
