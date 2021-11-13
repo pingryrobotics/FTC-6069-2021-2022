@@ -63,9 +63,9 @@ public class ManualDriveOpMode extends OpMode {
         movementController.updateButtonStates();
 		mechanismController.updateButtonStates();
 
-        double theta = Math.atan2(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
+        double theta = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x)-90;
         double magnitude = Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2));
-        double turn = -Range.clip(gamepad1.right_stick_x, -1, 1);
+        double turn = Range.clip(gamepad1.right_stick_x, -1, 1);
 
         telemetry.addData("angle", theta);
         telemetry.addData("magnitude", magnitude);
