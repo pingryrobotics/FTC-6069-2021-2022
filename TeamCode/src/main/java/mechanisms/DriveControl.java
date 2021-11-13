@@ -114,6 +114,10 @@ public class DriveControl {
         leftRear.setTargetPosition(leftRearTarget);
         rightFront.setTargetPosition(rightFrontTarget);
         rightRear.setTargetPosition(rightRearTarget);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         if(turnRight){
             leftFront.setPower(-power);
             leftRear.setPower(-power);
