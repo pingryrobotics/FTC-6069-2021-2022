@@ -35,7 +35,7 @@ public class LinearSlide {
 
         slideMotor.setPower(1);
         power = 1;
-        level = 3;
+        level = 0;
     }
 
     public void level1() { // extend linear slide to level appropriate for the bottom level of shipping hub
