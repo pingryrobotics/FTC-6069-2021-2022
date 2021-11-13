@@ -21,9 +21,9 @@ public class LinearSlide {
     private final Servo bucketServo;
     public double power;
     private int level;
-    private final int level2To3 = 5000;
-    private final int level1To2 = 5000;
-    private final int level0To1 = 7000;
+    private final int level2To3 = 3000;
+    private final int level1To2 = 3000;
+    private final int level0To1 = 5000;
 
     public LinearSlide(HardwareMap hardwareMap) {
         slideMotor = hardwareMap.get(DcMotor.class, "slideMotor");
@@ -31,7 +31,7 @@ public class LinearSlide {
         //slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bucketServo = hardwareMap.get(Servo.class, "bucketServo");
         bucketServo.setDirection(Servo.Direction.REVERSE);
-        bucketServo.scaleRange(0, .2);
+        bucketServo.scaleRange(0, .03);
 
         slideMotor.setPower(1);
         power = 1;
