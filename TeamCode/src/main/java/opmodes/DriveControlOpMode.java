@@ -2,6 +2,7 @@ package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.Range;
 
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
@@ -84,17 +85,27 @@ public class DriveControlOpMode extends OpMode {
 		double rightStickX = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_X);
 		double rightStickY = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_Y);
 
-		double speed = 0.2;
-		//if(gamepad1.right_trigger > 0.5){
-		//    speed += (1-speed)*(2*(gamepad1.right_trigger - 0.5));
-		//}
+		double theta = Math.atan2(-leftStickY, leftStickX) - Math.PI/4; // go back to subtracting 90?
+		double magnitude = Math.sqrt(Math.pow(leftStickX, 2) + Math.pow(leftStickY, 2));
+		double turn = Range.clip(gamepad1.right_stick_x, -1, 1);
 
-		double magnitude = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-		double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
-		telemetry.addData("robot angle", robotAngle);
-		robotAngle += offsetAngle / 180.0 * Math.PI;
-		double rightX = -gamepad1.right_stick_x;
-		driveControl.polarMove(robotAngle, rightX, 0.5 * direc * speed * magnitude);
+		telemetry.addData("angle", theta);
+		telemetry.addData("magnitude", magnitude);
+		telemetry.addData("rotation", turn);
+
+		driveControl.drive(theta, magnitude, turn);
+
+//		double speed = 0.2;
+//		//if(gamepad1.right_trigger > 0.5){
+//		//    speed += (1-speed)*(2*(gamepad1.right_trigger - 0.5));
+//		//}
+//
+//		double magnitude = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
+//		double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+//		telemetry.addData("robot angle", robotAngle);
+//		robotAngle += offsetAngle / 180.0 * Math.PI;
+//		double rightX = -gamepad1.right_stick_x;
+//		driveControl.polarMove(robotAngle, rightX, 0.5 * direc * speed * magnitude);
 
         // do something when A is pressed
         if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {

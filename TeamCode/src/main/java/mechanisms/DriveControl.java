@@ -325,11 +325,4 @@ public class DriveControl {
         leftRear.setPower(v3);
         rightRear.setPower(v4);
     }
-
-
-
-
-
-
-
 }

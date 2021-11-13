@@ -57,6 +57,7 @@ public class LinearSlide {
         }
 
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         level = 1;
         // i have no idea what it should be this is an estimate tho
     }
@@ -80,6 +81,7 @@ public class LinearSlide {
         }
 
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         level = 2;
     }
 
@@ -101,6 +103,7 @@ public class LinearSlide {
             slideMotor.setTargetPosition(0);
         }
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         level = 3;
     }
 
@@ -123,6 +126,7 @@ public class LinearSlide {
         }
 
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         level = 0;
     }
 
