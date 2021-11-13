@@ -53,6 +53,7 @@ public class ContourPipeline extends OpenCvPipeline {
 	private int location;
 	private int width;
 	private OpenCvCamera webcam;
+	private Mat mat;
 
 	public ContourPipeline(OpenCvCamera webcam) {
 		this.webcam = webcam;
@@ -90,8 +91,8 @@ public class ContourPipeline extends OpenCvPipeline {
 		element in the form of an index from 0 to 2.
 		*/
 
+		mat = new Mat();
 
-		Mat mat = new Mat();
 		Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
 		// if something is wrong, we assume there's no skystone
@@ -105,82 +106,79 @@ public class ContourPipeline extends OpenCvPipeline {
 		// Hue values are half the real value
 
 		// red hsv's wrap around from 170 to 10 so we need to create 2 and kinda merge them
-		Scalar lowHSV1 = new Scalar(0, 70, 50); // lower bound HSV #1 for red
-		Scalar highHSV1 = new Scalar(10, 255, 255); // higher bound HSV for red
-		Scalar lowHSV2 = new Scalar(170, 70, 50); // lower bound HSV #2 for red
-		Scalar highHSV2 = new Scalar(180, 255, 255); // higher bound HSV for red
-		Mat thresh = new Mat();
-		Mat thresh1 = new Mat();
-		Mat thresh2 = new Mat();
+		Scalar lowHSV1 = new Scalar(0, 255, 220); // lower bound HSV #1 for red
+		Scalar highHSV1 = new Scalar(0, 255, 255); // higher bound HSV for reds
+		//Mat thresh1 = new Mat();
 
 		// We'll get a black and white image. The white regions represent the regular stones.
 		// inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
-		//Core.inRange(mat, lowHSV1, highHSV1, thresh1); // goes through image, filters out color based on low&high hsv's
-		Core.inRange(mat, lowHSV2, highHSV2, thresh2); // goes through image, filters out color based on low&high hsv's
-
-
-		Core.addWeighted(thresh2, 1, thresh1, 1, 0, thresh);
-		Imgproc.GaussianBlur(thresh, thresh, new Size(9, 9), 2, 2); // should smooth out some stuff; if not then it should be caught later
-
-		// Use Canny Edge Detection to find edges
-		// you might have to tune the thresholds for hysteresis
-		Mat edges = new Mat();
-		Imgproc.Canny(thresh, edges, 100, 300);
-
-		// https://docs.opencv.org/3.4/da/d0c/tutorial_bounding_rects_circles.html
-		// Oftentimes the edges are disconnected. findContours connects these edges.
-		// We then find the bounding rectangles of those contours
-		List<MatOfPoint> contours = new ArrayList<>();
-		Mat hierarchy = new Mat();
-		Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-
-		int sz = contours.size();
-
-		MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[sz];
-		Rect[] boundRect = new Rect[sz]; // contains bounding rectangles for each coutour (object in 2d form)
-		for (int i = 0; i < sz; i++) {
-			contoursPoly[i] = new MatOfPoint2f();
-			Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
-			boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
-		}
-
-
-		// now what we're planning to do is looking at the relative positions of the contours we've found
-		// there should be 2 since there are 3 squares in the barcode and one is covered by shipping element
-		// then we can look at which thirds of the picture the contours are in, so we can find the square
-		// which the shipping element is on by process of elimination
-
-		int shippingElementLoc = 3; // start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
-									// that we find so we're left with the index of the shipping element's square
-		for (int i = 0; i < sz; i++) {
-			if (boundRect[i].area() < mat.width() * (double)mat.cols()/400) { // incorrectly detected
-				continue;
-			}
-			Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
-			// look at center of each bounding rectangle, see which thirds of the picture they should be in
-			
-			// rectangle is represented in terms of top left point, width, and height
-			int rectCenterX = boundRect[i].x + width/2;
-			int imgWidth = mat.width();
-			if (rectCenterX < imgWidth/3) { // leftmost third
-				continue;
-			} else if (rectCenterX >= imgWidth/3 && rectCenterX <= (2 * imgWidth)/3) { // middle third
-				shippingElementLoc -= 1;
-			} else { // rightmost third
-				shippingElementLoc -= 2;
-			}
-		}
-
-		objLevel = shippingElementLoc;
-		
-
-		/**
-		 * NOTE: to see how to get data from your pipeline to your OpMode as well as how
-		 * to change which stage of the pipeline is rendered to the viewport when it is
-		 * tapped, please see {@link PipelineStageSwitchingExample}
-		 */
-
+		Core.inRange(mat, lowHSV1, highHSV1, input); // goes through image, filters out color based on low&high hsv's
 		return input;
+//		Core.inRange(mat, lowHSV2, highHSV2, thresh2); // goes through image, filters out color based on low&high hsv's
+//
+//
+//		Core.addWeighted(thresh2, 1, thresh1, 1, 0, thresh);
+//		Imgproc.GaussianBlur(thresh, thresh, new Size(9, 9), 2, 2); // should smooth out some stuff; if not then it should be caught later
+//
+//		// Use Canny Edge Detection to find edges
+//		// you might have to tune the thresholds for hysteresis
+//		Mat edges = new Mat();
+//		Imgproc.Canny(thresh, edges, 100, 300);
+//
+//		// https://docs.opencv.org/3.4/da/d0c/tutorial_bounding_rects_circles.html
+//		// Oftentimes the edges are disconnected. findContours connects these edges.
+//		// We then find the bounding rectangles of those contours
+//		List<MatOfPoint> contours = new ArrayList<>();
+//		Mat hierarchy = new Mat();
+//		Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+//
+//		int sz = contours.size();
+//
+//		MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[sz];
+//		Rect[] boundRect = new Rect[sz]; // contains bounding rectangles for each coutour (object in 2d form)
+//		for (int i = 0; i < sz; i++) {
+//			contoursPoly[i] = new MatOfPoint2f();
+//			Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
+//			boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
+//		}
+//
+//
+//		// now what we're planning to do is looking at the relative positions of the contours we've found
+//		// there should be 2 since there are 3 squares in the barcode and one is covered by shipping element
+//		// then we can look at which thirds of the picture the contours are in, so we can find the square
+//		// which the shipping element is on by process of elimination
+//
+//		int shippingElementLoc = 3; // start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
+//									// that we find so we're left with the index of the shipping element's square
+//		for (int i = 0; i < sz; i++) {
+//			if (boundRect[i].area() < mat.width() * (double)mat.cols()/400) { // incorrectly detected
+//				continue;
+//			}
+//			Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
+//			// look at center of each bounding rectangle, see which thirds of the picture they should be in
+//
+//			// rectangle is represented in terms of top left point, width, and height
+//			int rectCenterX = boundRect[i].x + width/2;
+//			int imgWidth = mat.width();
+//			if (rectCenterX < imgWidth/3) { // leftmost third
+//				continue;
+//			} else if (rectCenterX >= imgWidth/3 && rectCenterX <= (2 * imgWidth)/3) { // middle third
+//				shippingElementLoc -= 1;
+//			} else { // rightmost third
+//				shippingElementLoc -= 2;
+//			}
+//		}
+//
+//		objLevel = shippingElementLoc;
+//
+//
+//		/**
+//		 * NOTE: to see how to get data from your pipeline to your OpMode as well as how
+//		 * to change which stage of the pipeline is rendered to the viewport when it is
+//		 * tapped, please see {@link PipelineStageSwitchingExample}
+//		 */
+//
+//		return input;
 	}
 
 	@Override
