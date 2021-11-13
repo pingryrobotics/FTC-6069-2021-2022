@@ -277,7 +277,7 @@ public class DriveControl {
         //The 1.5x is a multiplier to make sure the offset is applied 2enough to have an actual effect.
 
         //Commented for now to make drivable (find a new value instead of 300.0 and then uncomment to enable)
-        rotation += (averageGoal - averageVelocity / 120.0);
+//        rotation += (averageGoal - averageVelocity / 120.0);
 
 
         direction += Math.PI/4.0;  //Strafe direction needs to be offset so that forwards has everything go at the same power
