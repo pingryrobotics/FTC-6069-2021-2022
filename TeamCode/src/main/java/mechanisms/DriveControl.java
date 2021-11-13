@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
 /**
  * Class for controlling drive motors
  *
@@ -70,9 +69,6 @@ public class DriveControl {
 //        setMotorDirection(DcMotorSimple.Direction.FORWARD);
         setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftRear.setDirection(DcMotor.Direction.REVERSE);
-
         t = new ElapsedTime();
     }
 
@@ -84,6 +80,7 @@ public class DriveControl {
      */
     public void moveYDist(double targetInches, double percentSpeed) {
         int ticks = calculateDirectTicks(targetInches);
+        System.out.println("Ticks: " + ticks);
         setStraightTarget(ticks);
         runToStraightPosition(percentSpeed);
     }
@@ -109,6 +106,7 @@ public class DriveControl {
         int leftRearTarget = (int) (leftRear.getCurrentPosition() - (inches * ticksPerInch));
         int rightFrontTarget = (int) (rightFront.getCurrentPosition() + (inches * ticksPerInch));
         int rightRearTarget = (int) (rightRear.getCurrentPosition() + (inches * ticksPerInch));
+        System.out.println("Left Front Target" + leftFrontTarget);
 
         leftFront.setTargetPosition(leftFrontTarget);
         leftRear.setTargetPosition(leftRearTarget);
@@ -159,7 +157,9 @@ public class DriveControl {
     private int calculateDirectTicks(double targetInches) {
         double targetMM = targetInches * INCH_TO_MM;
         double targetRotations = targetMM/WHEEL_CIRCUMFERENCE_MM;
-        double encoderTicks = targetRotations/ENCODER_ROTATION_312RPM;
+        System.out.println("Target Rotations " + targetRotations);
+        double encoderTicks = targetRotations*ENCODER_ROTATION_312RPM;
+        System.out.println("Enconder Ticks" + encoderTicks);
         return (int)Math.round(encoderTicks);
     }
 
@@ -168,8 +168,8 @@ public class DriveControl {
      * @param percentSpeed the percent of the maximum speed to run the motors at [0,1]
      */
     private void runToStraightPosition(double percentSpeed) {
-        setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
         setStraightVelocity(percentSpeed);
+        setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     /**
@@ -197,10 +197,10 @@ public class DriveControl {
      */
     public void setStraightTarget(int targetEncoderTicks) {
         setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFront.setTargetPosition(targetEncoderTicks);
-        leftRear.setTargetPosition(targetEncoderTicks);
-        rightFront.setTargetPosition(-targetEncoderTicks);
-        rightRear.setTargetPosition(-targetEncoderTicks);
+        leftFront.setTargetPosition(leftFront.getCurrentPosition() + targetEncoderTicks);
+        leftRear.setTargetPosition(leftRear.getCurrentPosition() + targetEncoderTicks);
+        rightFront.setTargetPosition(rightFront.getCurrentPosition() -targetEncoderTicks);
+        rightRear.setTargetPosition(rightRear.getCurrentPosition()-targetEncoderTicks);
     }
 
     /**
