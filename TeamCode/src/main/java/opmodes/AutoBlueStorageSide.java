@@ -1,3 +1,32 @@
+/* Copyright (c) 2019 FIRST. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted (subject to the limitations in the disclaimer below) provided that
+ * the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list
+ * of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice, this
+ * list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ *
+ * Neither the name of FIRST nor the names of its contributors may be used to endorse or
+ * promote products derived from this software without specific prior written permission.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+ * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -37,47 +66,47 @@ import mechanisms.LinearSlide;
 import vision.ContourPipeline;
 
 /**
-* TODO:
-* - Test this code with printed VuMarks on field
-* - Find Camera mounting spot and put in the code
-* - Figure out PID loop stuff
-*/
+ * TODO:
+ * - Test this code with printed VuMarks on field
+ * - Find Camera mounting spot and put in the code
+ * - Figure out PID loop stuff
+ */
 
 /**
-* This 2020-2021 OpMode illustrates the basics of using the Vuforia localizer to determine
-* positioning and orientation of robot on the ULTIMATE GOAL FTC field.
-* The code is structured as a LinearOpMode
-*
-* When images are located, Vuforia is able to determine the position and orientation of the
-* image relative to the camera.  This sample code then combines that information with a
-* knowledge of where the target images are on the field, to determine the location of the camera.
-*
-* From the Audience perspective, the Red Alliance station is on the right and the
-* Blue Alliance Station is on the left.
-* There are a total of five image targets for the ULTIMATE GOAL game.
-* Three of the targets are placed in the center of the Red Alliance, Audience (Front),
-* and Blue Alliance perimeter walls.
-* Two additional targets are placed on the perimeter wall, one in front of each Tower Goal.
-* Refer to the Field Setup manual for more specific location details
-*
-* A final calculation then uses the location of the camera on the robot to determine the
-* robot's location and orientation on the field.
-*
-* @see VuforiaLocalizer
-* @see VuforiaTrackableDefaultListener
-* see  ultimategoal/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
-*
-* Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
-* Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
-*
-* IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
-* is explained below.
-*/
+ * This 2020-2021 OpMode illustrates the basics of using the Vuforia localizer to determine
+ * positioning and orientation of robot on the ULTIMATE GOAL FTC field.
+ * The code is structured as a LinearOpMode
+ *
+ * When images are located, Vuforia is able to determine the position and orientation of the
+ * image relative to the camera.  This sample code then combines that information with a
+ * knowledge of where the target images are on the field, to determine the location of the camera.
+ *
+ * From the Audience perspective, the Red Alliance station is on the right and the
+ * Blue Alliance Station is on the left.
+ * There are a total of five image targets for the ULTIMATE GOAL game.
+ * Three of the targets are placed in the center of the Red Alliance, Audience (Front),
+ * and Blue Alliance perimeter walls.
+ * Two additional targets are placed on the perimeter wall, one in front of each Tower Goal.
+ * Refer to the Field Setup manual for more specific location details
+ *
+ * A final calculation then uses the location of the camera on the robot to determine the
+ * robot's location and orientation on the field.
+ *
+ * @see VuforiaLocalizer
+ * @see VuforiaTrackableDefaultListener
+ * see  ultimategoal/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
+ *
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
+ *
+ * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+ * is explained below.
+ */
 
 
-@Autonomous(name="AutoRedStorageSide", group ="Autonomous")
+@Autonomous(name="AutoBlueStorageSide", group ="Autonomous")
 
-public class AutoRedStorageSide extends LinearOpMode {
+public class AutoBlueStorageSide extends LinearOpMode {
 
     // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -151,16 +180,14 @@ public class AutoRedStorageSide extends LinearOpMode {
         OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         webcam.setPipeline(new ContourPipeline(webcam));
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
+            public void onOpened() {
                 webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
             }
+
             @Override
-            public void onError(int errorCode)
-            {
+            public void onError(int errorCode) {
                 /*
                  * This will be called if the camera could not be opened
                  */
@@ -172,11 +199,11 @@ public class AutoRedStorageSide extends LinearOpMode {
             telemetry.addData("Level found", ContourPipeline.getObjLevel());
             int objLevel = ContourPipeline.getObjLevel();
 
-            driveControl.moveXDist(-4, 0.5);
+            driveControl.moveXDist(4, 0.5);
             sleep(1000);
             driveControl.moveYDist(60, 0.5);
 
-            // move to linear slide and put square on level
+//            // move to linear slide and put square on level
 //            driveControl.moveYDist(20, 1); // change
 //            sleep(1000);
 //            driveControl.turnAngle(20, 1); // change
@@ -195,18 +222,11 @@ public class AutoRedStorageSide extends LinearOpMode {
 //            linearSlide.undump();
 //            sleep(1000);
 //
-//            // move to carousel and spin it
-//            driveControl.turnAngle(-180, 1); // change
-//            sleep(1000);
-//            driveControl.moveYDist(22, 1); // change
-//            sleep(1000);
-//            carousel.spinAngle(360);
-//            sleep(1000);
-//
 //            // park in warehouse
-//            driveControl.turnAngle(-110, 1); // change
+//            driveControl.turnAngle(-(90 + 20), 1); // change
 //            sleep(1000);
-//            driveControl.moveYDist(100, 1); // change
+//            driveControl.moveXDist(13, 1);
+//            driveControl.moveYDist(1, 1); // change
 //            sleep(1000);
 
             telemetry.update();

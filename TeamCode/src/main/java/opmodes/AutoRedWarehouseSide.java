@@ -201,11 +201,15 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             telemetry.addData("Level found", ContourPipeline.getObjLevel());
             int objLevel = ContourPipeline.getObjLevel();
 
-            // move to linear slide and put square on level
-            driveControl.moveYDist(20, 1); // change
+            driveControl.moveXDist(-4, 0.5);
             sleep(1000);
-            driveControl.turnAngle(-20, 1); // change
-            sleep(1000);
+            driveControl.moveYDist(40, 0.5);
+
+//            // move to linear slide and put square on level
+//            driveControl.moveYDist(20, 1); // change
+//            sleep(1000);
+//            driveControl.turnAngle(-20, 1); // change
+//            sleep(1000);
 //            if (objLevel == 0) {
 //                linearSlide.level1();
 //            } else if (objLevel == 1) {
@@ -215,18 +219,18 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //            } else {
 //
 //            }
-            linearSlide.dump();
-            sleep(1000);
-            linearSlide.undump();
-            sleep(1000);
-
-            // park in warehouse
-            driveControl.turnAngle(90 + 20, 1); // change
-            sleep(1000);
-            driveControl.moveXDist(13, 1);
-            sleep(1000);
-            driveControl.moveYDist(40, 1); // change
-            sleep(1000);
+//            linearSlide.dump();
+//            sleep(1000);
+//            linearSlide.undump();
+//            sleep(1000);
+//
+//            // park in warehouse
+//            driveControl.turnAngle(90 + 20, 1); // change
+//            sleep(1000);
+//            driveControl.moveXDist(13, 1);
+//            sleep(1000);
+//            driveControl.moveYDist(40, 1); // change
+//            sleep(1000);
 
             telemetry.update();
         }
