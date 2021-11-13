@@ -114,21 +114,21 @@ public class DriveControl {
         leftRear.setTargetPosition(leftRearTarget);
         rightFront.setTargetPosition(rightFrontTarget);
         rightRear.setTargetPosition(rightRearTarget);
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        if(turnRight){
+        if (turnRight) {
             leftFront.setPower(-power);
             leftRear.setPower(-power);
             rightFront.setPower(power);
             rightRear.setPower(power);
-        }else{
+        } else {
             leftFront.setPower(power);
             leftRear.setPower(power);
             rightFront.setPower(-power);
             rightRear.setPower(-power);
         }
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightRear.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void polarMove(double angle, double turn, double power) {
