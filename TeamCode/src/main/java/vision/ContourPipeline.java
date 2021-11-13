@@ -113,6 +113,7 @@ public class ContourPipeline extends OpenCvPipeline {
 		// We'll get a black and white image. The white regions represent the regular stones.
 		// inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
 		Core.inRange(mat, lowHSV1, highHSV1, input); // goes through image, filters out color based on low&high hsv's
+		mat.release();
 		return input;
 //		Core.inRange(mat, lowHSV2, highHSV2, thresh2); // goes through image, filters out color based on low&high hsv's
 //

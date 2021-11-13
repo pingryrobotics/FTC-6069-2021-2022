@@ -31,7 +31,7 @@ public class LinearSlide {
         //slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bucketServo = hardwareMap.get(Servo.class, "bucketServo");
         bucketServo.setDirection(Servo.Direction.REVERSE);
-        bucketServo.scaleRange(0, .4);
+        bucketServo.scaleRange(0, .2);
 
         slideMotor.setPower(1);
         power = 1;
