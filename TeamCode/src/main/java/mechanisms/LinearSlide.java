@@ -21,9 +21,9 @@ public class LinearSlide {
     private final Servo bucketServo;
     public double power;
     private int level;
-    private final int level2To3 = 6000;
-    private final int level1To2 = 6000;
-    private final int level0To1 = 17000;
+    private final int level2To3 = 5000;
+    private final int level1To2 = 5000;
+    private final int level0To1 = 7000;
 
     public LinearSlide(HardwareMap hardwareMap) {
         slideMotor = hardwareMap.get(DcMotor.class, "slideMotor");
