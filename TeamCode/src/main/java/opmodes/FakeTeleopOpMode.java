@@ -15,7 +15,7 @@ import teamcode.GamepadController.ToggleButton;
 
 
 @TeleOp(name="Drive: Drive Control OpMode", group="Testing")
-public class DriveControlOpMode extends OpMode {
+public class FakeTeleopOpMode extends OpMode {
     // tag is used in logcat logs (Log.d()) to identify where the log is coming from
     // logcat is basically like System.out.print (standard output) except through adb
     private static final String TAG = "teamcode.drive-opmode"; // put the name of the opmode

@@ -61,8 +61,13 @@ public class DriveControl {
         this.rightFront = rightFront;
         this.rightRear = rightRear;
 
-        setMotorDirection(DcMotorSimple.Direction.FORWARD);
-        setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        setMotorDirection(DcMotorSimple.Direction.FORWARD);
+        setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+
+        t = new ElapsedTime();
     }
 
     /**
