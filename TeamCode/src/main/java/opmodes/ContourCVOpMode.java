@@ -61,6 +61,9 @@ public class ContourCVOpMode extends OpMode {
         runControls();
 
         telemetry.addData("location: ", pipeline.getObjLevel());
+        telemetry.addData("matWidth", pipeline.matWidth);
+        telemetry.addData("biggestRectCenter", pipeline.biggestRectCenter);
+
         // update telemetry at the end of the loop
         telemetry.update();
     }
