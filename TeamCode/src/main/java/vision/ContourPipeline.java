@@ -49,7 +49,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 public class ContourPipeline extends OpenCvPipeline {
 	public boolean viewportPaused;
-	private int objLevel;
+	private int objLevel = -1;
 	private int location;
 	private int width;
 	private OpenCvCamera webcam;
@@ -131,7 +131,7 @@ public class ContourPipeline extends OpenCvPipeline {
 		Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
 		int sz = contours.size();
-
+		System.out.println("Contours: " + sz);
 		MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[sz];
 		Rect[] boundRect = new Rect[sz]; // contains bounding rectangles for each coutour (object in 2d form)
 		for (int i = 0; i < sz; i++) {
@@ -157,29 +157,44 @@ public class ContourPipeline extends OpenCvPipeline {
 				secondBiggestArea = boundRect[i].area();
 			}
 		}
-
-		int shippingElementLoc = 3; // start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
+		int shippingElementLoc;// start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
 									// that we find so we're left with the index of the shipping element's square
+		int isFirst = 1;
+		int isSecond = 1;
+		int isThird = 1;
 		for (int i = 0; i < sz; i++) {
-			if (boundRect[i].area() < secondBiggestArea + 0.1) { // incorrectly detected
-				continue;
+
+			if (!((int)boundRect[i].area() == (int)secondBiggestArea || (int)boundRect[i].area() == (int)biggestArea)) { // incorrectly detected
+				break;
 			}
+
 			Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
+
 			// look at center of each bounding rectangle, see which thirds of the picture they should be in
 
 			// rectangle is represented in terms of top left point, width, and height
 			int rectCenterX = boundRect[i].x + width/2;
 			int imgWidth = mat.width();
 			if (rectCenterX < imgWidth/3) { // leftmost third
-				continue;
+				isFirst = 0;
 			} else if (rectCenterX >= imgWidth/3 && rectCenterX <= (2 * imgWidth)/3) { // middle third
-				shippingElementLoc -= 1;
-			} else { // rightmost third
-				shippingElementLoc -= 2;
+				isSecond = 0;
+			} else if(rectCenterX < imgWidth && rectCenterX >= (2*imgWidth)/3){ // rightmost third
+				isThird = 0;
 			}
 		}
 
-		objLevel = shippingElementLoc;
+		if(isFirst == 1 && isSecond == 1){
+			objLevel = 3;
+		}
+
+		else if(isSecond == 1 && isThird == 1){
+			objLevel = 2;
+		}
+
+		else if(isThird == 1 && isFirst == 1){
+			objLevel = 1;
+		}
 
 
 		/**
@@ -218,9 +233,9 @@ public class ContourPipeline extends OpenCvPipeline {
 		}
 	}
 
-	public static int getObjLevel() {
+	public int getObjLevel() {
 
 //		return objLevel;
-		return 0;
+		return objLevel;
 	}
 }

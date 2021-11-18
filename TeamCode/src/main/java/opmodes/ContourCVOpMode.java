@@ -30,6 +30,7 @@ public class ContourCVOpMode extends OpMode {
     private final double cameraPlatform = 10.5; // random value
     private final double cameraHeight = (cameraPlatform + toCameraCenter) * inchesToMM;
     private static final int fieldLength = 3660; // mm (this is correct)
+    private ContourPipeline pipeline;
 
 
 
@@ -39,7 +40,8 @@ public class ContourCVOpMode extends OpMode {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
         cvManager = new CVManager(hardwareMap);
-        cvManager.initializeCamera(new ContourPipeline(cvManager.getWebcam()));
+        pipeline = new ContourPipeline(cvManager.getWebcam());
+        cvManager.initializeCamera(pipeline);
     }
 
     // code to loop after init is pressed and before start is pressed
@@ -58,7 +60,7 @@ public class ContourCVOpMode extends OpMode {
 
         runControls();
 
-
+        telemetry.addData("location: ", pipeline.getObjLevel());
         // update telemetry at the end of the loop
         telemetry.update();
     }
