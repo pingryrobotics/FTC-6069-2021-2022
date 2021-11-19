@@ -47,7 +47,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-public class ContourPipeline extends OpenCvPipeline {
+public class RedCVPipeline extends OpenCvPipeline {
 	public boolean viewportPaused;
 	private int objLevel = -1;
 	private int location;
@@ -55,9 +55,9 @@ public class ContourPipeline extends OpenCvPipeline {
 	private OpenCvCamera webcam;
 	private Mat mat;
 	public int biggestRectCenter;
-	public int matWidth;
+	public int secondBiggestRectCenter;
 
-	public ContourPipeline(OpenCvCamera webcam) {
+	public RedCVPipeline(OpenCvCamera webcam) {
 		this.webcam = webcam;
 	}
 
@@ -117,7 +117,6 @@ public class ContourPipeline extends OpenCvPipeline {
 		// stones.
 		// inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
 		Core.inRange(mat, lowHSV1, highHSV1, thresh); // goes through image, filters out color based on low&high hsv's
-		mat.release();
 
 		// Core.addWeighted(thresh2, 1, thresh1, 1, 0, thresh);
 		// Imgproc.GaussianBlur(thresh, thresh, new Size(9, 9), 2, 2); // should smooth
@@ -155,24 +154,34 @@ public class ContourPipeline extends OpenCvPipeline {
 
 		double biggestArea = 0;
 		double secondBiggestArea = 0;
+		double thirdBiggestArea = 0;
 
 		for (int i = 0; i < sz; i++) {
 			if (boundRect[i].area() >= biggestArea) {
+				thirdBiggestArea = secondBiggestArea;
 				secondBiggestArea = biggestArea;
 				biggestArea = boundRect[i].area();
 			} else if (boundRect[i].area() >= secondBiggestArea) {
+				thirdBiggestArea = secondBiggestArea;
 				secondBiggestArea = boundRect[i].area();
+			} else if (boundRect[i].area() >= thirdBiggestArea) {
+				thirdBiggestArea = boundRect[i].area();
 			}
+		}
+		if (thirdBiggestArea < secondBiggestArea/2) {
+			thirdBiggestArea = 0;
 		}
 		int shippingElementLoc;// start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
 		// that we find so we're left with the index of the shipping element's square
 		int isFirst = 1;
 		int isSecond = 1;
 		int isThird = 1;
+		double imgWidth = input.cols();
 		for (int i = 0; i < sz; i++) {
 
 			if ((int) boundRect[i].area() != (int) secondBiggestArea
-					&& (int) boundRect[i].area() != (int) biggestArea) { // incorrectly detected
+					&& (int) boundRect[i].area() != (int) biggestArea
+					&& (int) boundRect[i].area() != (int) thirdBiggestArea) { // incorrectly detected
 				continue;
 			}
 
@@ -183,7 +192,6 @@ public class ContourPipeline extends OpenCvPipeline {
 
 			// rectangle is represented in terms of top left point, width, and height
 			int rectCenterX = boundRect[i].x + width / 2;
-			int imgWidth = mat.width();
 			if (rectCenterX < imgWidth / 3) { // leftmost third
 				isFirst = 0;
 			} else if (rectCenterX >= imgWidth / 3 && rectCenterX <= (2 * imgWidth) / 3) { // middle third
@@ -193,17 +201,19 @@ public class ContourPipeline extends OpenCvPipeline {
 			}
 
 			if ((int) boundRect[i].area() == (int) biggestArea) {
-				matWidth = mat.width();
 				biggestRectCenter = rectCenterX;
+			} else {
+				secondBiggestRectCenter = rectCenterX;
 			}
 		}
 
 		if (isFirst + isSecond + isThird > 1) {
 			// things went wrong since we somehow have 2 or more thirds that don't have red
 			// in them
+			objLevel = -1;
 		}
 
-		if (isFirst == 1) {
+		else if (isFirst == 1) {
 			objLevel = 0;
 		}
 
