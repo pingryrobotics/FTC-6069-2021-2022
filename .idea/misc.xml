@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../../../.gradle/caches/transforms-2/files-2.1/ff32045991be952b75a6e0e433500c68/jetified-FtcCommon-7.0.0/res/layout/pwms.xml" value="0.1953125" />
+        <entry key="FtcRobotController/src/main/res/layout/activity_ftc_controller.xml" value="0.1953125" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

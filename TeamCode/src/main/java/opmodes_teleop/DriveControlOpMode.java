@@ -1,7 +1,8 @@
-package opmodes;
+package opmodes_teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import mechanisms.Carousel;
@@ -31,6 +32,7 @@ public class DriveControlOpMode extends OpMode {
     private double velocity = 0;
 	private int direc = 1;
 	private int offsetAngle;
+	private double servoPos = 1;
 
 
     // code to run once when driver hits init on phone
@@ -38,7 +40,7 @@ public class DriveControlOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
 		mechanismController = new GamepadController(gamepad2);
-        driveControl = new DriveControl(hardwareMap);
+        driveControl = new DriveControl(hardwareMap, telemetry);
 		intake = new Intake(hardwareMap);
 		linearSlide = new LinearSlide(hardwareMap);
 		carousel = new Carousel(hardwareMap);
@@ -86,15 +88,25 @@ public class DriveControlOpMode extends OpMode {
 		double rightStickY = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_Y);
 
 //		double theta = Math.atan2(-leftStickY, leftStickX) - Math.PI/4; // go back to subtracting 90?
-		double theta = Math.atan2(-leftStickY, -leftStickX); // go back to subtracting 90?
+		double theta = Math.atan2(-leftStickY, leftStickX) - Math.PI/2; // go back to subtracting 90?
 		double magnitude = Math.sqrt(Math.pow(leftStickX, 2) + Math.pow(leftStickY, 2));
 		double turn = Range.clip(gamepad1.right_stick_x, -1, 1);
+
+		driveControl.drive(theta, magnitude, turn);
 
 		telemetry.addData("angle", theta);
 		telemetry.addData("magnitude", magnitude);
 		telemetry.addData("rotation", turn);
 
-		driveControl.drive(theta, magnitude, turn);
+		Servo servo = linearSlide.getServo();
+		telemetry.addData("serv position", servo.getPosition());
+		telemetry.addData("serv direction", servo.getDirection());
+		telemetry.addData("servo pwm status", servo.getController());
+		telemetry.addData("controller pwm status", servo.getPortNumber());
+		telemetry.addData("servo variable position", servoPos);
+
+
+
 
 //		double speed = 0.2;
 //		//if(gamepad1.right_trigger > 0.5){
@@ -109,52 +121,19 @@ public class DriveControlOpMode extends OpMode {
 //		driveControl.polarMove(robotAngle, rightX, 0.5 * direc * speed * magnitude);
 
         // do something when A is pressed
-        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
-            driveControl.runAtSpeed(velocity);
-        }
-
-        if (movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-            driveControl.runAtSpeed(0);
-        }
-
-        if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
-            if (velocity < 1)
-                velocity += .1;
-        }
-
-        if (movementController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
-            if (velocity > -1)
-                velocity -= .1;
-        }
-
-        if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-            driveControl.turnAngle(20, 1);
-        }
-
-		if (movementController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) { // reverse robot
-			direc *= -1;
-		}
-
-		if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
-			driveControl.moveXDist(12, 0.5);
-		}
-
-		if(movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN){
-			driveControl.moveYDist(12, 0.5);
-		}
 
 		// mechanismController button state executions
 
 		// left trigger: intake goes while pressed
-		if (mechanismController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
+		if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
 			intake.intakeIn();
-		} else if (mechanismController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_UP) {
+		} else if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_UP) {
 			intake.stop();
 		}
 		// right trigger: intake reverses while pressed
-		if (mechanismController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN) {
+		if (movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN) {
 			intake.intakeOut();
-		} else if (mechanismController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_UP) {
+		} else if (movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_UP) {
 			intake.stop();
 		}
 
@@ -174,22 +153,30 @@ public class DriveControlOpMode extends OpMode {
 
 		// dpad down: linearslide goes to ground level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
-			linearSlide.level0();
+			if (servoPos <= 1)
+				servoPos += .05;
+			else
+				servoPos = 1;
+			linearSlide.setPosition(servoPos);
 		}
 
 		// dpad right: linearslide goes to first level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
-			linearSlide.level1();
+			linearSlide.setPosition(servoPos);
 		}
 
 		// dpad left: linearslide goes to second level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
-			linearSlide.level2();
+			linearSlide.level3();
 		}
 
 		// dpad up: linearslide goes to third level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
-			linearSlide.level3();
+			if (servoPos >= .4)
+				servoPos -= .05;
+			else
+				servoPos = 0.4;
+			linearSlide.setPosition(servoPos);
 		}
 
 		// X button; linear slide dumps and then undumps once it's pressed

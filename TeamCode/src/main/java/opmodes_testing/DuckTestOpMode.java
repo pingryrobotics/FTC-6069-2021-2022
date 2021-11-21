@@ -1,19 +1,16 @@
-package opmodes;
-
-import android.util.Log;
+package opmodes_testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import teamcode.GamepadController;
-
-import teamcode.GamepadController.ToggleButton;
 import teamcode.GamepadController.ButtonState;
-import teamcode.GamepadController.FloatButton;
+import teamcode.GamepadController.ToggleButton;
 
 
-@TeleOp(name="Template: Template OpMode", group="Testing")
-public class TemplateOpMode extends OpMode {
+@TeleOp(name="Testing: Duck Test OpMode", group="Testing")
+public class DuckTestOpMode extends OpMode {
     // tag is used in logcat logs (Log.d()) to identify where the log is coming from
     // logcat is basically like System.out.print (standard output) except through adb
     private static final String TAG = "teamcode.test_opmode"; // put the name of the opmode
@@ -21,6 +18,9 @@ public class TemplateOpMode extends OpMode {
     // put any outside classes you need to use here
     private GamepadController movementController;
     private GamepadController mechanismController;
+    private DcMotor duckMotor;
+
+    private double duckPower;
 
 
     // put any measurements here
@@ -37,6 +37,8 @@ public class TemplateOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
+        duckMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
+        duckMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
@@ -67,36 +69,41 @@ public class TemplateOpMode extends OpMode {
     public void runControls() {
 
 
-        telemetry.addData("caption", "value");
+        telemetry.addData("Duck power", duckPower);
 
         // button states need to be updated each loop for controls to work
         movementController.updateButtonStates();
         mechanismController.updateButtonStates();
 
         // do something when A is pressed
-        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
-            Log.d(TAG, "button a pressed");
+        if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
+            if (duckPower >= 0)
+                duckPower -= .05;
+            else
+                duckPower = 0;
         }
 
-        // do different things depending on the button's state
-        // dont forget to break
-        switch (movementController.getButtonState(ToggleButton.B)) {
-            case KEY_DOWN: // code to run when button is pressed down
-                Log.d(TAG, "button b pressed");
-                break;
-            case KEY_HOLD: // code to run while button is held down
-                Log.d(TAG, "button b held");
-                break;
-            case KEY_UP: // code to run when b is released
-                Log.d(TAG, "button b released");
-                break;
-            case KEY_INACTIVE: // code to run while nothing is happening with button
-                break;
+        if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
+            if (duckPower <= 1)
+                duckPower += .05;
+            else
+                duckPower = 1;
         }
 
-        // get joystick positions
-        float rightStickX = mechanismController.getButtonState(FloatButton.RIGHT_STICK_X);
-        float rightStickY = mechanismController.getButtonState(FloatButton.RIGHT_STICK_Y);
+        if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+            duckMotor.setPower(0);
+        }
+
+        if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
+            duckMotor.setPower(duckPower);
+        }
+
+        if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
+            duckMotor.setPower(-duckPower);
+        }
+
+
+
     }
 
 

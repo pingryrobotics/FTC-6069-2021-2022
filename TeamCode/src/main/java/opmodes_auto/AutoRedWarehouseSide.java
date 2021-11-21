@@ -27,43 +27,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package opmodes;
+package opmodes_auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
-import vision.ContourPipeline;
 
 /**
  * TODO:
@@ -104,9 +86,9 @@ import vision.ContourPipeline;
  */
 
 
-@Autonomous(name="AutoBlueWarehouseSide", group ="Autonomous")
+@Autonomous(name="AutoRedWarehouseSide", group ="Autonomous")
 
-public class AutoBlueWarehouseSide extends LinearOpMode {
+public class AutoRedWarehouseSide extends LinearOpMode {
 
     // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -171,7 +153,7 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        driveControl = new DriveControl(hardwareMap);
+        driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap);
         carousel = new Carousel(hardwareMap);
@@ -180,14 +162,16 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
 //        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 //        webcam.setPipeline(new ContourPipeline(webcam));
 //        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+//        {
 //            @Override
-//            public void onOpened() {
+//            public void onOpened()
+//            {
 //                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
 //            }
-//
 //            @Override
-//            public void onError(int errorCode) {
+//            public void onError(int errorCode)
+//            {
 //                /*
 //                 * This will be called if the camera could not be opened
 //                 */
@@ -199,14 +183,14 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
 //            telemetry.addData("Level found", ContourPipeline.getObjLevel());
 //            int objLevel = ContourPipeline.getObjLevel();
 
-            driveControl.moveXDist(20, 0.5);
-            sleep(1500);
-            driveControl.moveYDist(60, 0.5);
+            driveControl.moveXDist(-28, 0.5);
+            sleep(5000);
+            driveControl.moveYDist(80, 1);
 
-            // move to linear slide and put square on level
+//            // move to linear slide and put square on level
 //            driveControl.moveYDist(20, 1); // change
 //            sleep(1000);
-//            driveControl.turnAngle(20, 1); // change
+//            driveControl.turnAngle(-20, 1); // change
 //            sleep(1000);
 //            if (objLevel == 0) {
 //                linearSlide.level1();
@@ -223,10 +207,11 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
 //            sleep(1000);
 //
 //            // park in warehouse
-//            driveControl.turnAngle(-(90 + 20), 1); // change
+//            driveControl.turnAngle(90 + 20, 1); // change
 //            sleep(1000);
 //            driveControl.moveXDist(13, 1);
-//            driveControl.moveYDist(1, 1); // change
+//            sleep(1000);
+//            driveControl.moveYDist(40, 1); // change
 //            sleep(1000);
 
             telemetry.update();

@@ -30,8 +30,11 @@ public class LinearSlide {
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // not sure if needed but sets base state to 0
         //slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bucketServo = hardwareMap.get(Servo.class, "bucketServo");
-        bucketServo.setDirection(Servo.Direction.REVERSE);
-        bucketServo.scaleRange(0, .03);
+        bucketServo.setDirection(Servo.Direction.FORWARD);
+        bucketServo.scaleRange(0, 1);
+        //bucketServo.setPosition(0);
+
+
 
         slideMotor.setPower(1);
         power = 1;
@@ -87,23 +90,24 @@ public class LinearSlide {
 
     public void level3() { // extend linear slide to level appropriate for the top level of shipping hub
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        if(level == 0) {
-            slideMotor.setTargetPosition(level1To2 + level2To3 + level0To1);
-        }
-
-        else if(level == 1){
-            slideMotor.setTargetPosition(level1To2 + level2To3);
-        }
-
-        else if(level == 2){
-            slideMotor.setTargetPosition(level2To3);
-        }
-
-        else {
-            slideMotor.setTargetPosition(0);
-        }
+//        if(level == 0) {
+//            slideMotor.setTargetPosition(level1To2 + level2To3 + level0To1);
+//        }
+//
+//        else if(level == 1){
+//            slideMotor.setTargetPosition(level1To2 + level2To3);
+//        }
+//
+//        else if(level == 2){
+//            slideMotor.setTargetPosition(level2To3);
+//        }
+//
+//        else {
+//            slideMotor.setTargetPosition(0);
+//        }
+        slideMotor.setTargetPosition(30000);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setPower(1);
         level = 3;
     }
 
@@ -132,20 +136,21 @@ public class LinearSlide {
 
     public void extend() { // continuously extend linear slide
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setPower(power);
+        slideMotor.setPower(-power);
     }
 
     public void retract() { // continuously retract linear slide
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setPower(-power);
+        slideMotor.setPower(power);
     }
 
     public void dump() { // dump stuff in bucket
-        bucketServo.setPosition(1.0);
+        bucketServo.setPosition(.5);
     }
 
     public void undump() { // pull bucket back after dumping
-        bucketServo.setPosition(0.0);
+        bucketServo.setPosition(1);
+
     }
 
     public void stop() {
@@ -154,5 +159,17 @@ public class LinearSlide {
 
     public void resetEncoder() {
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public int getTicks() {
+        return slideMotor.getCurrentPosition();
+    }
+
+    public Servo getServo() {
+        return bucketServo;
+    }
+
+    public void setPosition(double position) {
+        bucketServo.setPosition(position);
     }
 }

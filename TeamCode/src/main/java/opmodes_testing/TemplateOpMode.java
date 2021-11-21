@@ -1,12 +1,10 @@
-package opmodes;
+package opmodes_testing;
 
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import mechanisms.Carousel;
-import mechanisms.LinearSlide;
 import teamcode.GamepadController;
 
 import teamcode.GamepadController.ToggleButton;
@@ -14,16 +12,15 @@ import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.FloatButton;
 
 
-@TeleOp(name="Testing: Slide OpMode", group="Testing")
-public class LinearSlideOpMode extends OpMode {
+@TeleOp(name="Template: Template OpMode", group="Testing")
+public class TemplateOpMode extends OpMode {
     // tag is used in logcat logs (Log.d()) to identify where the log is coming from
     // logcat is basically like System.out.print (standard output) except through adb
     private static final String TAG = "teamcode.test_opmode"; // put the name of the opmode
 
     // put any outside classes you need to use here
+    private GamepadController movementController;
     private GamepadController mechanismController;
-	private LinearSlide linearSlide;
-	private Carousel carousel;
 
 
     // put any measurements here
@@ -38,9 +35,9 @@ public class LinearSlideOpMode extends OpMode {
     // code to run once when driver hits init on phone
     @Override
     public void init() {
-        mechanismController = new GamepadController(gamepad1);
-		linearSlide = new LinearSlide(hardwareMap);
-		carousel = new Carousel(hardwareMap);
+        movementController = new GamepadController(gamepad1);
+        mechanismController = new GamepadController(gamepad2);
+
     }
 
     // code to loop after init is pressed and before start is pressed
@@ -73,24 +70,33 @@ public class LinearSlideOpMode extends OpMode {
         telemetry.addData("caption", "value");
 
         // button states need to be updated each loop for controls to work
+        movementController.updateButtonStates();
         mechanismController.updateButtonStates();
 
-		if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
-			linearSlide.extend();
-		}
-
-		if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_DOWN) {
-			linearSlide.retract();
-		}
-
-        if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-            linearSlide.stop();
+        // do something when A is pressed
+        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+            Log.d(TAG, "button a pressed");
         }
 
-		if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-			linearSlide.resetEncoder();
-		}
+        // do different things depending on the button's state
+        // dont forget to break
+        switch (movementController.getButtonState(ToggleButton.B)) {
+            case KEY_DOWN: // code to run when button is pressed down
+                Log.d(TAG, "button b pressed");
+                break;
+            case KEY_HOLD: // code to run while button is held down
+                Log.d(TAG, "button b held");
+                break;
+            case KEY_UP: // code to run when b is released
+                Log.d(TAG, "button b released");
+                break;
+            case KEY_INACTIVE: // code to run while nothing is happening with button
+                break;
+        }
 
+        // get joystick positions
+        float rightStickX = mechanismController.getButtonState(FloatButton.RIGHT_STICK_X);
+        float rightStickY = mechanismController.getButtonState(FloatButton.RIGHT_STICK_Y);
     }
 
 

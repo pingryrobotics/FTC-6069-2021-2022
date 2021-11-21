@@ -1,14 +1,11 @@
-package opmodes;
+package opmodes_testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-import mechanisms.Carousel;
 import mechanisms.DriveControl;
-import mechanisms.Intake;
-import mechanisms.LinearSlide;
 import teamcode.GamepadController;
 
 
@@ -29,7 +26,7 @@ public class ManualDriveOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
 		mechanismController = new GamepadController(gamepad2);
-        driveControl = new DriveControl(hardwareMap);
+        driveControl = new DriveControl(hardwareMap, telemetry);
 
     }
 

@@ -1,4 +1,4 @@
-package opmodes;
+package opmodes_testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,8 +8,6 @@ import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
 import teamcode.GamepadController;
-import teamcode.GamepadController.ButtonState;
-import teamcode.GamepadController.ToggleButton;
 
 
 @TeleOp(name="Drive: Teleop Drive Control OpMode", group="Testing")
@@ -35,7 +33,7 @@ public class TeleopDriveControlOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
 		mechanismController = new GamepadController(gamepad2);
-        driveControl = new DriveControl(hardwareMap);
+        driveControl = new DriveControl(hardwareMap, telemetry);
 		intake = new Intake(hardwareMap);
 		linearSlide = new LinearSlide(hardwareMap);
 		carousel = new Carousel(hardwareMap);
@@ -92,7 +90,7 @@ public class TeleopDriveControlOpMode extends OpMode {
 		telemetry.addData("robot angle", robotAngle);
 		robotAngle += offsetAngle / 180.0 * Math.PI;
 		double rightX = -gamepad1.right_stick_x;
-		driveControl.polarMove(robotAngle, rightX, 0.5 * direc * speed * magnitude);
+//		driveControl.polarMove(robotAngle, rightX, 0.5 * direc * speed * magnitude);
 
     }
 

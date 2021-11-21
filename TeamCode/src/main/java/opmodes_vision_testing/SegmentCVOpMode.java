@@ -1,4 +1,4 @@
-package opmodes;
+package opmodes_vision_testing;
 
 import android.util.Log;
 
@@ -7,12 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
-import teamcode.GamepadController.FloatButton;
 import teamcode.GamepadController.ToggleButton;
 import vision.CVManager;
 import vision.ColorPipeline;
-import vision.ContourPipeline;
-import vision.TestPipeline;
 
 
 @TeleOp(name="Testing: Segmentation CV OpMode", group="Testing")

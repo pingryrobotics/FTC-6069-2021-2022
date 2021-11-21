@@ -3,9 +3,12 @@ package mechanisms;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 /**
@@ -20,16 +23,20 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class DriveControl {
 
+    public static final int GYRO_MIN_ANGLE = -180;
+    public static final int GYRO_MAX_ANGLE = 180;
     private final DcMotor leftFront;
     private final DcMotor leftRear;
     private final DcMotor rightFront;
     private final DcMotor rightRear;
     private final BNO055IMU imu;
 
-    private double lastAngle = 0;
-    private double averageVelocity = 0;
-    private double averageGoal = 0;
-    private ElapsedTime t;
+
+
+    private DriveAction currentAction;
+    private final Queue<DriveAction> actionQueue;
+
+
 
 
     // gobilda yellowjacket 312 rpm, technically 537.7 but yk
@@ -44,12 +51,18 @@ public class DriveControl {
     private static final double gearboxReduction = 19.2; // reduction of gearbox, check specs
     private static final double pulsesPerRevolution = 28; // pulses per revolution for the unreducted motor
     private static final double ticksPerInch = ((pulsesPerRevolution * gearboxReduction) / wheelDiameterInches) / Math.PI;
+    private final Telemetry telemetry;
+
+    // auto navigation constants
+    private static final double CLOSE_ENOUGH_TO_ZERO = 0.9;
+
+
 
     /**
      * Initialize the drive controller
      * @param hardwareMap the hardware map to use
      */
-    public DriveControl(HardwareMap hardwareMap) {
+    public DriveControl(HardwareMap hardwareMap, Telemetry telemetry) {
         DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         DcMotor leftRear = hardwareMap.get(DcMotor.class, "leftRear");
         DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
@@ -61,11 +74,13 @@ public class DriveControl {
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         imu.initialize(parameters);
 
-
+        this.telemetry = telemetry;
         this.leftFront = leftFront;
         this.leftRear = leftRear;
         this.rightFront = rightFront;
         this.rightRear = rightRear;
+
+        actionQueue = new LinkedList<>();
 
 //        setMotorDirection(DcMotorSimple.Direction.FORWARD);
         setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -73,21 +88,19 @@ public class DriveControl {
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftRear.setDirection(DcMotor.Direction.REVERSE);
 
-        t = new ElapsedTime();
     }
 
     /**
-     * Drive a set distance straight (forwards & backwards
+     * Drive a set distance straight (forwards & backwards)
      * and then stop
      * A positive distance is forward, negative is backwards
      * @param targetInches the distance to move, in inches
      * @param percentSpeed the fraction of the motor's max speed to move, as a decimal
      */
-    public int moveYDist(double targetInches, double percentSpeed) {
+    public void moveYDist(double targetInches, double percentSpeed) {
         int ticks = calculateDirectTicks(targetInches);
         setStraightTarget(ticks);
-        runToStraightPosition(percentSpeed);
-        return ticks;
+        runToDirectPosition(percentSpeed);
     }
 
     /**
@@ -99,48 +112,7 @@ public class DriveControl {
     public void moveXDist(double targetInches, double percentSpeed) {
         int ticks = calculateDirectTicks(targetInches);
         setStrafeTarget(ticks);
-        runToStrafePosition(percentSpeed);
-    }
-
-    public void turnAngle(double degrees, double power) {
-        boolean turnRight = degrees > 0;
-        power = Math.abs(power);
-
-        double inches = degrees/180 * Math.PI * 11.5;
-        setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        int leftFrontTarget = (int) (inches * ticksPerInch);
-        int leftRearTarget = (int) (inches * ticksPerInch);
-        int rightFrontTarget = (int) (inches * ticksPerInch);
-        int rightRearTarget = (int) (inches * ticksPerInch);
-
-        leftFront.setTargetPosition(leftFrontTarget);
-        leftRear.setTargetPosition(leftRearTarget);
-        rightFront.setTargetPosition(rightFrontTarget);
-        rightRear.setTargetPosition(rightRearTarget);
-        if(turnRight){
-            leftFront.setPower(-power);
-            leftRear.setPower(-power);
-            rightFront.setPower(power);
-            rightRear.setPower(power);
-        }else{
-            leftFront.setPower(power);
-            leftRear.setPower(power);
-            rightFront.setPower(-power);
-            rightRear.setPower(-power);
-        }
-        setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-
-    public void polarMove(double angle, double turn, double power) {
-		final double v1 = (power) * Math.cos(angle) + turn;
-        final double v2 = power * Math.sin(angle) - turn;
-        final double v3 = power * Math.sin(angle) + turn;
-        final double v4 = power * Math.cos(angle) - turn;
-
-        leftFront.setPower(-v1);
-        rightFront.setPower(-v2);
-        leftRear.setPower(-v3);
-        rightRear.setPower(-v4);
+        runToDirectPosition(percentSpeed);
     }
 
     /**
@@ -163,23 +135,16 @@ public class DriveControl {
         return (int)Math.round(encoderTicks);
     }
 
-    /**
-     * After a target has been set, run the motors to the target pos at the provided speed
-     * @param percentSpeed the percent of the maximum speed to run the motors at [0,1]
-     */
-    private void runToStraightPosition(double percentSpeed) {
-        setStraightVelocity(percentSpeed);
-        setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
 
     /**
      * After a target has been set, run the motors to the target pos at the provided speed
      * @param percentSpeed the percent of the maximum speed to run the motors at [0,1]
      */
-    private void runToStrafePosition(double percentSpeed) {
+    private void runToDirectPosition(double percentSpeed) {
+        setVelocity(percentSpeed);
         setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
-        setStrafeVelocity(percentSpeed);
     }
+
 
     /**
      * Run the motor at the specified speed
@@ -274,6 +239,14 @@ public class DriveControl {
         rightRear.setDirection(direction);
     }
 
+    public void setTurnVelocity(double percentSpeed) {
+        setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setPower(percentSpeed);
+        leftRear.setPower(percentSpeed);
+        rightFront.setPower(-percentSpeed);
+        rightRear.setPower(-percentSpeed);
+    }
+
     /**
      * Drive the robot using gyro strafe correction
      * @param direction Angle to strafe at (0 is forward, Pi/2 is left...?)
@@ -285,37 +258,6 @@ public class DriveControl {
         leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //Get the current gyro angle
-        double gyroAngle = imu.getAngularOrientation().firstAngle;
-        //Find the change since our last angle
-        double dAngle = (lastAngle - gyroAngle);
-        //Find the change in time since out last measurement
-        double dTime = t.seconds();
-        t.reset();
-        //Find the change in angle over time (angular velocity)
-        double velocity = dAngle/dTime;
-
-        //Find the AVERAGE velocity (just a smoothed out velocity that has been averaged to minimize static noise and improve accuracy)
-        averageVelocity = (averageVelocity * 3 + velocity)/4;
-
-        //Find the AVERAGE rotational goal (smoothed out)
-        averageGoal = (averageGoal * 3 + rotation)/4.0;
-
-        //Update the last angle
-        lastAngle = gyroAngle;
-
-        //Update the rotational goal to compensate for how off we are from the goal.
-        //Dividing by 300 to convert the degrees per second into power for a motor. We found that about 300 degrees per second is a 1 in turning power.
-        //The 1.5x is a multiplier to make sure the offset is applied 2enough to have an actual effect.
-
-        //Commented for now to make drivable (find a new value instead of 300.0 and then uncomment to enable)
-//        rotation += (averageGoal - averageVelocity / 120.0);
-
-//        if (rotation < .2 || rotation > -.2) {
-//            rotation = 0;
-//        }
-
 
         direction += Math.PI/4.0;  //Strafe direction needs to be offset so that forwards has everything go at the same power
 
@@ -330,25 +272,229 @@ public class DriveControl {
         rightRear.setPower(v4);
     }
 
+    /**
+     * Get the gyroscope heading from the imu
+     * @return the heading, in degrees [-180, 180]
+     */
     public double getGyroAngle(){
         return imu.getAngularOrientation().firstAngle;
     }
 
-    public void gyroTurn(double angle, double power){
-        power = Math.abs(power);
 
-        double gyroAngle = getGyroAngle();
-        double driveAngle = power*Math.max(-1, Math.min(1, (gyroAngle - angle)/20.0));
+    /**
+     * Turn an amount of degrees using encoders
+     * @return true if turning is completed, otherwise false
+     */
+    public boolean updateTurnTarget() {
 
-        System.out.println("Angle: "+gyroAngle);
-        System.out.println("Turn power: "+driveAngle);
-        drive(0, 0, driveAngle);
+        // current, target, degrees to turn
+        // 90 - 80 = turn 10
+        // 80 - 90 = turn -10
+        double degreesToTurn = (getGyroAngle() - currentAction.targetPosition) * -1;
+        telemetry.addData("degrees to turn pre wrap", degreesToTurn);
+        // wrap to -180, 180
+        degreesToTurn = wrapAngle(degreesToTurn);
+        telemetry.addData("degrees to turn post wrap", degreesToTurn);
+
+        // get sign of degrees to get direction
+        double direction = degreesToTurn / Math.abs(degreesToTurn);
+        telemetry.addData("turn direction", direction);
+        // the greatest distance the robot can be from its target is 180, so its distance from
+        // its target can be expressed as the degrees / 180
+        double fractionReducer = 45;
+        double fractionOfCircleFromTarget = Math.abs(degreesToTurn / fractionReducer);
+        telemetry.addData("fraction from target", fractionOfCircleFromTarget);
+
+        // determine whether to turn left or right
+        // current, degrees, target
+        // 90 + 80 = 110
+        // -180 + 80 = -100
+
+        // -180 + 200 = 20
+        // -180 + wrap(200) = 20
+        // wrap(200) = -20
+        // -180 - 20 = -200
+        // wrap(-200) = 20
+
+        // -180 - 1 = 180
+        // -180 - 1 = -181
+        // wrap(-181) = 180
+
+        // a wrapped degree value tells you the direction to turn in based on its sign
+        // -180 - 90 = -270
+        // wrap(-270) = 90
+        // assuming the left side of a circle is negative and the right half is positive,
+        // counterclockwise from 0 turns to the negative values and clockwise turns to the positive
+        // a negative wrapped degree value should turn counterclockwise, while a positive should turn
+        // clockwise
+
+        if (Math.abs(degreesToTurn) <= CLOSE_ENOUGH_TO_ZERO) {
+            setVelocity(0);
+            return true;
+        }
+
+        final double leftPower = -(currentAction.percentSpeed * fractionOfCircleFromTarget * direction);
+        final double rightPower = currentAction.percentSpeed * fractionOfCircleFromTarget * direction;
+
+        telemetry.addData("left power", leftPower);
+        telemetry.addData("right power", rightPower);
+        leftFront.setPower(leftPower);
+        leftRear.setPower(leftPower);
+        rightFront.setPower(rightPower);
+        rightRear.setPower(rightPower);
+        return false;
+    }
+
+    /**
+     * Wraps an angle to between -180 & 180.
+     * @param angle the angle to wrap
+     * @return the wrapped angle
+     */
+    public static double wrapAngle(double angle) {
+
+        if (angle > GYRO_MIN_ANGLE && angle < GYRO_MAX_ANGLE) {
+            return angle;
+        } else if (angle < GYRO_MIN_ANGLE) {
+            return wrapAngle((angle - GYRO_MIN_ANGLE) * -1);
+        } else {
+            return wrapAngle((angle - GYRO_MAX_ANGLE) * -1);
+        }
+    }
+
+    /**
+     * Add an auto action to the queue
+     * @param driveAction the driveaction to add
+     */
+    public void addAutoAction(DriveAction driveAction) {
+        actionQueue.add(driveAction);
+        if (currentAction == null) {
+            currentAction = actionQueue.poll();
+            beginAction();
+        }
     }
 
 
+    /**
+     * Update the auto actions or move to the next one if the current action has completed.
+     */
+    public void updateAutoAction() {
+
+        if (currentAction == null) {
+            telemetry.addData("Drive type", "null");
+            return;
+        }
+        telemetry.addData("current action", currentAction.driveType);
+
+        boolean finished = false;
+        switch (currentAction.driveType) {
+            case FORWARD:
+            case STRAFE:
+                finished = !isRunningToPosition();
+                break;
+            case TURN:
+                finished = updateTurnTarget();
+                break;
+            case WAIT:
+                finished = (System.currentTimeMillis() >= currentAction.targetPosition);
+                break;
+        }
+
+        if (finished) {
+            setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            currentAction = actionQueue.poll();
+            beginAction();
+        }
+
+    }
+
+    /**
+     * Begin the current auto action in the queue
+     */
+    private void beginAction() {
+        if (currentAction == null)
+            return;
+        switch (currentAction.driveType) {
+            case FORWARD:
+                moveYDist(currentAction.targetIncrement, currentAction.percentSpeed);
+                break;
+            case STRAFE:
+                moveXDist(currentAction.targetIncrement, currentAction.percentSpeed);
+                break;
+            case TURN:
+                setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                currentAction.setTargetPosition(getGyroAngle());
+                break;
+            case WAIT:
+                setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                currentAction.setTargetPosition(System.currentTimeMillis());
+                break;
+
+        }
+    }
 
 
+    /**
+     * Determine if motors are currently running to a position
+     * @return true if any of the motors are running to a position, otherwise false
+     */
+    private boolean isRunningToPosition() {
+        return (leftFront.isBusy() || leftRear.isBusy() || rightFront.isBusy() || rightRear.isBusy());
+    }
 
 
+    /**
+     * A class to represent auto drive actions to queue for execution
+     */
+    public static class DriveAction {
+        private final double percentSpeed;
+        private final double targetIncrement;
+        private final DriveType driveType;
+        private double targetPosition;
+
+        /**
+         * Create a DriveAction to be queued for execution by DriveControl
+         * @param driveType the type of action to perform
+         * @param targetIncrement the increment to add to the current position. If the driveType
+         *                       is FORWARD/STRAFE, this should be in inches. If its TURN, this
+         *                       should be an imu angle within the range of [-180,180], and values
+         *                       outside this range will be wrapped to this range.
+         * @param percentSpeed the percent of the motors maximum speed to run at [0,1]
+         */
+        public DriveAction(DriveType driveType, double targetIncrement, double percentSpeed) {
+            this.driveType = driveType;
+            this.percentSpeed = percentSpeed;
+
+            if (driveType == DriveType.TURN) {
+                // negative wrapped because its added to the target position in setTargetPosition,
+                // so it needs to be negative
+                this.targetIncrement = -wrapAngle(targetIncrement);
+            }
+            else {
+                this.targetIncrement = targetIncrement;
+            }
+
+        }
+
+        /**
+         * Set the target position for the action. This should only be set by beginAction prior to execution.
+         * For TURN and WAIT, the current position should be the current angle or current time, respectively.
+         * This isn't necessary for FORWARD or STRAFE
+         * @param currentPosition the current position of the robot. This value should be different
+         *                        depending on the drive action
+         */
+        private void setTargetPosition(double currentPosition) {
+            targetPosition = currentPosition + targetIncrement;
+        }
+    }
+
+    /**
+     * An enum of drive types for drive control to execute
+     */
+    public enum DriveType {
+        FORWARD,
+        STRAFE,
+        TURN,
+        WAIT,
+    }
 
 }
