@@ -1,4 +1,4 @@
-package opmodes_vision_testing;
+package opmodes;
 
 import android.util.Log;
 
@@ -9,7 +9,7 @@ import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
 import vision.CVManager;
-import vision.ContourPipeline;
+import vision.RedCVPipeline;
 
 
 @TeleOp(name="Testing: Contour CV OpMode", group="Testing")
@@ -30,6 +30,7 @@ public class ContourCVOpMode extends OpMode {
     private final double cameraPlatform = 10.5; // random value
     private final double cameraHeight = (cameraPlatform + toCameraCenter) * inchesToMM;
     private static final int fieldLength = 3660; // mm (this is correct)
+    private RedCVPipeline pipeline;
 
 
 
@@ -39,13 +40,13 @@ public class ContourCVOpMode extends OpMode {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
         cvManager = new CVManager(hardwareMap);
-        cvManager.initializeCamera(new ContourPipeline(cvManager.getWebcam()));
+        pipeline = new RedCVPipeline(cvManager.getWebcam());
+        cvManager.initializeCamera(pipeline);
     }
 
     // code to loop after init is pressed and before start is pressed
     @Override
     public void init_loop() {
-        
     }
 
     // code to run once when driver hits start
@@ -59,8 +60,8 @@ public class ContourCVOpMode extends OpMode {
 
         runControls();
 
-        telemetry.addData("location1", "bruh");
-
+        telemetry.addData("location", pipeline.getObjLevel());
+        telemetry.addData("biggestRectCenter", " " + pipeline.biggestRectCenter + " " + pipeline.secondBiggestRectCenter);
 
         // update telemetry at the end of the loop
         telemetry.update();
