@@ -168,11 +168,9 @@ public class RedCVPipeline extends OpenCvPipeline {
 				thirdBiggestArea = boundRect[i].area();
 			}
 		}
-		if (thirdBiggestArea < secondBiggestArea/2) {
-			thirdBiggestArea = 0;
+		if (thirdBiggestArea < (3 * secondBiggestArea)/5) {
+			thirdBiggestArea = -1;
 		}
-		int shippingElementLoc;// start with 0 + 1 + 2 = 6, subtract 0 or 1 or 2 for each barcode square
-		// that we find so we're left with the index of the shipping element's square
 		int isFirst = 1;
 		int isSecond = 1;
 		int isThird = 1;
@@ -184,6 +182,13 @@ public class RedCVPipeline extends OpenCvPipeline {
 					&& (int) boundRect[i].area() != (int) thirdBiggestArea) { // incorrectly detected
 				continue;
 			}
+			if (isFirst + isSecond + isThird == 1) { // don't need this one since only one square is
+													 // left and it's probably the one being blocked
+													 // might not work if an accidental recognition
+													 // is bigger than the 2 squares which should
+													 // actually be recognized
+				continue;
+			}
 
 			Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
 
@@ -191,7 +196,7 @@ public class RedCVPipeline extends OpenCvPipeline {
 			// they should be in
 
 			// rectangle is represented in terms of top left point, width, and height
-			int rectCenterX = boundRect[i].x + width / 2;
+			int rectCenterX = boundRect[i].x + boundRect[i].width / 2;
 			if (rectCenterX < imgWidth / 3) { // leftmost third
 				isFirst = 0;
 			} else if (rectCenterX >= imgWidth / 3 && rectCenterX <= (2 * imgWidth) / 3) { // middle third
@@ -210,7 +215,7 @@ public class RedCVPipeline extends OpenCvPipeline {
 		if (isFirst + isSecond + isThird > 1) {
 			// things went wrong since we somehow have 2 or more thirds that don't have red
 			// in them
-			objLevel = -1;
+			objLevel = 2; // just go for the third one
 		}
 
 		else if (isFirst == 1) {

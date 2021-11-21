@@ -47,17 +47,14 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-public class BlueCVPipeline extends OpenCvPipeline {
+public class ElementCVPipeline extends OpenCvPipeline {
     public boolean viewportPaused;
     private int objLevel = -1;
-    private int location;
-    private int width;
     private OpenCvCamera webcam;
     private Mat mat;
     public int biggestRectCenter;
-    public int secondBiggestRectCenter;
 
-    public BlueCVPipeline(OpenCvCamera webcam) {
+    public ElementCVPipeline(OpenCvCamera webcam) {
         this.webcam = webcam;
     }
 
@@ -97,20 +94,14 @@ public class BlueCVPipeline extends OpenCvPipeline {
 
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
-        // if something is wrong, we assume there's no skystone
-        if (mat.empty()) {
-            location = -1;
-            return input;
-        }
-
         // We create a HSV range for yellow to detect regular stones
         // NOTE: In OpenCV's implementation,
         // Hue values are half the real value
 
-        // red hsv's wrap around from 170 to 10 so we need to create 2 and kinda merge
+        // red hsvs wrap around from 170 to 10 so we need to create 2 and kinda merge
         // them
-        Scalar lowHSV1 = new Scalar(0, 120, 120); // lower bound HSV #1 for blue
-        Scalar highHSV1 = new Scalar(255, 255, 255); // higher bound HSV for blue
+        Scalar lowHSV1 = new Scalar(0, 0, 0); // lower bound HSV #1 for team shipping element
+        Scalar highHSV1 = new Scalar(255, 255, 255); // higher bound HSV for team shipping element
         Mat thresh = new Mat();
 
         // We'll get a black and white image. The white regions represent the regular
@@ -144,83 +135,33 @@ public class BlueCVPipeline extends OpenCvPipeline {
             boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
         }
 
-        // now what we're planning to do is looking at the relative positions of the
-        // contours we've found
-        // there should be 2 since there are 3 squares in the barcode and one is covered
-        // by shipping element
-        // then we can look at which thirds of the picture the contours are in, so we
-        // can find the square
-        // which the shipping element is on by process of elimination
+        // just look at which third the shipping element is in
 
         double biggestArea = 0;
-        double secondBiggestArea = 0;
-        double thirdBiggestArea = 0;
-
         for (int i = 0; i < sz; i++) {
             if (boundRect[i].area() >= biggestArea) {
-                thirdBiggestArea = secondBiggestArea;
-                secondBiggestArea = biggestArea;
                 biggestArea = boundRect[i].area();
-            } else if (boundRect[i].area() >= secondBiggestArea) {
-                thirdBiggestArea = secondBiggestArea;
-                secondBiggestArea = boundRect[i].area();
-            } else if (boundRect[i].area() >= thirdBiggestArea) {
-                thirdBiggestArea = boundRect[i].area();
             }
         }
-        if (thirdBiggestArea < secondBiggestArea/2) {
-            thirdBiggestArea = -1;
-        }
-        int isFirst = 1;
-        int isSecond = 1;
-        int isThird = 1;
         double imgWidth = input.cols();
         for (int i = 0; i < sz; i++) {
+            if ((int) boundRect[i].area() == (int) biggestArea) { // incorrectly detected
+                Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
 
-            if ((int) boundRect[i].area() != (int) secondBiggestArea
-                    && (int) boundRect[i].area() != (int) biggestArea
-                    && (int) boundRect[i].area() != (int) thirdBiggestArea) { // incorrectly detected
-                continue;
-            }
+                // look at center of bounding rectangle, see which third of the picture
 
-            Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
+                // rectangle is represented in terms of top left point, width, and height
+                int rectCenterX = boundRect[i].x + boundRect[i].width / 2;
+                if (rectCenterX < imgWidth / 3) { // leftmost third
+                    objLevel = 0;
+                } else if (rectCenterX >= imgWidth / 3 && rectCenterX <= (2 * imgWidth) / 3) { // middle third
+                    objLevel = 1;
+                } else if (rectCenterX < imgWidth && rectCenterX >= (2 * imgWidth) / 3) { // rightmost third
+                    objLevel = 2;
+                }
 
-            // look at center of each bounding rectangle, see which thirds of the picture
-            // they should be in
-
-            // rectangle is represented in terms of top left point, width, and height
-            int rectCenterX = boundRect[i].x + boundRect[i].width / 2;
-            if (rectCenterX < imgWidth / 3) { // leftmost third
-                isFirst = 0;
-            } else if (rectCenterX >= imgWidth / 3 && rectCenterX <= (2 * imgWidth) / 3) { // middle third
-                isSecond = 0;
-            } else if (rectCenterX < imgWidth && rectCenterX >= (2 * imgWidth) / 3) { // rightmost third
-                isThird = 0;
-            }
-
-            if ((int) boundRect[i].area() == (int) biggestArea) {
                 biggestRectCenter = rectCenterX;
-            } else {
-                secondBiggestRectCenter = rectCenterX;
             }
-        }
-
-        if (isFirst + isSecond + isThird > 1) {
-            // things went wrong since we somehow have 2 or more thirds that don't have red
-            // in them
-            objLevel = -1;
-        }
-
-        else if (isFirst == 1) {
-            objLevel = 0;
-        }
-
-        else if (isSecond == 1) {
-            objLevel = 1;
-        }
-
-        else if (isThird == 1) {
-            objLevel = 2;
         }
 
         mat.release();

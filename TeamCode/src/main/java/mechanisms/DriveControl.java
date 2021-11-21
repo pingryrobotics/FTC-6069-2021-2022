@@ -373,6 +373,32 @@ public class DriveControl {
         }
     }
 
+    /**
+     * Turns angle at specified speed
+     * @param angle angle to turn
+     * @param speed speed at which to turn (range from 0 to 1)
+     */
+    public void turnAngle(double angle, double speed) {
+        this.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.TURN, angle, speed));
+    }
+
+    /**
+     * moves forward a number of inches at specified speed
+     * @param inches inches to move forward
+     * @param speed speed to move at
+     */
+    public void moveForward(double inches, double speed) {
+        this.addAutoAction(new DriveControl.DriveAction(DriveType.FORWARD, inches, speed));
+    }
+
+    /**
+     * Strafes a number of inches at specified speed
+     * @param inches inches to strafe
+     * @param speed speed to strafe at
+     */
+    public void moveSideways(double inches, double speed) {
+        this.addAutoAction(new DriveControl.DriveAction(DriveType.STRAFE, inches, speed));
+    }
 
     /**
      * Update the auto actions or move to the next one if the current action has completed.

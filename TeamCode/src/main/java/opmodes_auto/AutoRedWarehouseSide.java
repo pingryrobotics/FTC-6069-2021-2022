@@ -36,6 +36,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -46,6 +47,9 @@ import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
+import vision.CVManager;
+import vision.ElementCVPipeline;
+import vision.RedCVPipeline;
 
 /**
  * TODO:
@@ -150,6 +154,8 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     private Intake intake;
     private LinearSlide linearSlide;
     private Carousel carousel;
+    private ElementCVPipeline pipeline;
+    private CVManager cvManager;
 
     @Override
     public void runOpMode() {
@@ -157,67 +163,50 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap);
         carousel = new Carousel(hardwareMap);
-//        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-//        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-//        webcam.setPipeline(new ContourPipeline(webcam));
-//        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-//        {
-//            @Override
-//            public void onOpened()
-//            {
-//                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-//            }
-//            @Override
-//            public void onError(int errorCode)
-//            {
-//                /*
-//                 * This will be called if the camera could not be opened
-//                 */
-//            }
-//        });
+        cvManager = new CVManager(hardwareMap);
+        pipeline = new ElementCVPipeline(cvManager.getWebcam());
+        cvManager.initializeCamera(pipeline);
         waitForStart();
 
         if (opModeIsActive()) {
-//            telemetry.addData("Level found", ContourPipeline.getObjLevel());
-//            int objLevel = ContourPipeline.getObjLevel();
+            telemetry.addData("Level found", pipeline.getObjLevel());
+            int objLevel = pipeline.getObjLevel();
 
-            driveControl.moveXDist(-28, 0.5);
-            sleep(5000);
-            driveControl.moveYDist(80, 1);
+//            driveControl.moveXDist(-28, 0.5);
+//            driveControl.moveYDist(80, 1);
 
-//            // move to linear slide and put square on level
-//            driveControl.moveYDist(20, 1); // change
-//            sleep(1000);
-//            driveControl.turnAngle(-20, 1); // change
-//            sleep(1000);
-//            if (objLevel == 0) {
-//                linearSlide.level1();
-//            } else if (objLevel == 1) {
-//                linearSlide.level2();
-//            } else if (objLevel == 2){
-//                linearSlide.level3();
-//            } else {
-//
-//            }
-//            linearSlide.dump();
-//            sleep(1000);
-//            linearSlide.undump();
-//            sleep(1000);
-//
-//            // park in warehouse
-//            driveControl.turnAngle(90 + 20, 1); // change
-//            sleep(1000);
-//            driveControl.moveXDist(13, 1);
-//            sleep(1000);
-//            driveControl.moveYDist(40, 1); // change
-//            sleep(1000);
+            // move to linear slide and put square on level
+            driveControl.moveForward(20, 1); // change
+            driveControl.turnAngle(-20, 1); // change
+
+            if (objLevel == 0) {
+                linearSlide.level1();
+            } else if (objLevel == 1) {
+                linearSlide.level2();
+            } else if (objLevel == 2){
+                linearSlide.level3();
+            }
+            sleep(3000);
+            linearSlide.dump();
+            sleep(2000);
+            linearSlide.undump();
+            sleep(2000);
+
+            // carousel spin would go here if our partner isn't doing it
+            // we probably wouldn't use this opmode unless partner can do carousel since you have
+            // to move all the way to the carousel and then back in order to park
+
+            // maybe we can cycle here?
+
+            // park in warehouse
+            driveControl.turnAngle(90 + 20, 0.5);
+            driveControl.moveSideways(13, 1);
+            driveControl.moveForward(40, 1);
 
             telemetry.update();
         }
         while (opModeIsActive()) {
-
+            driveControl.updateAutoAction();
             telemetry.update();
             sleep(100);
         }
