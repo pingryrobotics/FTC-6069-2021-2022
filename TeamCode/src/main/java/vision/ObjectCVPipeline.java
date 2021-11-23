@@ -47,14 +47,14 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-public class ElementCVPipeline extends OpenCvPipeline {
+public class ObjectCVPipeline extends OpenCvPipeline {
     public boolean viewportPaused;
-    private int objLevel = -1;
+    private boolean objExists = false;
     private OpenCvCamera webcam;
     private Mat mat;
-    public int biggestRectCenter;
+    boolean isCube = true;
 
-    public ElementCVPipeline(OpenCvCamera webcam) {
+    public ObjectCVPipeline(OpenCvCamera webcam) {
         this.webcam = webcam;
     }
 
@@ -100,9 +100,15 @@ public class ElementCVPipeline extends OpenCvPipeline {
 
         // red hsvs wrap around from 170 to 10 so we need to create 2 and kinda merge
         // them
-        int sensitivity = 15;
-        Scalar lowHSV1 = new Scalar(60 - sensitivity, 100, 100); // lower bound HSV #1 for team shipping element
-        Scalar highHSV1 = new Scalar(60 + sensitivity, 255, 255); // higher bound HSV for team shipping element
+        Scalar lowHSV1;
+        Scalar highHSV1;
+        if (isCube) {
+            lowHSV1 = new Scalar(20, 100, 100); // lower bound HSV #1 for team shipping element
+            highHSV1 = new Scalar(30, 255, 255); // higher bound HSV for team shipping element
+        } else {
+            lowHSV1 = new Scalar(0, 0, 168); // lower bound HSV #1 for team shipping element
+            highHSV1 = new Scalar(172, 111, 255); // higher bound HSV for team shipping element
+        }
         Mat thresh = new Mat();
 
         // We'll get a black and white image. The white regions represent the regular
@@ -139,31 +145,18 @@ public class ElementCVPipeline extends OpenCvPipeline {
         // just look at which third the shipping element is in
 
         double biggestArea = 0;
+        Rect biggestRect = new Rect();
         for (int i = 0; i < sz; i++) {
             if (boundRect[i].area() >= biggestArea) {
                 biggestArea = boundRect[i].area();
+                biggestRect = boundRect[i];
             }
         }
-        double imgWidth = input.cols();
-        for (int i = 0; i < sz; i++) {
-            if ((int) boundRect[i].area() == (int) biggestArea) { // incorrectly detected
-                Imgproc.rectangle(input, boundRect[i], new Scalar(255, 0, 0), 4);
 
-                // look at center of bounding rectangle, see which third of the picture
+        Imgproc.rectangle(input, biggestRect, new Scalar(255, 0, 0), 4);
 
-                // rectangle is represented in terms of top left point, width, and height
-                int rectCenterX = boundRect[i].x + boundRect[i].width / 2;
-                if (rectCenterX < imgWidth / 3) { // leftmost third
-                    objLevel = 0;
-                } else if (rectCenterX >= imgWidth / 3 && rectCenterX <= (2 * imgWidth) / 3) { // middle third
-                    objLevel = 1;
-                } else if (rectCenterX < imgWidth && rectCenterX >= (2 * imgWidth) / 3) { // rightmost third
-                    objLevel = 2;
-                }
+        objExists = (biggestArea >= 5000); // should be at least 200x200 pixels
 
-                biggestRectCenter = rectCenterX;
-            }
-        }
 
         mat.release();
         thresh.release();
@@ -204,9 +197,17 @@ public class ElementCVPipeline extends OpenCvPipeline {
         }
     }
 
-    public int getObjLevel() {
+    public boolean ifObjExists() {
 
         // return objLevel;
-        return objLevel;
+        return objExists;
+    }
+
+    public void setObject(String obj) {
+        if (obj.equals("Ball")) {
+            isCube = false;
+        } else if (obj.equals("Cube")) {
+            isCube = true;
+        }
     }
 }

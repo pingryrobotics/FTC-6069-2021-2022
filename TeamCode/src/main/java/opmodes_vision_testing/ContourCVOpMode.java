@@ -1,4 +1,4 @@
-package opmodes;
+package opmodes_vision_testing;
 
 import android.util.Log;
 
@@ -9,6 +9,8 @@ import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
 import vision.CVManager;
+import vision.ElementCVPipeline;
+import vision.ObjectCVPipeline;
 import vision.RedCVPipeline;
 
 
@@ -30,7 +32,7 @@ public class ContourCVOpMode extends OpMode {
     private final double cameraPlatform = 10.5; // random value
     private final double cameraHeight = (cameraPlatform + toCameraCenter) * inchesToMM;
     private static final int fieldLength = 3660; // mm (this is correct)
-    private RedCVPipeline pipeline;
+    private ObjectCVPipeline pipeline;
 
 
 
@@ -40,7 +42,7 @@ public class ContourCVOpMode extends OpMode {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
         cvManager = new CVManager(hardwareMap);
-        pipeline = new RedCVPipeline(cvManager.getWebcam());
+        pipeline = new ObjectCVPipeline(cvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
     }
 
@@ -60,8 +62,9 @@ public class ContourCVOpMode extends OpMode {
 
         runControls();
 
-        telemetry.addData("location", pipeline.getObjLevel());
-        telemetry.addData("biggestRectCenter", " " + pipeline.biggestRectCenter + " " + pipeline.secondBiggestRectCenter);
+        pipeline.setObject("Ball");
+        telemetry.addData("location", pipeline.ifObjExists());
+        // telemetry.addData("biggestRectCenter", " " + pipeline.biggestRectCenter);
 
         // update telemetry at the end of the loop
         telemetry.update();
