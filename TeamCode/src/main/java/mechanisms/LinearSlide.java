@@ -24,6 +24,7 @@ public class LinearSlide {
     private final int level2To3 = 3000;
     private final int level1To2 = 3000;
     private final int level0To1 = 5000;
+    public boolean tilted = false;
 
     public LinearSlide(HardwareMap hardwareMap) {
         slideMotor = hardwareMap.get(DcMotor.class, "slideMotor");
@@ -31,7 +32,7 @@ public class LinearSlide {
         //slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bucketServo = hardwareMap.get(Servo.class, "bucketServo");
         bucketServo.setDirection(Servo.Direction.FORWARD);
-        bucketServo.scaleRange(0, 1);
+        bucketServo.scaleRange(0.15, 0.55);
         //bucketServo.setPosition(0);
 
 
@@ -145,12 +146,18 @@ public class LinearSlide {
     }
 
     public void dump() { // dump stuff in bucket
-        bucketServo.setPosition(.5);
+        bucketServo.setPosition(0);
     }
 
     public void undump() { // pull bucket back after dumping
         bucketServo.setPosition(1);
+        tilted = false;
 
+    }
+
+    public void tilt() {
+        bucketServo.setPosition(0.75);
+        tilted = true;
     }
 
     public void stop() {

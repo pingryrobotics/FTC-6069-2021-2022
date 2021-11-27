@@ -47,14 +47,16 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-public class ObjectCVPipeline extends OpenCvPipeline {
+public class IntakeCVPipeline extends OpenCvPipeline {
     public boolean viewportPaused;
-    private boolean objExists = false;
     private OpenCvCamera webcam;
-    private Mat mat;
-    boolean isCube = false;
+    private Mat matBlock;
+    private Mat matBall;
+    private boolean blockExists = false;
+    private boolean ballExists = false;
+    private int frameCount = 0;
 
-    public ObjectCVPipeline(OpenCvCamera webcam) {
+    public IntakeCVPipeline(OpenCvCamera webcam) {
         this.webcam = webcam;
     }
 
@@ -90,9 +92,11 @@ public class ObjectCVPipeline extends OpenCvPipeline {
          * index from 0 to 2.
          */
 
-        mat = new Mat();
+        matBlock = new Mat();
+        matBall = new Mat();
 
-        Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(input, matBlock, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(input, matBall, Imgproc.COLOR_RGB2HSV);
 
         // We create a HSV range for yellow to detect regular stones
         // NOTE: In OpenCV's implementation,
@@ -100,29 +104,24 @@ public class ObjectCVPipeline extends OpenCvPipeline {
 
         // red hsvs wrap around from 170 to 10 so we need to create 2 and kinda merge
         // them
-        boolean yellow = true;
-        Scalar lowHSV1;
-        Scalar highHSV1;
-        if (isCube) {
-            lowHSV1 = new Scalar(20, 100, 100); // lower bound HSV #1 for team shipping element
-            highHSV1 = new Scalar(30, 255, 255); // higher bound HSV for team shipping elemet
-        }
+        Scalar lowHSVBlock;
+        Scalar highHSVBlock;
+        Scalar lowHSVBall;
+        Scalar highHSVBall;
 
-        else if(yellow){
-            lowHSV1 = new Scalar(23, 50, 70);
-            highHSV1 = new Scalar(32, 255, 255);
-        }
-
-        else {
-            lowHSV1 = new Scalar(0, 0, 168); // lower bound HSV #1 for team shipping element
-            highHSV1 = new Scalar(172, 111, 255); // higher bound HSV for team shipping element
-        }
-        Mat thresh = new Mat();
+        //Cube Color Values
+        lowHSVBlock = new Scalar(10, 70, 200);
+        highHSVBlock = new Scalar(40, 150, 255);
+        lowHSVBall = new Scalar(55, 0, 240); // lower bound HSV #1 for team shipping element
+        highHSVBall= new Scalar(70, 5,  255);
+        Mat threshBlock = new Mat();
+        Mat threshBall = new Mat();
 
         // We'll get a black and white image. The white regions represent the regular
         // stones.
         // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
-        Core.inRange(mat, lowHSV1, highHSV1, thresh); // goes through image, filters out color based on low&high hsv's
+        Core.inRange(matBlock, lowHSVBlock, highHSVBlock, threshBlock); // goes through image, filters out color based on low&high hsv's
+        Core.inRange(matBall, lowHSVBall, highHSVBall, threshBall);
 
         // Core.addWeighted(thresh2, 1, thresh1, 1, 0, thresh);
         // Imgproc.GaussianBlur(thresh, thresh, new Size(9, 9), 2, 2); // should smooth
@@ -130,46 +129,97 @@ public class ObjectCVPipeline extends OpenCvPipeline {
 
         // Use Canny Edge Detection to find edges
         // you might have to tune the thresholds for hysteresis
-        Mat edges = new Mat();
-        Imgproc.Canny(thresh, edges, 100, 300);
+        Mat edgesBlock = new Mat();
+        Mat edgesBall = new Mat();
+        Imgproc.Canny(threshBlock, edgesBlock, 100, 300);
+        Imgproc.Canny(threshBall, edgesBall, 100, 300);
 
         // https://docs.opencv.org/3.4/da/d0c/tutorial_bounding_rects_circles.html
         // Oftentimes the edges are disconnected. findContours connects these edges.
         // We then find the bounding rectangles of those contours
-        List<MatOfPoint> contours = new ArrayList<>();
-        Mat hierarchy = new Mat();
-        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        List<MatOfPoint> contoursBlock = new ArrayList<>();
+        Mat hierarchyBlock = new Mat();
+        Imgproc.findContours(edgesBlock, contoursBlock, hierarchyBlock, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        int sz = contours.size();
+        List<MatOfPoint> contoursBall = new ArrayList<>();
+        Mat hierarchyBall = new Mat();
+        Imgproc.findContours(edgesBall, contoursBall, hierarchyBall, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+
+        int sz = contoursBlock.size();
         System.out.println("Contours: " + sz);
-        MatOfPoint2f[] contoursPoly = new MatOfPoint2f[sz];
-        Rect[] boundRect = new Rect[sz]; // contains bounding rectangles for each coutour (object in 2d form)
+        MatOfPoint2f[] contoursPolyBlock = new MatOfPoint2f[sz];
+        Rect[] boundRectBlock = new Rect[sz]; // contains bounding rectangles for each coutour (object in 2d form)
         for (int i = 0; i < sz; i++) {
-            contoursPoly[i] = new MatOfPoint2f();
-            Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
-            boundRect[i] = Imgproc.boundingRect(new MatOfPoint(contoursPoly[i].toArray()));
+            contoursPolyBlock[i] = new MatOfPoint2f();
+            Imgproc.approxPolyDP(new MatOfPoint2f(contoursBlock.get(i).toArray()), contoursPolyBlock[i], 3, true);
+            boundRectBlock[i] = Imgproc.boundingRect(new MatOfPoint(contoursPolyBlock[i].toArray()));
         }
 
-        // just look at which third the shipping element is in
 
-        double biggestArea = 0;
-        Rect biggestRect = new Rect();
+        int sz2 = contoursBall.size();
+        System.out.println("Contours: " + sz2);
+        MatOfPoint2f[] contoursPolyBall = new MatOfPoint2f[sz2];
+        Rect[] boundRectBall = new Rect[sz2]; // contains bounding rectangles for each coutour (object in 2d form)
+        for (int i = 0; i < sz2; i++) {
+            contoursPolyBall[i] = new MatOfPoint2f();
+            Imgproc.approxPolyDP(new MatOfPoint2f(contoursBall.get(i).toArray()), contoursPolyBall[i], 3, true);
+            boundRectBall[i] = Imgproc.boundingRect(new MatOfPoint(contoursPolyBall[i].toArray()));
+        }
+        // just look at which third the shipping element is in
+        double biggestAreaBlock = 0;
+        Rect biggestRectBlock = new Rect();
         for (int i = 0; i < sz; i++) {
-            if (boundRect[i].area() >= biggestArea) {
-                biggestArea = boundRect[i].area();
-                biggestRect = boundRect[i];
+            if (boundRectBlock[i].area() >= biggestAreaBlock) {
+                biggestAreaBlock = boundRectBlock[i].area();
+                biggestRectBlock = boundRectBlock[i];
             }
         }
 
-        Imgproc.rectangle(input, biggestRect, new Scalar(255, 0, 0), 4);
-
-        objExists = (biggestArea >= 5000); // should be at least 200x200 pixels
 
 
-        mat.release();
-        thresh.release();
-        hierarchy.release();
-        edges.release();
+        double biggestAreaBall = 0;
+        Rect biggestRectBall = new Rect();
+        for (int i = 0; i < sz2; i++) {
+            if (boundRectBall[i].area() >= biggestAreaBall) {
+                biggestAreaBall = boundRectBall[i].area();
+                biggestRectBall = boundRectBall[i];
+            }
+        }
+
+
+        blockExists = (biggestAreaBlock >= 3000);
+        ballExists = biggestAreaBall >= 3000;
+        if(ballExists){
+            Imgproc.rectangle(input, biggestRectBall, new Scalar(255, 0, 0), 4);
+            frameCount++;
+        }
+
+        if(blockExists){
+            Imgproc.rectangle(input, biggestRectBlock, new Scalar(255, 0, 0), 4);
+            frameCount++;
+        }
+
+        if(!(blockExists || ballExists)){
+            frameCount = 0;
+        }
+
+
+//        double[] values = mat.get(input.rows()/2, input.cols()/2);
+//        System.out.println("HSV: " + values[0] + ", " + values[1]+ ", " + values[2]);
+        // should be at least 200x200 pixels
+
+
+
+        matBlock.release();
+        threshBlock.release();
+        hierarchyBlock.release();
+        edgesBlock.release();
+
+        matBall.release();
+        threshBall.release();
+        hierarchyBall.release();
+        edgesBall.release();
 
         /**
          * NOTE: to see how to get data from your pipeline to your OpMode as well as how
@@ -205,17 +255,24 @@ public class ObjectCVPipeline extends OpenCvPipeline {
         }
     }
 
-    public boolean ifObjExists() {
+    public boolean frameCount(int frames){
+       return frameCount >= frames;
+    }
+
+    public boolean ifBlockExists() {
 
         // return objLevel;
-        return objExists;
+        return blockExists;
     }
 
-    public void setObject(String obj) {
-        if (obj.equals("Ball")) {
-            isCube = false;
-        } else if (obj.equals("Cube")) {
-            isCube = true;
-        }
+    public boolean ifBallExists(){
+        return ballExists;
     }
+//    public void setObject(String obj) {
+//        if (obj.equals("Ball")) {
+//            isCube = false;
+//        } else if (obj.equals("Cube")) {
+//            isCube = true;
+//        }
+//    }
 }

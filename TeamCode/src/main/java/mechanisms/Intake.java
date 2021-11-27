@@ -9,7 +9,7 @@ public class Intake {
 	public Intake(HardwareMap hardwareMap) {
 		intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		power = 1.25;
+		power = 1.0;
 	}
 
 	public void intakeIn() { // intake

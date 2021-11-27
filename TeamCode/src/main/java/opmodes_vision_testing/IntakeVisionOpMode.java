@@ -1,27 +1,32 @@
-package opmodes_testing;
+package opmodes_vision_testing;
+
+import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import mechanisms.Carousel;
+import mechanisms.Intake;
 import mechanisms.LinearSlide;
 import teamcode.GamepadController;
-
-import teamcode.GamepadController.ToggleButton;
 import teamcode.GamepadController.ButtonState;
+import teamcode.GamepadController.ToggleButton;
+import vision.CVManager;
+import vision.ElementCVPipeline;
+import vision.IntakeCVPipeline;
+import vision.ObjectCVPipeline;
+import vision.RedCVPipeline;
 
 
-@TeleOp(name="Testing: Slide OpMode", group="Testing")
-
-public class LinearSlideOpMode extends OpMode {
+@TeleOp(name="Testing: Intake CV Test", group="Testing")
+public class IntakeVisionOpMode extends OpMode {
     // tag is used in logcat logs (Log.d()) to identify where the log is coming from
     // logcat is basically like System.out.print (standard output) except through adb
-    private static final String TAG = "teamcode.test_opmode"; // put the name of the opmode
+    private static final String TAG = "teamcode.opencv_opmode"; // put the name of the opmode
 
     // put any outside classes you need to use here
+    private GamepadController movementController;
     private GamepadController mechanismController;
-	private LinearSlide linearSlide;
-	private Carousel carousel;
+    private CVManager cvManager;
 
 
     // put any measurements here
@@ -30,15 +35,22 @@ public class LinearSlideOpMode extends OpMode {
     private final double cameraPlatform = 10.5; // random value
     private final double cameraHeight = (cameraPlatform + toCameraCenter) * inchesToMM;
     private static final int fieldLength = 3660; // mm (this is correct)
+    private IntakeCVPipeline pipeline;
+    private Intake intake;
+    private LinearSlide slide;
 
 
 
     // code to run once when driver hits init on phone
     @Override
     public void init() {
-        mechanismController = new GamepadController(gamepad1);
-		linearSlide = new LinearSlide(hardwareMap);
-		carousel = new Carousel(hardwareMap);
+        movementController = new GamepadController(gamepad1);
+        mechanismController = new GamepadController(gamepad2);
+        cvManager = new CVManager(hardwareMap);
+        pipeline = new IntakeCVPipeline(cvManager.getWebcam());
+        cvManager.initializeCamera(pipeline);
+        intake = new Intake(hardwareMap);
+        slide = new LinearSlide(hardwareMap);
     }
 
     // code to loop after init is pressed and before start is pressed
@@ -57,7 +69,21 @@ public class LinearSlideOpMode extends OpMode {
 
         runControls();
 
+        //pipeline.setObject("Ball");
+        telemetry.addData("Block Exists: ", pipeline.ifBlockExists());
+        telemetry.addData("Ball Exists: ", pipeline.ifBallExists());
+        // telemetry.addData("biggestRectCenter", " " + pipeline.biggestRectCenter);
+        if(pipeline.ifBallExists() || pipeline.ifBlockExists() && pipeline.frameCount(5)){
+            intake.stop();
+            if(!slide.tilted){
+                slide.tilt();
+            }
 
+        }
+        else{
+            intake.intakeOut();
+            slide.undump();
+        }
         // update telemetry at the end of the loop
         telemetry.update();
     }
@@ -71,23 +97,13 @@ public class LinearSlideOpMode extends OpMode {
         telemetry.addData("caption", "value");
 
         // button states need to be updated each loop for controls to work
+        movementController.updateButtonStates();
         mechanismController.updateButtonStates();
 
-		if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
-			linearSlide.extend();
-		}
-
-		if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_DOWN) {
-			linearSlide.retract();
-		}
-
-        if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-            linearSlide.stop();
+        // do something when A is pressed
+        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+            Log.d(TAG, "button a pressed");
         }
-
-		if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-			linearSlide.resetEncoder();
-		}
 
     }
 
