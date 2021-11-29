@@ -39,6 +39,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
@@ -49,6 +50,7 @@ import mechanisms.Intake;
 import mechanisms.LinearSlide;
 import vision.CVManager;
 import vision.ElementCVPipeline;
+import vision.IntakeCVPipeline;
 import vision.RedCVPipeline;
 
 /**
@@ -155,7 +157,9 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     private LinearSlide linearSlide;
     private Carousel carousel;
     private ElementCVPipeline pipeline;
+    private IntakeCVPipeline intakePipeline;
     private CVManager cvManager;
+    private CVManager intakeCvManager;
 
     @Override
     public void runOpMode() {
@@ -163,14 +167,19 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap);
         carousel = new Carousel(hardwareMap);
-        cvManager = new CVManager(hardwareMap);
+        cvManager = new CVManager(hardwareMap, "Webcam 1");
+        intakeCvManager = new CVManager(hardwareMap, "Webcam 2");
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
+        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
+        intakeCvManager.initializeCamera(intakePipeline);
         waitForStart();
 
         if (opModeIsActive()) {
             telemetry.addData("Level found", pipeline.getObjLevel());
             int objLevel = pipeline.getObjLevel();
+            ElapsedTime rtime = new ElapsedTime();
+            rtime.reset();
 
 //            driveControl.moveXDist(-28, 0.5);
 //            driveControl.moveYDist(80, 1);
@@ -188,20 +197,52 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             }
             sleep(3000);
             linearSlide.dump();
-            sleep(2000);
+            sleep(1000);
             linearSlide.undump();
             sleep(2000);
+            linearSlide.level0();
 
             // carousel spin would go here if our partner isn't doing it
             // we probably wouldn't use this opmode unless partner can do carousel since you have
             // to move all the way to the carousel and then back in order to park
 
-            // maybe we can cycle here?
+            // loop iterates once every cycle
+            while (rtime.time() <= 25000) { // this gives us at least 5 seconds to park
+                driveControl.turnAngle(90 + 20, 0.5);
+                driveControl.moveSideways(13, 1); // go against the wall
+                double inchesMoved = 0;
+                while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
+                    if (driveControl.actionQueue.size() > 0) {
+                        sleep(10);
+                    }
+                    driveControl.moveForward(2.5, 1); // idk if there'll be delay
+                    inchesMoved += 2.5;
+                    if (inchesMoved >= 80) { // couldn't intake anything
+                                                                // so we can just park for the rest
+                        sleep(100000);
+                    }
+                }
+                driveControl.setStraightTarget(0); // idk y but theres no stop method so this'll do
+                intake.intakeOut();
+                driveControl.moveForward(-inchesMoved, 1);
+                while (driveControl.actionQueue.size() > 0) {
+                    sleep(100);
+                }
+                driveControl.moveSideways(-13, 1);
+                driveControl.turnAngle(-(90 + 20), 0.5);
+                linearSlide.level3();
+                sleep(3000);
+                linearSlide.dump();
+                sleep(1000);
+                linearSlide.undump();
+                sleep(2000);
+                linearSlide.level0();
+            }
 
             // park in warehouse
             driveControl.turnAngle(90 + 20, 0.5);
-            driveControl.moveSideways(13, 1);
-            driveControl.moveForward(40, 1);
+            driveControl.moveSideways(13, 1); // go against the wall
+            driveControl.moveForward(40, 1); // drive into warehouse
 
             telemetry.update();
         }

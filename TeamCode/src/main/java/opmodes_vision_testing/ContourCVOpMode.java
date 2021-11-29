@@ -41,7 +41,7 @@ public class ContourCVOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
-        cvManager = new CVManager(hardwareMap);
+        cvManager = new CVManager(hardwareMap, "Webcam 1");
         pipeline = new ObjectCVPipeline(cvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
     }
@@ -63,7 +63,7 @@ public class ContourCVOpMode extends OpMode {
         runControls();
 
         pipeline.setObject("Ball");
-        telemetry.addData("location", pipeline.ifObjExists());
+//        telemetry.addData("location", pipeline.ifObjExists());
         // telemetry.addData("biggestRectCenter", " " + pipeline.biggestRectCenter);
 
         // update telemetry at the end of the loop

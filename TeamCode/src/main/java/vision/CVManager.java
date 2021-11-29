@@ -18,9 +18,9 @@ public class CVManager {
      * The webcam gets a viewport, so the camera stream is displayed on the robot.
      * @param hardwareMap the hardware map
      */
-    public CVManager(HardwareMap hardwareMap) {
+    public CVManager(HardwareMap hardwareMap, String webcamName) {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
     }
 
     /**

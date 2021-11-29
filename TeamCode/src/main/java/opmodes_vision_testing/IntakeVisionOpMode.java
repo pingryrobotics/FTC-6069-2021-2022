@@ -46,7 +46,7 @@ public class IntakeVisionOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
-        cvManager = new CVManager(hardwareMap);
+        cvManager = new CVManager(hardwareMap, "Webcam 1");
         pipeline = new IntakeCVPipeline(cvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         intake = new Intake(hardwareMap);

@@ -34,7 +34,7 @@ public class DriveControl {
 
 
     private DriveAction currentAction;
-    private final Queue<DriveAction> actionQueue;
+    public final Queue<DriveAction> actionQueue;
 
 
 

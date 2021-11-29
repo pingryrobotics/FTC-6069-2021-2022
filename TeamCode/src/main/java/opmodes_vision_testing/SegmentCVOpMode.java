@@ -38,7 +38,7 @@ public class SegmentCVOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
-        cvManager = new CVManager(hardwareMap);
+        cvManager = new CVManager(hardwareMap, "Webcam 1");
         cvManager.initializeCamera(new ColorPipeline(cvManager.getWebcam()));
     }
 
