@@ -185,8 +185,14 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //            driveControl.moveYDist(80, 1);
 
             // move to linear slide and put square on level
-            driveControl.moveForward(20, 1); // change
-            driveControl.turnAngle(-20, 1); // change
+            driveControl.moveForward(26, 1); // change
+            int firstAngle = 75;
+            driveControl.turnAngle(-firstAngle, 1); // change
+            driveControl.moveForward(2, 1);
+            while (driveControl.actionQueue.size() > 0) {
+                driveControl.updateAutoAction();
+                sleep(100);
+            }
 
             if (objLevel == 0) {
                 linearSlide.level1();
@@ -208,17 +214,25 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
             // loop iterates once every cycle
             while (rtime.time() <= 25000) { // this gives us at least 5 seconds to park
-                driveControl.turnAngle(90 + 20, 0.5);
-                driveControl.moveSideways(13, 1); // go against the wall
+                driveControl.moveForward(-2, 1);
+                driveControl.turnAngle(90 + firstAngle, 0.5);
+                driveControl.moveSideways(26, 1); // go against the wall
+                while (driveControl.actionQueue.size() > 0) {
+                    driveControl.updateAutoAction();
+                    sleep(100);
+                }
                 double inchesMoved = 0;
+                intake.intakeIn();
                 while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
                     if (driveControl.actionQueue.size() > 0) {
+                        driveControl.updateAutoAction();
                         sleep(10);
+                        continue;
                     }
                     driveControl.moveForward(2.5, 1); // idk if there'll be delay
                     inchesMoved += 2.5;
                     if (inchesMoved >= 80) { // couldn't intake anything
-                                                                // so we can just park for the rest
+                                             // so we can just park for the rest
                         sleep(100000);
                     }
                 }
@@ -226,12 +240,17 @@ public class AutoRedWarehouseSide extends LinearOpMode {
                 intake.intakeOut();
                 driveControl.moveForward(-inchesMoved, 1);
                 while (driveControl.actionQueue.size() > 0) {
+                    driveControl.updateAutoAction();
                     sleep(100);
                 }
-                driveControl.moveSideways(-13, 1);
-                driveControl.turnAngle(-(90 + 20), 0.5);
-                linearSlide.level3();
-                sleep(3000);
+                intake.stop();
+                driveControl.moveSideways(-26, 1);
+                driveControl.turnAngle(-(90 + firstAngle), 0.5);
+                driveControl.moveForward(2, 0.5);
+                while (driveControl.actionQueue.size() > 0) {
+                    driveControl.updateAutoAction();
+                    sleep(100);
+                }
                 linearSlide.dump();
                 sleep(1000);
                 linearSlide.undump();
@@ -240,9 +259,13 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             }
 
             // park in warehouse
-            driveControl.turnAngle(90 + 20, 0.5);
-            driveControl.moveSideways(13, 1); // go against the wall
+            driveControl.turnAngle(90 + firstAngle, 0.5);
+            driveControl.moveSideways(26, 1); // go against the wall
             driveControl.moveForward(40, 1); // drive into warehouse
+            while (driveControl.actionQueue.size() > 0) {
+                driveControl.updateAutoAction();
+                sleep(100);
+            }
 
             telemetry.update();
         }
