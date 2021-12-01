@@ -2,6 +2,7 @@ package opmodes_testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import mechanisms.Carousel;
 import mechanisms.LinearSlide;
@@ -73,21 +74,42 @@ public class LinearSlideOpMode extends OpMode {
         // button states need to be updated each loop for controls to work
         mechanismController.updateButtonStates();
 
-		if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
-			linearSlide.extend();
-		}
+        // right bumper: linearslide extends while pressed
+        if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
+            linearSlide.extend();
+        } else if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_UP) {
+            linearSlide.stop();
+        }
 
-		if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_DOWN) {
-			linearSlide.retract();
-		}
+        // left bumper: linearslide retracts while pressed
+        if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_DOWN) {
+            linearSlide.retract();
+        } else if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_UP) {
+            linearSlide.stop();
+        }
 
         if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
             linearSlide.stop();
         }
 
 		if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-			linearSlide.resetEncoder();
+            DcMotor slideMotor = linearSlide.getSlideMotor();
+            slideMotor.setTargetPosition(0);
+            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slideMotor.setPower(.3);
 		}
+
+
+        if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+            DcMotor slideMotor = linearSlide.getSlideMotor();
+            slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slideMotor.setTargetPosition(300);
+            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slideMotor.setPower(.3);
+        }
+
+
+
 
     }
 

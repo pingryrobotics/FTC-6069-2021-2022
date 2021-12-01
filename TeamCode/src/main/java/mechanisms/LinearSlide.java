@@ -35,9 +35,10 @@ public class LinearSlide {
         bucketServo.scaleRange(0.15, 0.55);
         //bucketServo.setPosition(0);
 
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        slideMotor.setPower(1);
+//        slideMotor.setPower(1);
         power = 1;
         level = 0;
     }
@@ -178,5 +179,9 @@ public class LinearSlide {
 
     public void setPosition(double position) {
         bucketServo.setPosition(position);
+    }
+
+    public DcMotor getSlideMotor() {
+        return slideMotor;
     }
 }
