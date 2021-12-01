@@ -21,9 +21,9 @@ public class LinearSlide {
     private final Servo bucketServo;
     public double power;
     private int level;
-    private final int level2To3 = 3000;
-    private final int level1To2 = 3000;
-    private final int level0To1 = 5000;
+    private final int level2To3 = 410;
+    private final int level1To2 = 590;
+    private final int level0To1 = 0;
     public boolean tilted = false;
 
     public LinearSlide(HardwareMap hardwareMap) {

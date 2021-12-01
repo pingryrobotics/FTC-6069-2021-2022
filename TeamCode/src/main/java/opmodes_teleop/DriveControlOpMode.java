@@ -166,9 +166,20 @@ public class DriveControlOpMode extends OpMode {
 		}
 
 		// dpad left: linearslide goes to second level
-		if (mechanismController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
+		if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
 			linearSlide.level3();
 		}
+
+		if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
+			linearSlide.level2();
+		}
+		if (movementController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
+			linearSlide.level1();
+		}
+
+
+
+
 
 		// dpad up: linearslide goes to third level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
