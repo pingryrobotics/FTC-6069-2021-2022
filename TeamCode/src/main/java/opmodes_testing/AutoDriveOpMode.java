@@ -96,39 +96,39 @@ public class AutoDriveOpMode extends OpMode {
 
         // do something when A is pressed
 //        if (movementController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
-//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.WAIT, 1000, .5));
+//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveOption.WAIT, 1000, .5));
 //        }
 //
 //        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
-//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.WAIT, 2000, .5));
+//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveOption.WAIT, 2000, .5));
 //        }
 //
 //        if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.TURN, -90, .5));
+//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveOption.TURN, -90, .5));
 //        }
 //
 //        if (movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.TURN, 90, .5));
+//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveOption.TURN, 90, .5));
 //        }
 //
 //        if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
 //            driveControl.addAutoAction(new DriveControl.DriveAction(
-//                    DriveControl.DriveType.FORWARD, 12, .5));
+//                    DriveControl.DriveOption.FORWARD, 12, .5));
 //        }
 //
 //        if (movementController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
 //            driveControl.addAutoAction(new DriveControl.DriveAction(
-//                    DriveControl.DriveType.FORWARD, -12, .5));
+//                    DriveControl.DriveOption.FORWARD, -12, .5));
 //        }
 //
 //        if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
 //            driveControl.addAutoAction(new DriveControl.DriveAction(
-//                    DriveControl.DriveType.STRAFE, -12, .5));
+//                    DriveControl.DriveOption.STRAFE, -12, .5));
 //        }
 //
 //        if (movementController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
 //            driveControl.addAutoAction(new DriveControl.DriveAction(
-//                    DriveControl.DriveType.STRAFE, 12, .5));
+//                    DriveControl.DriveOption.STRAFE, 12, .5));
 //        }
 
 

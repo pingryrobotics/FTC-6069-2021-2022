@@ -7,9 +7,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 
 /**
  * Class for controlling drive motors
@@ -372,10 +369,10 @@ public class DriveControl implements QueueableMechanism {
 //            telemetry.addData("Drive type", "null");
 //            return;
 //        }
-//        telemetry.addData("current action", currentAction.driveType);
+//        telemetry.addData("current action", currentAction.driveOption);
 //
 //        boolean finished = false;
-//        switch (currentAction.driveType) {
+//        switch (currentAction.driveOption) {
 //            case FORWARD:
 //            case STRAFE:
 //                finished = !isRunningToPosition();
@@ -402,7 +399,7 @@ public class DriveControl implements QueueableMechanism {
 //    public void beginAction() {
 //        if (currentAction == null)
 //            return;
-//        switch (currentAction.driveType) {
+//        switch (currentAction.driveOption) {
 //            case FORWARD:
 //                moveYDist(currentAction.targetIncrement, currentAction.percentSpeed);
 //                break;
@@ -428,7 +425,7 @@ public class DriveControl implements QueueableMechanism {
      * @return the DriveAction for a forward movement
      */
     public DriveAction getForwardAction(double incrementInches, double percentSpeed) {
-        return new DriveAction(DriveAction.DriveType.FORWARD, incrementInches, percentSpeed, this);
+        return new DriveAction(DriveAction.DriveOption.FORWARD, incrementInches, percentSpeed, this);
     }
 
     /**
@@ -438,7 +435,7 @@ public class DriveControl implements QueueableMechanism {
      * @return the DriveAction for a strafe movement
      */
     public DriveAction getStrafeAction(double incrementInches, double percentSpeed) {
-        return new DriveAction(DriveAction.DriveType.STRAFE, incrementInches, percentSpeed, this);
+        return new DriveAction(DriveAction.DriveOption.STRAFE, incrementInches, percentSpeed, this);
     }
 
     /**
@@ -450,7 +447,7 @@ public class DriveControl implements QueueableMechanism {
      * @return the DriveAction for a turn movement
      */
     public DriveAction getTurnAction(double incrementAngle, double percentSpeed) {
-        return new DriveAction(DriveAction.DriveType.TURN, incrementAngle, percentSpeed, this);
+        return new DriveAction(DriveAction.DriveOption.TURN, incrementAngle, percentSpeed, this);
     }
 
     /**
@@ -459,25 +456,25 @@ public class DriveControl implements QueueableMechanism {
     public static class DriveAction extends AutoQueue.AutoAction {
         private final double percentSpeed;
         private final double targetIncrement;
-        private final DriveType driveType;
+        private final DriveOption driveOption;
         private double targetPosition;
         private DriveControl driveControl;
 
         /**
          * Create a DriveAction to be queued for execution by DriveControl
-         * @param driveType the type of action to perform
-         * @param targetIncrement the increment to add to the current position. If the driveType is:
+         * @param driveOption the type of action to perform
+         * @param targetIncrement the increment to add to the current position. If the driveOption is:
          *                        FORWARD/STRAFE: the increment is in inches
          *                        TURN: the increment is an imu angle within the range of [-180,180], and values
          *                       outside this range will be wrapped to this range.
          * @param percentSpeed the percent of the motors maximum speed to run at [0,1]
          */
-        public DriveAction(DriveType driveType, double targetIncrement, double percentSpeed, DriveControl driveControl) {
+        public DriveAction(DriveOption driveOption, double targetIncrement, double percentSpeed, DriveControl driveControl) {
             this.driveControl = driveControl;
-            this.driveType = driveType;
+            this.driveOption = driveOption;
             this.percentSpeed = percentSpeed;
 
-            if (driveType == DriveType.TURN) {
+            if (driveOption == DriveOption.TURN) {
                 // negative wrapped because its added to the target position in setTargetPosition,
                 // so it needs to be negative
                 this.targetIncrement = -wrapAngle(targetIncrement);
@@ -492,7 +489,7 @@ public class DriveControl implements QueueableMechanism {
          * Begin the auto action by performing different actions depending on which action needs to be started.
          */
         public void beginAutoAction() {
-            switch (driveType) {
+            switch (driveOption) {
                 case FORWARD:
                     driveControl.moveYDist(targetIncrement, percentSpeed);
                     break;
@@ -511,13 +508,13 @@ public class DriveControl implements QueueableMechanism {
         }
 
         /**
-         * Update the auto action depending on the driveType
+         * Update the auto action depending on the driveOption
          * @return true if the action was completed, false otherwise
          */
         public boolean updateAutoAction() {
 
             boolean finished = false;
-            switch (driveType) {
+            switch (driveOption) {
                 case FORWARD:
                 case STRAFE:
                     finished = !driveControl.isRunningToPosition();
@@ -551,7 +548,7 @@ public class DriveControl implements QueueableMechanism {
         /**
          * An enum of drive types for drive control to execute autonomously
          */
-        public enum DriveType {
+        public enum DriveOption {
             FORWARD,
             STRAFE,
             TURN,

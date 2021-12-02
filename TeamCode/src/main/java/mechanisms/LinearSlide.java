@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo; //only if we need the additional feeder.
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.util.Queue;
+
 public class LinearSlide {
     // SKU: 5202-0002-0014
     // 384.5 PPR encoder resolution
@@ -21,9 +23,9 @@ public class LinearSlide {
     private final Servo bucketServo;
     public double power;
     private int level;
-    private final int level2To3 = 410;
-    private final int level1To2 = 590;
-    private final int level0To1 = 0;
+    private final int LEVEL_3 = 1000;
+    private final int LEVEL_2 = 590;
+    private final int LEVEL_1 = 0;
     public boolean tilted = false;
 
     public LinearSlide(HardwareMap hardwareMap) {
@@ -44,96 +46,15 @@ public class LinearSlide {
     }
 
     public void level1() { // extend linear slide to level appropriate for the bottom level of shipping hub
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        if(level == 0) {
-            slideMotor.setTargetPosition(level0To1);
-        }
-
-        else if(level == 2){
-            slideMotor.setTargetPosition(-level1To2);
-        }
-
-        else if(level == 3){
-            slideMotor.setTargetPosition(-(level1To2 + level2To3));
-        }
-
-        else {
-            slideMotor.setTargetPosition(0);
-        }
-
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        level = 1;
-        // i have no idea what it should be this is an estimate tho
+        slideMotor.setTargetPosition(LEVEL_1);
     }
 
     public void level2() { // extend linear slide to level appropriate for the middle level of shipping hub
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        if(level == 0) {
-            slideMotor.setTargetPosition(level0To1 + level1To2);
-        }
-
-        else if(level == 1){
-            slideMotor.setTargetPosition(level1To2);
-        }
-
-        else if(level == 3){
-            slideMotor.setTargetPosition(-level2To3);
-        }
-
-        else {
-            slideMotor.setTargetPosition(0);
-        }
-
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        level = 2;
+        slideMotor.setTargetPosition(LEVEL_2);
     }
 
     public void level3() { // extend linear slide to level appropriate for the top level of shipping hub
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        if(level == 0) {
-//            slideMotor.setTargetPosition(level1To2 + level2To3 + level0To1);
-//        }
-//
-//        else if(level == 1){
-//            slideMotor.setTargetPosition(level1To2 + level2To3);
-//        }
-//
-//        else if(level == 2){
-//            slideMotor.setTargetPosition(level2To3);
-//        }
-//
-//        else {
-//            slideMotor.setTargetPosition(0);
-//        }
-        slideMotor.setTargetPosition(30000);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setPower(1);
-        level = 3;
-    }
-
-    public void level0(){
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        if(level == 1) {
-            slideMotor.setTargetPosition(-level0To1);
-        }
-
-        else if(level == 2){
-            slideMotor.setTargetPosition(-(level0To1 + level1To2));
-        }
-
-        else if(level == 3){
-            slideMotor.setTargetPosition(-(level0To1 + level1To2 + level2To3));
-        }
-
-        else {
-            slideMotor.setTargetPosition(0);
-        }
-
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        level = 0;
+        slideMotor.setTargetPosition(LEVEL_3);
     }
 
     /**
@@ -214,4 +135,58 @@ public class LinearSlide {
     public DcMotor getSlideMotor() {
         return slideMotor;
     }
+
+
+    public static class SlideAction extends AutoQueue.AutoAction {
+
+        private SlideOption slideOption;
+        private LinearSlide linearSlide;
+        private double targetPosition;
+
+        public SlideAction(SlideOption slideOption, LinearSlide linearSlide) {
+            this.slideOption = slideOption;
+            this.linearSlide = linearSlide;
+        }
+
+        public SlideAction(SlideOption slideOption, LinearSlide linearSlide, double targetPosition) {
+            this.slideOption = slideOption;
+            this.linearSlide = linearSlide;
+            this.targetPosition = targetPosition;
+        }
+
+        @Override
+        public void beginAutoAction() {
+            switch (slideOption) {
+                case CALIBRATE_SLIDES:
+                    break;
+                case LEVEL_1:
+                    linearSlide.level1();
+                    break;
+                case LEVEL_2:
+                    linearSlide.level2();
+                    break;
+                case LEVEL_3:
+                    linearSlide.level2();
+                    break;
+                case TILT_BUCKET:
+                    linearSlide.setPosition(targetPosition);
+                    break;
+            }
+        }
+
+        @Override
+        public boolean updateAutoAction() {
+            return false;
+        }
+
+
+        public enum SlideOption {
+            CALIBRATE_SLIDES,
+            LEVEL_1,
+            LEVEL_2,
+            LEVEL_3,
+            TILT_BUCKET
+        }
+    }
+
 }

@@ -1,9 +1,5 @@
 package opmodes_testing;
 
-import static mechanisms.DriveControl.DriveAction.DriveType;
-
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,7 +7,6 @@ import mechanisms.AutoQueue;
 import mechanisms.DriveControl;
 import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
-import teamcode.GamepadController.FloatButton;
 import teamcode.GamepadController.ToggleButton;
 
 

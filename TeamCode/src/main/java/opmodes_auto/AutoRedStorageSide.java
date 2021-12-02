@@ -36,7 +36,6 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -51,7 +50,6 @@ import mechanisms.LinearSlide;
 import vision.CVManager;
 import vision.ElementCVPipeline;
 import vision.IntakeCVPipeline;
-import vision.RedCVPipeline;
 
 /**
  * TODO:
@@ -190,7 +188,7 @@ public class AutoRedStorageSide extends LinearOpMode {
             driveControl.turnAngle(firstAngle, 1); // change
             driveControl.moveForward(2, 1);
             while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAutoAction();
+                driveControl.updateAction();
                 sleep(100);
             }
 
@@ -217,7 +215,7 @@ public class AutoRedStorageSide extends LinearOpMode {
             driveControl.turnAngle(-200, 0.5);
             driveControl.moveForward(27, 1);
             while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAutoAction();
+                driveControl.updateAction();
                 sleep(100);
             }
             carousel.reverseSpin();
@@ -230,14 +228,14 @@ public class AutoRedStorageSide extends LinearOpMode {
             driveControl.turnAngle(215, 0.5);
             driveControl.moveForward(100, 1); // drive into warehouse over bars
             while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAutoAction();
+                driveControl.updateAction();
                 sleep(100);
             }
 
             telemetry.update();
         }
         while (opModeIsActive()) {
-            driveControl.updateAutoAction();
+            driveControl.updateAction();
             telemetry.update();
             sleep(100);
         }
