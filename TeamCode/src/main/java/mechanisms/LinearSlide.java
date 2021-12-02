@@ -1,4 +1,6 @@
 package mechanisms;
+import android.transition.Slide;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo; //only if we need the additional feeder.
@@ -136,29 +138,40 @@ public class LinearSlide {
         return slideMotor;
     }
 
+    /**
+     * Convenience method to get a slide action that moves the slide to the specified level
+     * @param slideOption the slideoption to add
+     * @return the slide action
+     */
+    public SlideAction getLevelAction(SlideAction.SlideOption slideOption) {
+        return new SlideAction(slideOption, this);
+    }
 
+
+    /**
+     * Class for linear slide actions
+     */
     public static class SlideAction extends AutoQueue.AutoAction {
 
         private SlideOption slideOption;
         private LinearSlide linearSlide;
-        private double targetPosition;
 
+        /**
+         * Create a slide action to be executed autonomously
+         * @param slideOption the slide option to go to
+         * @param linearSlide the linear slide to use
+         */
         public SlideAction(SlideOption slideOption, LinearSlide linearSlide) {
             this.slideOption = slideOption;
             this.linearSlide = linearSlide;
         }
 
-        public SlideAction(SlideOption slideOption, LinearSlide linearSlide, double targetPosition) {
-            this.slideOption = slideOption;
-            this.linearSlide = linearSlide;
-            this.targetPosition = targetPosition;
-        }
-
+        /**
+         * Begin the autonomous action
+         */
         @Override
         public void beginAutoAction() {
             switch (slideOption) {
-                case CALIBRATE_SLIDES:
-                    break;
                 case LEVEL_1:
                     linearSlide.level1();
                     break;
@@ -166,26 +179,33 @@ public class LinearSlide {
                     linearSlide.level2();
                     break;
                 case LEVEL_3:
-                    linearSlide.level2();
-                    break;
-                case TILT_BUCKET:
-                    linearSlide.setPosition(targetPosition);
+                    linearSlide.level3();
                     break;
             }
         }
 
+        /**
+         * Update the action. This needs to be called each loop
+         * @return true if the action has finished, otherwise false
+         */
         @Override
         public boolean updateAutoAction() {
-            return false;
+            boolean finished = false;
+            switch (slideOption) {
+                case LEVEL_1:
+                case LEVEL_2:
+                case LEVEL_3:
+                    finished = !linearSlide.getSlideMotor().isBusy();
+                    break;
+            }
+            return finished;
         }
 
 
         public enum SlideOption {
-            CALIBRATE_SLIDES,
             LEVEL_1,
             LEVEL_2,
             LEVEL_3,
-            TILT_BUCKET
         }
     }
 
