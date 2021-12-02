@@ -184,6 +184,8 @@ public class LinearSlide {
                 case LEVEL_3:
                     linearSlide.level3();
                     break;
+                case CALIBRATE:
+                    linearSlide.calibrateSlide();
             }
         }
 
@@ -198,6 +200,7 @@ public class LinearSlide {
                 case LEVEL_1:
                 case LEVEL_2:
                 case LEVEL_3:
+                case CALIBRATE:
                     finished = !linearSlide.getSlideMotor().isBusy();
                     break;
             }
@@ -209,6 +212,7 @@ public class LinearSlide {
             LEVEL_1,
             LEVEL_2,
             LEVEL_3,
+            CALIBRATE
         }
     }
 

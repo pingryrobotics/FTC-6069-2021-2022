@@ -47,6 +47,8 @@ import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
+import mechanisms.AutoQueue;
+import mechanisms.LinearSlide.SlideAction.SlideOption;
 import vision.CVManager;
 import vision.ElementCVPipeline;
 import vision.IntakeCVPipeline;
@@ -158,6 +160,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     private IntakeCVPipeline intakePipeline;
     private CVManager cvManager;
     private CVManager intakeCvManager;
+    private AutoQueue autoQueue;
 
     @Override
     public void runOpMode() {
@@ -175,6 +178,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
         if (opModeIsActive()) {
             telemetry.addData("Level found", pipeline.getObjLevel());
+            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.CALIBRATE));
             int objLevel = pipeline.getObjLevel();
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
@@ -183,28 +187,32 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //            driveControl.moveYDist(80, 1);
 
             // move to linear slide and put square on level
-            driveControl.moveForward(26, 1); // change
+            autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
             int firstAngle = 75;
-            driveControl.turnAngle(-firstAngle, 1); // change
-            driveControl.moveForward(2, 1);
-            while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAction();
-                sleep(100);
-            }
+            autoQueue.addAutoAction(driveControl.getTurnAction(-firstAngle, 0.5));
+            autoQueue.addAutoAction(driveControl.getForwardAction(2, 1));
 
             if (objLevel == 0) {
-                linearSlide.level1();
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
-                linearSlide.level2();
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2){
-                linearSlide.level3();
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
-            sleep(3000);
+
+
+            while (autoQueue.updateQueue()) {
+                sleep(100);
+            }
             linearSlide.dump();
             sleep(1000);
             linearSlide.undump();
-            sleep(2000);
-            linearSlide.level0();
+            sleep(1000);
+            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+
+            while (autoQueue.updateQueue()) {
+                sleep(100);
+            }
 
             // carousel spin would go here if our partner isn't doing it
             // we probably wouldn't use this opmode unless partner can do carousel since you have
@@ -212,63 +220,54 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
             // loop iterates once every cycle
             while (rtime.time() <= 25000) { // this gives us at least 5 seconds to park
-                driveControl.moveForward(-2, 1);
-                driveControl.turnAngle(90 + firstAngle, 0.5);
-                driveControl.moveSideways(26, 1); // go against the wall
-                while (driveControl.actionQueue.size() > 0) {
-                    driveControl.updateAction();
+                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+                autoQueue.addAutoAction(driveControl.getTurnAction(-(90 - firstAngle), 0.5));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(-26, 1));
+                while (autoQueue.updateQueue()) {
                     sleep(100);
                 }
                 double inchesMoved = 0;
                 intake.intakeIn();
                 while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
-                    if (driveControl.actionQueue.size() > 0) {
-                        driveControl.updateAction();
+                    while (autoQueue.updateQueue()) {
                         sleep(10);
-                        continue;
                     }
-                    driveControl.moveForward(2.5, 1); // idk if there'll be delay
-                    inchesMoved += 2.5;
+                    autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+                    inchesMoved += 2;
                     if (inchesMoved >= 80) { // couldn't intake anything
                                              // so we can just park for the rest
                         sleep(100000);
                     }
                 }
-                driveControl.setStraightTarget(0); // idk y but theres no stop method so this'll do
                 intake.intakeOut();
-                driveControl.moveForward(-inchesMoved, 1);
-                while (driveControl.actionQueue.size() > 0) {
-                    driveControl.updateAction();
+                autoQueue.addAutoAction(driveControl.getForwardAction(inchesMoved, 1));
+                while (autoQueue.updateQueue()) {
                     sleep(100);
                 }
                 intake.stop();
-                driveControl.moveSideways(-26, 1);
-                driveControl.turnAngle(-(90 + firstAngle), 0.5);
-                driveControl.moveForward(2, 0.5);
-                while (driveControl.actionQueue.size() > 0) {
-                    driveControl.updateAction();
-                    sleep(100);
-                }
+                autoQueue.addAutoAction(driveControl.getStrafeAction(26, 1));
+                autoQueue.addAutoAction(driveControl.getTurnAction(90 - firstAngle, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(2, 1));
                 linearSlide.dump();
                 sleep(1000);
                 linearSlide.undump();
-                sleep(2000);
-                linearSlide.level0();
+                sleep(1000);
+                while (autoQueue.updateQueue()) {
+                    sleep(100);
+                }
             }
 
             // park in warehouse
-            driveControl.turnAngle(90 + firstAngle, 0.5);
-            driveControl.moveSideways(26, 1); // go against the wall
-            driveControl.moveForward(40, 1); // drive into warehouse
-            while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAction();
+            autoQueue.addAutoAction(driveControl.getTurnAction(-(90 - firstAngle), 0.5));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-26, 1)); // go against wall
+            autoQueue.addAutoAction(driveControl.getForwardAction(-40, 1)); // drive into warehouse
+            while (autoQueue.updateQueue()) {
                 sleep(100);
             }
-
             telemetry.update();
         }
         while (opModeIsActive()) {
-            driveControl.updateAction();
+            autoQueue.updateQueue();
             telemetry.update();
             sleep(100);
         }

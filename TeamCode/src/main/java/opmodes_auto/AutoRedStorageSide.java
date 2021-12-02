@@ -47,6 +47,8 @@ import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
+import mechanisms.AutoQueue;
+import mechanisms.LinearSlide.SlideAction.SlideOption;
 import vision.CVManager;
 import vision.ElementCVPipeline;
 import vision.IntakeCVPipeline;
@@ -158,6 +160,7 @@ public class AutoRedStorageSide extends LinearOpMode {
     private IntakeCVPipeline intakePipeline;
     private CVManager cvManager;
     private CVManager intakeCvManager;
+    private AutoQueue autoQueue;
 
     @Override
     public void runOpMode() {
@@ -183,39 +186,41 @@ public class AutoRedStorageSide extends LinearOpMode {
 //            driveControl.moveYDist(80, 1);
 
             // move to linear slide and put square on level
-            driveControl.moveForward(26, 1); // change
+            autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
             int firstAngle = 75;
-            driveControl.turnAngle(firstAngle, 1); // change
-            driveControl.moveForward(2, 1);
-            while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAction();
+            autoQueue.addAutoAction(driveControl.getTurnAction(firstAngle, 0.5));
+            autoQueue.addAutoAction(driveControl.getForwardAction(2, 1));
+
+            if (objLevel == 0) {
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+            } else if (objLevel == 1) {
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
+            } else if (objLevel == 2){
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
+            }
+
+            while (autoQueue.updateQueue()) {
                 sleep(100);
             }
 
-            if (objLevel == 0) {
-                linearSlide.level1();
-            } else if (objLevel == 1) {
-                linearSlide.level2();
-            } else if (objLevel == 2){
-                linearSlide.level3();
-            }
-            sleep(3000);
             linearSlide.dump();
             sleep(1000);
             linearSlide.undump();
-            sleep(2000);
-            linearSlide.level0();
-            sleep(5000);
+            sleep(1000);
+            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+
+            while (autoQueue.updateQueue()) {
+                sleep(100);
+            }
 
             // carousel spin would go here if our partner isn't doing it
             // we probably wouldn't use this opmode unless partner can do carousel since you have
             // to move all the way to the carousel and then back in order to park
 
-            driveControl.moveForward(-2, 1);
-            driveControl.turnAngle(-200, 0.5);
-            driveControl.moveForward(27, 1);
-            while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAction();
+            autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+            autoQueue.addAutoAction(driveControl.getTurnAction(-10, 0.5));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-27, 1));
+            while (autoQueue.updateQueue()) {
                 sleep(100);
             }
             carousel.reverseSpin();
@@ -224,18 +229,17 @@ public class AutoRedStorageSide extends LinearOpMode {
             sleep(5000);
 
             // park in warehouse
-            driveControl.moveForward(-10, 0.5);
-            driveControl.turnAngle(215, 0.5);
-            driveControl.moveForward(100, 1); // drive into warehouse over bars
-            while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAction();
+            autoQueue.addAutoAction(driveControl.getForwardAction(-10, 1));
+            autoQueue.addAutoAction(driveControl.getTurnAction(25, 0.5));
+            autoQueue.addAutoAction(driveControl.getForwardAction(100, 1));
+            while (autoQueue.updateQueue()) {
                 sleep(100);
             }
 
             telemetry.update();
         }
         while (opModeIsActive()) {
-            driveControl.updateAction();
+            autoQueue.updateQueue();
             telemetry.update();
             sleep(100);
         }
