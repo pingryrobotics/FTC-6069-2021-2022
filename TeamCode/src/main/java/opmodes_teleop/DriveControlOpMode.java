@@ -33,6 +33,8 @@ public class DriveControlOpMode extends OpMode {
 	private int direc = 1;
 	private int offsetAngle;
 	private double servoPos = 1;
+	private int direction = 1;
+	private int factor = 1;
 
 
     // code to run once when driver hits init on phone
@@ -82,15 +84,15 @@ public class DriveControlOpMode extends OpMode {
 		mechanismController.updateButtonStates();
 
 		// polarmove calculations
-		double leftStickX = movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_X);
-		double leftStickY = movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_Y);
-		double rightStickX = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_X);
-		double rightStickY = movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_Y);
+		double leftStickX = direction * movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_X);
+		double leftStickY = direction * movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_Y);
+		double rightStickX = direction * movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_X);
+		double rightStickY = direction * movementController.getButtonState(GamepadController.FloatButton.RIGHT_STICK_Y);
 
 //		double theta = Math.atan2(-leftStickY, leftStickX) - Math.PI/4; // go back to subtracting 90?
 		double theta = Math.atan2(-leftStickY, leftStickX) - Math.PI/2; // go back to subtracting 90?
-		double magnitude = Math.sqrt(Math.pow(leftStickX, 2) + Math.pow(leftStickY, 2));
-		double turn = Range.clip(gamepad1.right_stick_x, -1, 1);
+		double magnitude = Math.sqrt(Math.pow(leftStickX, 2) + Math.pow(leftStickY, 2)) /factor ;
+		double turn = Range.clip(gamepad1.right_stick_x, -1, 1)/factor;
 
 		driveControl.drive(theta, magnitude, turn);
 
@@ -178,7 +180,25 @@ public class DriveControlOpMode extends OpMode {
 		}
 
 
+		if(movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN){
+			if(direction == 1){
+				direction = -1;
+			}
 
+			else{
+				direction = 1;
+			}
+		}
+
+		if(movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN){
+			if(factor == 1){
+				factor = 2;
+			}
+
+			else{
+				factor = 1;
+			}
+		}
 
 
 		// dpad up: linearslide goes to third level
@@ -217,6 +237,9 @@ public class DriveControlOpMode extends OpMode {
 			carousel.stop();
 		}
 
+		if(){
+
+		}
     }
 
 
