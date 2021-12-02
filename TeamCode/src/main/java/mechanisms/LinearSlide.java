@@ -49,14 +49,17 @@ public class LinearSlide {
 
     public void level1() { // extend linear slide to level appropriate for the bottom level of shipping hub
         slideMotor.setTargetPosition(LEVEL_1);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void level2() { // extend linear slide to level appropriate for the middle level of shipping hub
         slideMotor.setTargetPosition(LEVEL_2);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void level3() { // extend linear slide to level appropriate for the top level of shipping hub
         slideMotor.setTargetPosition(LEVEL_3);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     /**
