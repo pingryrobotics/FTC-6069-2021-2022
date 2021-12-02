@@ -183,10 +183,10 @@ public class DriveControlOpMode extends OpMode {
 
 		// dpad up: linearslide goes to third level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
-			if (servoPos >= .4)
+			if (servoPos >= 0)
 				servoPos -= .05;
 			else
-				servoPos = 0.4;
+				servoPos = 0;
 			linearSlide.setPosition(servoPos);
 		}
 

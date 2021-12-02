@@ -136,6 +136,36 @@ public class LinearSlide {
         level = 0;
     }
 
+    /**
+     * Bring the slide to the lowest possible position, set the encoders to 0, and hold at that position.
+     * WARNING: THIS METHOD BRINGS THE SLIDE ALL THE WAY DOWN. This SHOULD be limited by the bar
+     * below the bucket, but if this isn't there, this will DESTROY THE SLIDE.
+     *
+     * Also, this method likely takes a few seconds to run.
+     */
+    public void calibrateSlide() {
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setPower(.4);
+
+        double previousPosition = slideMotor.getCurrentPosition();
+        int count = 0;
+
+        while (count < 20) {
+            if (previousPosition - slideMotor.getCurrentPosition() < 10) {
+                count++;
+            } else {
+                count = 0;
+            }
+            previousPosition = slideMotor.getCurrentPosition();
+        }
+
+        slideMotor.setTargetPosition(slideMotor.getCurrentPosition());
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setTargetPosition(0);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
     public void extend() { // continuously extend linear slide
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotor.setPower(-power);

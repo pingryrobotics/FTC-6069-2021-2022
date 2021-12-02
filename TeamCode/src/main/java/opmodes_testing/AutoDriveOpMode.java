@@ -1,21 +1,12 @@
 package opmodes_testing;
 
-import android.util.Log;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 import mechanisms.DriveControl;
 import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
-import teamcode.GamepadController.FloatButton;
 import teamcode.GamepadController.ToggleButton;
 
 
@@ -88,7 +79,7 @@ public class AutoDriveOpMode extends OpMode {
         // button states need to be updated each loop for controls to work
         movementController.updateButtonStates();
         mechanismController.updateButtonStates();
-        driveControl.updateAutoAction();
+//        driveControl.updateAction();
 //
 //        double leftStickX = movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_X);
 //        double leftStickY = movementController.getButtonState(GamepadController.FloatButton.LEFT_STICK_Y);
@@ -104,41 +95,41 @@ public class AutoDriveOpMode extends OpMode {
         telemetry.addData("gyro angle", imu.getAngularOrientation());
 
         // do something when A is pressed
-        if (movementController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
-            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.WAIT, 1000, .5));
-        }
-
-        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
-            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.WAIT, 2000, .5));
-        }
-
-        if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.TURN, -90, .5));
-        }
-
-        if (movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.TURN, 90, .5));
-        }
-
-        if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
-            driveControl.addAutoAction(new DriveControl.DriveAction(
-                    DriveControl.DriveType.FORWARD, 12, .5));
-        }
-
-        if (movementController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
-            driveControl.addAutoAction(new DriveControl.DriveAction(
-                    DriveControl.DriveType.FORWARD, -12, .5));
-        }
-
-        if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
-            driveControl.addAutoAction(new DriveControl.DriveAction(
-                    DriveControl.DriveType.STRAFE, -12, .5));
-        }
-
-        if (movementController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
-            driveControl.addAutoAction(new DriveControl.DriveAction(
-                    DriveControl.DriveType.STRAFE, 12, .5));
-        }
+//        if (movementController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
+//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.WAIT, 1000, .5));
+//        }
+//
+//        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.WAIT, 2000, .5));
+//        }
+//
+//        if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
+//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.TURN, -90, .5));
+//        }
+//
+//        if (movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
+//            driveControl.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.TURN, 90, .5));
+//        }
+//
+//        if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
+//            driveControl.addAutoAction(new DriveControl.DriveAction(
+//                    DriveControl.DriveType.FORWARD, 12, .5));
+//        }
+//
+//        if (movementController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
+//            driveControl.addAutoAction(new DriveControl.DriveAction(
+//                    DriveControl.DriveType.FORWARD, -12, .5));
+//        }
+//
+//        if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
+//            driveControl.addAutoAction(new DriveControl.DriveAction(
+//                    DriveControl.DriveType.STRAFE, -12, .5));
+//        }
+//
+//        if (movementController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
+//            driveControl.addAutoAction(new DriveControl.DriveAction(
+//                    DriveControl.DriveType.STRAFE, 12, .5));
+//        }
 
 
 

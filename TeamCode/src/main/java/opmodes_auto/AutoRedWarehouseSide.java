@@ -36,7 +36,6 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -51,7 +50,6 @@ import mechanisms.LinearSlide;
 import vision.CVManager;
 import vision.ElementCVPipeline;
 import vision.IntakeCVPipeline;
-import vision.RedCVPipeline;
 
 /**
  * TODO:
@@ -190,7 +188,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             driveControl.turnAngle(-firstAngle, 1); // change
             driveControl.moveForward(2, 1);
             while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAutoAction();
+                driveControl.updateAction();
                 sleep(100);
             }
 
@@ -218,14 +216,14 @@ public class AutoRedWarehouseSide extends LinearOpMode {
                 driveControl.turnAngle(90 + firstAngle, 0.5);
                 driveControl.moveSideways(26, 1); // go against the wall
                 while (driveControl.actionQueue.size() > 0) {
-                    driveControl.updateAutoAction();
+                    driveControl.updateAction();
                     sleep(100);
                 }
                 double inchesMoved = 0;
                 intake.intakeIn();
                 while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
                     if (driveControl.actionQueue.size() > 0) {
-                        driveControl.updateAutoAction();
+                        driveControl.updateAction();
                         sleep(10);
                         continue;
                     }
@@ -240,7 +238,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
                 intake.intakeOut();
                 driveControl.moveForward(-inchesMoved, 1);
                 while (driveControl.actionQueue.size() > 0) {
-                    driveControl.updateAutoAction();
+                    driveControl.updateAction();
                     sleep(100);
                 }
                 intake.stop();
@@ -248,7 +246,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
                 driveControl.turnAngle(-(90 + firstAngle), 0.5);
                 driveControl.moveForward(2, 0.5);
                 while (driveControl.actionQueue.size() > 0) {
-                    driveControl.updateAutoAction();
+                    driveControl.updateAction();
                     sleep(100);
                 }
                 linearSlide.dump();
@@ -263,14 +261,14 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             driveControl.moveSideways(26, 1); // go against the wall
             driveControl.moveForward(40, 1); // drive into warehouse
             while (driveControl.actionQueue.size() > 0) {
-                driveControl.updateAutoAction();
+                driveControl.updateAction();
                 sleep(100);
             }
 
             telemetry.update();
         }
         while (opModeIsActive()) {
-            driveControl.updateAutoAction();
+            driveControl.updateAction();
             telemetry.update();
             sleep(100);
         }

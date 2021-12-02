@@ -21,7 +21,7 @@ import java.util.Queue;
  * 3. polar move
  *
  */
-public class DriveControl {
+public class DriveControl implements QueueableMechanism {
 
     public static final int GYRO_MIN_ANGLE = -180;
     public static final int GYRO_MAX_ANGLE = 180;
@@ -30,13 +30,6 @@ public class DriveControl {
     private final DcMotor rightFront;
     private final DcMotor rightRear;
     private final BNO055IMU imu;
-
-
-
-    private DriveAction currentAction;
-    public final Queue<DriveAction> actionQueue;
-
-
 
 
     // gobilda yellowjacket 312 rpm, technically 537.7 but yk
@@ -79,8 +72,6 @@ public class DriveControl {
         this.leftRear = leftRear;
         this.rightFront = rightFront;
         this.rightRear = rightRear;
-
-        actionQueue = new LinkedList<>();
 
 //        setMotorDirection(DcMotorSimple.Direction.FORWARD);
         setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -285,7 +276,7 @@ public class DriveControl {
      * Turn an amount of degrees using encoders
      * @return true if turning is completed, otherwise false
      */
-    public boolean updateTurnTarget() {
+    private boolean updateTurnTarget(DriveAction currentAction) {
 
         // current, target, degrees to turn
         // 90 - 80 = turn 10
@@ -361,103 +352,6 @@ public class DriveControl {
         }
     }
 
-    /**
-     * Add an auto action to the queue
-     * @param driveAction the driveaction to add
-     */
-    public void addAutoAction(DriveAction driveAction) {
-        actionQueue.add(driveAction);
-        if (currentAction == null) {
-            currentAction = actionQueue.poll();
-            beginAction();
-        }
-    }
-
-    /**
-     * Turns angle at specified speed
-     * @param angle angle to turn
-     * @param speed speed at which to turn (range from 0 to 1)
-     */
-    public void turnAngle(double angle, double speed) {
-        this.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveType.TURN, angle, speed));
-    }
-
-    /**
-     * moves forward a number of inches at specified speed
-     * @param inches inches to move forward
-     * @param speed speed to move at
-     */
-    public void moveForward(double inches, double speed) {
-        this.addAutoAction(new DriveControl.DriveAction(DriveType.FORWARD, inches, speed));
-    }
-
-    /**
-     * Strafes a number of inches at specified speed
-     * @param inches inches to strafe
-     * @param speed speed to strafe at
-     */
-    public void moveSideways(double inches, double speed) {
-        this.addAutoAction(new DriveControl.DriveAction(DriveType.STRAFE, inches, speed));
-    }
-
-    /**
-     * Update the auto actions or move to the next one if the current action has completed.
-     */
-    public void updateAutoAction() {
-
-        if (currentAction == null) {
-            telemetry.addData("Drive type", "null");
-            return;
-        }
-        telemetry.addData("current action", currentAction.driveType);
-
-        boolean finished = false;
-        switch (currentAction.driveType) {
-            case FORWARD:
-            case STRAFE:
-                finished = !isRunningToPosition();
-                break;
-            case TURN:
-                finished = updateTurnTarget();
-                break;
-            case WAIT:
-                finished = (System.currentTimeMillis() >= currentAction.targetPosition);
-                break;
-        }
-
-        if (finished) {
-            setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            currentAction = actionQueue.poll();
-            beginAction();
-        }
-
-    }
-
-    /**
-     * Begin the current auto action in the queue
-     */
-    private void beginAction() {
-        if (currentAction == null)
-            return;
-        switch (currentAction.driveType) {
-            case FORWARD:
-                moveYDist(currentAction.targetIncrement, currentAction.percentSpeed);
-                break;
-            case STRAFE:
-                moveXDist(currentAction.targetIncrement, currentAction.percentSpeed);
-                break;
-            case TURN:
-                setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                currentAction.setTargetPosition(getGyroAngle());
-                break;
-            case WAIT:
-                setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                currentAction.setTargetPosition(System.currentTimeMillis());
-                break;
-
-        }
-    }
-
 
     /**
      * Determine if motors are currently running to a position
@@ -468,25 +362,118 @@ public class DriveControl {
     }
 
 
+//
+//    /**
+//     * Update the auto actions or move to the next one if the current action has completed.
+//     */
+//    public void updateAction(DriveAction currentAction) {
+//
+//        if (currentAction == null) {
+//            telemetry.addData("Drive type", "null");
+//            return;
+//        }
+//        telemetry.addData("current action", currentAction.driveType);
+//
+//        boolean finished = false;
+//        switch (currentAction.driveType) {
+//            case FORWARD:
+//            case STRAFE:
+//                finished = !isRunningToPosition();
+//                break;
+//            case TURN:
+//                finished = updateTurnTarget();
+//                break;
+//            case WAIT:
+//                finished = (System.currentTimeMillis() >= currentAction.targetPosition);
+//                break;
+//        }
+//
+//        if (finished) {
+//            setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            currentAction = actionQueue.poll();
+//            beginAction();
+//        }
+//
+//    }
+//
+//    /**
+//     * Begin the current auto action in the queue
+//     */
+//    public void beginAction() {
+//        if (currentAction == null)
+//            return;
+//        switch (currentAction.driveType) {
+//            case FORWARD:
+//                moveYDist(currentAction.targetIncrement, currentAction.percentSpeed);
+//                break;
+//            case STRAFE:
+//                moveXDist(currentAction.targetIncrement, currentAction.percentSpeed);
+//                break;
+//            case TURN:
+//                setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                currentAction.setTargetPosition(getGyroAngle());
+//                break;
+//            case WAIT:
+//                setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                currentAction.setTargetPosition(System.currentTimeMillis());
+//                break;
+//
+//        }
+//    }
+
+    /**
+     * Convenience method to get a drive action for driving forward the specified number of inches
+     * @param incrementInches the inches to move straight (positive is forward, negative is backward)
+     * @param percentSpeed the percent of the maximum speed to run at
+     * @return the DriveAction for a forward movement
+     */
+    public DriveAction getForwardAction(double incrementInches, double percentSpeed) {
+        return new DriveAction(DriveAction.DriveType.FORWARD, incrementInches, percentSpeed, this);
+    }
+
+    /**
+     * Convenience method to get a drive action for strafing by the specified number of inches
+     * @param incrementInches the inches to strafe (positive is right, negative is left)
+     * @param percentSpeed the percent of the maximum speed to run at
+     * @return the DriveAction for a strafe movement
+     */
+    public DriveAction getStrafeAction(double incrementInches, double percentSpeed) {
+        return new DriveAction(DriveAction.DriveType.STRAFE, incrementInches, percentSpeed, this);
+    }
+
+    /**
+     * Convenience method to get a drive action for turning by the specified angle in degrees
+     * @param incrementAngle the angle to turn (positive is right, negative is left).
+     *                       The increment is an imu angle within the range of [-180,180], and values
+     *                       outside this range will be wrapped to this range.
+     * @param percentSpeed the percent of the maximum speed to run at
+     * @return the DriveAction for a turn movement
+     */
+    public DriveAction getTurnAction(double incrementAngle, double percentSpeed) {
+        return new DriveAction(DriveAction.DriveType.TURN, incrementAngle, percentSpeed, this);
+    }
+
     /**
      * A class to represent auto drive actions to queue for execution
      */
-    public static class DriveAction {
+    public static class DriveAction extends AutoQueue.AutoAction {
         private final double percentSpeed;
         private final double targetIncrement;
         private final DriveType driveType;
         private double targetPosition;
+        private DriveControl driveControl;
 
         /**
          * Create a DriveAction to be queued for execution by DriveControl
          * @param driveType the type of action to perform
-         * @param targetIncrement the increment to add to the current position. If the driveType
-         *                       is FORWARD/STRAFE, this should be in inches. If its TURN, this
-         *                       should be an imu angle within the range of [-180,180], and values
+         * @param targetIncrement the increment to add to the current position. If the driveType is:
+         *                        FORWARD/STRAFE: the increment is in inches
+         *                        TURN: the increment is an imu angle within the range of [-180,180], and values
          *                       outside this range will be wrapped to this range.
          * @param percentSpeed the percent of the motors maximum speed to run at [0,1]
          */
-        public DriveAction(DriveType driveType, double targetIncrement, double percentSpeed) {
+        public DriveAction(DriveType driveType, double targetIncrement, double percentSpeed, DriveControl driveControl) {
+            this.driveControl = driveControl;
             this.driveType = driveType;
             this.percentSpeed = percentSpeed;
 
@@ -502,6 +489,54 @@ public class DriveControl {
         }
 
         /**
+         * Begin the auto action by performing different actions depending on which action needs to be started.
+         */
+        public void beginAutoAction() {
+            switch (driveType) {
+                case FORWARD:
+                    driveControl.moveYDist(targetIncrement, percentSpeed);
+                    break;
+                case STRAFE:
+                    driveControl.moveXDist(targetIncrement, percentSpeed);
+                    break;
+                case TURN:
+                    driveControl.setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    setTargetPosition(driveControl.getGyroAngle());
+                    break;
+                case WAIT:
+                    driveControl.setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    setTargetPosition(System.currentTimeMillis());
+                    break;
+            }
+        }
+
+        /**
+         * Update the auto action depending on the driveType
+         * @return true if the action was completed, false otherwise
+         */
+        public boolean updateAutoAction() {
+
+            boolean finished = false;
+            switch (driveType) {
+                case FORWARD:
+                case STRAFE:
+                    finished = !driveControl.isRunningToPosition();
+                    break;
+                case TURN:
+                    finished = driveControl.updateTurnTarget(this);
+                    break;
+                case WAIT:
+                    finished = (System.currentTimeMillis() >= targetPosition);
+                    break;
+            }
+
+            if (finished) {
+                driveControl.setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
+            return finished;
+        }
+
+        /**
          * Set the target position for the action. This should only be set by beginAction prior to execution.
          * For TURN and WAIT, the current position should be the current angle or current time, respectively.
          * This isn't necessary for FORWARD or STRAFE
@@ -511,16 +546,20 @@ public class DriveControl {
         private void setTargetPosition(double currentPosition) {
             targetPosition = currentPosition + targetIncrement;
         }
+
+
+        /**
+         * An enum of drive types for drive control to execute autonomously
+         */
+        public enum DriveType {
+            FORWARD,
+            STRAFE,
+            TURN,
+            WAIT,
+        }
     }
 
-    /**
-     * An enum of drive types for drive control to execute
-     */
-    public enum DriveType {
-        FORWARD,
-        STRAFE,
-        TURN,
-        WAIT,
-    }
+
+
 
 }
