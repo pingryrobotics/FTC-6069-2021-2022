@@ -62,6 +62,7 @@ public class LinearSlide {
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
+
     /**
      * Bring the slide to the lowest possible position, set the encoders to 0, and hold at that position.
      * WARNING: THIS METHOD BRINGS THE SLIDE ALL THE WAY DOWN. This SHOULD be limited by the bar
@@ -110,6 +111,21 @@ public class LinearSlide {
         bucketServo.setPosition(1);
         tilted = false;
 
+    }
+
+    public void increaseTilt() {
+        if (bucketServo.getPosition() < 1) {
+            bucketServo.setPosition(bucketServo.getPosition() + .05);
+        } else {
+            bucketServo.setPosition(1);
+        }
+    }
+    public void decreaseTilt() {
+        if (bucketServo.getPosition() > 0) {
+            bucketServo.setPosition(bucketServo.getPosition() - .05);
+        } else {
+            bucketServo.setPosition(0);
+        }
     }
 
     public void tilt() {

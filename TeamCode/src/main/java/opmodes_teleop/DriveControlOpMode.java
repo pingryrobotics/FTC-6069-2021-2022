@@ -155,11 +155,7 @@ public class DriveControlOpMode extends OpMode {
 
 		// dpad down: linearslide goes to ground level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
-			if (servoPos <= 1)
-				servoPos += .05;
-			else
-				servoPos = 1;
-			linearSlide.setPosition(servoPos);
+			linearSlide.decreaseTilt();
 		}
 
 		// dpad right: linearslide goes to first level
@@ -203,11 +199,7 @@ public class DriveControlOpMode extends OpMode {
 
 		// dpad up: linearslide goes to third level
 		if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
-			if (servoPos >= 0)
-				servoPos -= .05;
-			else
-				servoPos = 0;
-			linearSlide.setPosition(servoPos);
+			linearSlide.increaseTilt();
 		}
 
 		// X button; linear slide dumps and then undumps once it's pressed
