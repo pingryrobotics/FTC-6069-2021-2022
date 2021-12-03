@@ -98,16 +98,14 @@ public class TeleMainOpMode extends OpMode {
 
         driveControl.drive(theta, magnitude, turn);
 
-        telemetry.addData("angle", theta);
-        telemetry.addData("magnitude", magnitude);
-        telemetry.addData("rotation", turn);
 
         Servo servo = linearSlide.getServo();
         telemetry.addData("serv position", servo.getPosition());
         telemetry.addData("serv direction", servo.getDirection());
-        telemetry.addData("servo pwm status", servo.getController());
-        telemetry.addData("controller pwm status", servo.getPortNumber());
         telemetry.addData("servo variable position", servoPos);
+
+        telemetry.addData("current pos", linearSlide.getSlideMotor().getCurrentPosition());
+        telemetry.addData("target pos", linearSlide.getSlideMotor().getTargetPosition());
 
         // region movement
         if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
@@ -228,7 +226,7 @@ public class TeleMainOpMode extends OpMode {
         }
 
         if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
-            linearSlide.level1();
+            linearSlide.level0();
         }
 
         if (mechanismController.getButtonState(ToggleButton.START_BUTTON) == ButtonState.KEY_DOWN) {
