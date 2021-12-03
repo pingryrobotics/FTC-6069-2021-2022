@@ -1,15 +1,7 @@
 package opmodes_auto;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import mechanisms.AutoQueue;
 import mechanisms.Carousel;
@@ -36,7 +28,7 @@ public class AutoTemplateOpMode extends LinearOpMode {
     private void initialize() {
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
-        linearSlide = new LinearSlide(hardwareMap);
+        linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
         autoQueue = new AutoQueue();
     }

@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import mechanisms.AutoQueue;
 import mechanisms.DriveControl;
+import mechanisms.LinearSlide;
 import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
@@ -22,6 +23,7 @@ public class AutoQueueOpMode extends OpMode {
 
     private AutoQueue autoQueue;
     private DriveControl driveControl;
+    private LinearSlide linearSlide;
 
 
     // put any measurements here
@@ -40,6 +42,7 @@ public class AutoQueueOpMode extends OpMode {
         mechanismController = new GamepadController(gamepad2);
         autoQueue = new AutoQueue();
         driveControl = new DriveControl(hardwareMap, telemetry);
+        linearSlide = new LinearSlide(hardwareMap, telemetry);
 
     }
 
@@ -76,6 +79,11 @@ public class AutoQueueOpMode extends OpMode {
         mechanismController.updateButtonStates();
         autoQueue.updateQueue();
 
+        telemetry.addData("current pos", linearSlide.getSlideMotor().getCurrentPosition());
+        telemetry.addData("target pos", linearSlide.getSlideMotor().getTargetPosition());
+
+
+
         // do something when A is pressed
         if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
             autoQueue.addAutoAction(driveControl.getForwardAction(12, .3));
@@ -91,12 +99,26 @@ public class AutoQueueOpMode extends OpMode {
         }
 
         if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-            autoQueue.addAutoAction(driveControl.getTurnAction(-90, .3));
+            autoQueue.addAutoAction(linearSlide.getLevelAction(LinearSlide.SlideAction.SlideOption.LEVEL_1));
+        }
+
+        if (movementController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
+            telemetry.addData("calibrating status", "calibrating");
+            linearSlide.calibrateSlide();
+            telemetry.addData("calibrating status", "calibrating complete");
         }
 
         if (movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
-            autoQueue.addAutoAction(driveControl.getTurnAction(90, .3));
+            autoQueue.addAutoAction(linearSlide.getLevelAction(LinearSlide.SlideAction.SlideOption.LEVEL_2));
         }
+        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+            autoQueue.addAutoAction(linearSlide.getLevelAction(LinearSlide.SlideAction.SlideOption.LEVEL_3));
+        }
+
+        if (movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN) {
+            linearSlide.undump();
+        }
+
 
     }
 

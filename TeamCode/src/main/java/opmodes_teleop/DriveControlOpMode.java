@@ -44,7 +44,7 @@ public class DriveControlOpMode extends OpMode {
 		mechanismController = new GamepadController(gamepad2);
         driveControl = new DriveControl(hardwareMap, telemetry);
 		intake = new Intake(hardwareMap);
-		linearSlide = new LinearSlide(hardwareMap);
+		linearSlide = new LinearSlide(hardwareMap, telemetry);
 		carousel = new Carousel(hardwareMap);
 		offsetAngle = 0;
 
@@ -229,9 +229,6 @@ public class DriveControlOpMode extends OpMode {
 			carousel.stop();
 		}
 
-		if(){
-
-		}
     }
 
 

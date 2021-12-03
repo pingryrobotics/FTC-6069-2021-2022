@@ -166,7 +166,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     public void runOpMode() {
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
-        linearSlide = new LinearSlide(hardwareMap);
+        linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
         cvManager = new CVManager(hardwareMap, "Webcam 1");
         intakeCvManager = new CVManager(hardwareMap, "Webcam 2");
@@ -178,7 +178,6 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
         if (opModeIsActive()) {
             telemetry.addData("Level found", pipeline.getObjLevel());
-            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.CALIBRATE));
             int objLevel = pipeline.getObjLevel();
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();

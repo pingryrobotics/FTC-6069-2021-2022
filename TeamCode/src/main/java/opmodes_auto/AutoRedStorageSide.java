@@ -166,7 +166,7 @@ public class AutoRedStorageSide extends LinearOpMode {
     public void runOpMode() {
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
-        linearSlide = new LinearSlide(hardwareMap);
+        linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
         cvManager = new CVManager(hardwareMap, "Webcam 1");
         intakeCvManager = new CVManager(hardwareMap, "Webcam 2");

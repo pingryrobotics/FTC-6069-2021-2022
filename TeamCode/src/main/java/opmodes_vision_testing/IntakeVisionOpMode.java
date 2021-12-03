@@ -11,10 +11,7 @@ import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
 import vision.CVManager;
-import vision.ElementCVPipeline;
 import vision.IntakeCVPipeline;
-import vision.ObjectCVPipeline;
-import vision.RedCVPipeline;
 
 
 @TeleOp(name="Testing: Intake CV Test", group="Testing")
@@ -50,7 +47,7 @@ public class IntakeVisionOpMode extends OpMode {
         pipeline = new IntakeCVPipeline(cvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         intake = new Intake(hardwareMap);
-        slide = new LinearSlide(hardwareMap);
+        slide = new LinearSlide(hardwareMap, telemetry);
     }
 
     // code to loop after init is pressed and before start is pressed

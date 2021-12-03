@@ -1,14 +1,12 @@
 package mechanisms;
 import static android.os.SystemClock.sleep;
 
-import android.transition.Slide;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo; //only if we need the additional feeder.
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import java.util.Queue;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class LinearSlide {
     // SKU: 5202-0002-0014
@@ -25,28 +23,40 @@ public class LinearSlide {
 
     private final DcMotor slideMotor;
     private final Servo bucketServo;
+    protected final Telemetry telemetry;
+
     public double power;
     private int level;
-    private final int LEVEL_3 = 1000;
-    private final int LEVEL_2 = 590;
-    private final int LEVEL_1 = 0;
+    private final int CAP = 3500;
+    private final int LEVEL_3 = 2690;
+    private final int LEVEL_2 = 1424;
+    private final int LEVEL_1 = 308;
+    private final int LEVEL_0 = 0;
     public boolean tilted = false;
 
-    public LinearSlide(HardwareMap hardwareMap) {
+    public LinearSlide(HardwareMap hardwareMap, Telemetry telemetry) {
         slideMotor = hardwareMap.get(DcMotor.class, "slideMotor");
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // not sure if needed but sets base state to 0
         //slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bucketServo = hardwareMap.get(Servo.class, "bucketServo");
         bucketServo.setDirection(Servo.Direction.FORWARD);
-        bucketServo.scaleRange(0.15, 0.55);
+        // functional range: .15 - .55
+        bucketServo.scaleRange(0.19, 0.55);
         //bucketServo.setPosition(0);
 
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.telemetry = telemetry;
 
 
 //        slideMotor.setPower(1);
         power = 1;
         level = 0;
+    }
+
+    public void level0() { // extend linear slide to level appropriate for intaking
+        slideMotor.setTargetPosition(LEVEL_0);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setPower(1);
     }
 
     public void level1() { // extend linear slide to level appropriate for the bottom level of shipping hub
@@ -67,6 +77,14 @@ public class LinearSlide {
         slideMotor.setPower(1);
     }
 
+    public void levelCap() { // extend linear slide to level appropriate for capping
+        slideMotor.setTargetPosition(LEVEL_0);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setPower(1);
+    }
+
+
+
     public void holdSlidePosition() {
         slideMotor.setTargetPosition(slideMotor.getCurrentPosition());
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -83,18 +101,21 @@ public class LinearSlide {
      */
     public void calibrateSlide() {
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setPower(.4);
+        slideMotor.setPower(1);
+        telemetry.addData("calibrating status", "calibrating");
 
         double previousPosition = slideMotor.getCurrentPosition();
         int count = 0;
 
-        while (count < 20) {
-            if (previousPosition - slideMotor.getCurrentPosition() < 10) {
+        while (count < 15) {
+            telemetry.addData("count", count);
+            if (Math.abs(previousPosition - slideMotor.getCurrentPosition()) < 5) {
                 count++;
             } else {
                 count = 0;
             }
             previousPosition = slideMotor.getCurrentPosition();
+            sleep(50);
         }
 
         slideMotor.setTargetPosition(slideMotor.getCurrentPosition());
@@ -203,6 +224,9 @@ public class LinearSlide {
         @Override
         public void beginAutoAction() {
             switch (slideOption) {
+                case LEVEL_0:
+                    linearSlide.level0();
+                    break;
                 case LEVEL_1:
                     linearSlide.level1();
                     break;
@@ -212,8 +236,9 @@ public class LinearSlide {
                 case LEVEL_3:
                     linearSlide.level3();
                     break;
-                case CALIBRATE:
-                    linearSlide.calibrateSlide();
+                case CAP:
+                    linearSlide.levelCap();
+                    break;
             }
         }
 
@@ -225,10 +250,11 @@ public class LinearSlide {
         public boolean updateAutoAction() {
             boolean finished = false;
             switch (slideOption) {
+                case LEVEL_0:
                 case LEVEL_1:
                 case LEVEL_2:
                 case LEVEL_3:
-                case CALIBRATE:
+                case CAP:
                     finished = !linearSlide.getSlideMotor().isBusy();
                     break;
             }
@@ -237,10 +263,11 @@ public class LinearSlide {
 
 
         public enum SlideOption {
+            LEVEL_0,
             LEVEL_1,
             LEVEL_2,
             LEVEL_3,
-            CALIBRATE
+            CAP
         }
     }
 

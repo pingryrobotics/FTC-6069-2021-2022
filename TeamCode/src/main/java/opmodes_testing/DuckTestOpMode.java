@@ -78,14 +78,14 @@ public class DuckTestOpMode extends OpMode {
         // do something when A is pressed
         if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
             if (duckPower >= 0)
-                duckPower -= .05;
+                duckPower -= .025;
             else
                 duckPower = 0;
         }
 
         if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
             if (duckPower <= 1)
-                duckPower += .05;
+                duckPower += .025;
             else
                 duckPower = 1;
         }

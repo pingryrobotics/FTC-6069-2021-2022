@@ -1,16 +1,12 @@
 package opmodes_testing;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import mechanisms.LinearSlide;
 import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
-import teamcode.GamepadController.FloatButton;
 import teamcode.GamepadController.ToggleButton;
 
 
@@ -42,7 +38,7 @@ public class TestLevelsOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
-        linearSlide = new LinearSlide(hardwareMap);
+        linearSlide = new LinearSlide(hardwareMap, telemetry);
         slideMotor = linearSlide.getSlideMotor();
 //        slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
@@ -80,6 +76,12 @@ public class TestLevelsOpMode extends OpMode {
         // button states need to be updated each loop for controls to work
         movementController.updateButtonStates();
         mechanismController.updateButtonStates();
+
+        if (movementController.getButtonState(ToggleButton.START_BUTTON) == ButtonState.KEY_DOWN) {
+            linearSlide.getSlideMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            linearSlide.getSlideMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
 
         if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_HOLD) {
             linearSlide.dump();

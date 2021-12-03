@@ -2,6 +2,7 @@ package opmodes_teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
@@ -16,8 +17,8 @@ import teamcode.GamepadController.ToggleButton;
 
 
 
-@TeleOp(name="TeleMain: TeleOp OpMode", group="TeleOp")
-public class TeleMain extends OpMode {
+@TeleOp(name="TeleMainOpMode: TeleOp OpMode", group="TeleOp")
+public class TeleMainOpMode extends OpMode {
     // tag is used in logcat logs (Log.d()) to identify where the log is coming from
     // logcat is basically like System.out.print (standard output) except through adb
     private static final String TAG = "teamcode.drive-opmode"; // put the name of the opmode
@@ -44,7 +45,7 @@ public class TeleMain extends OpMode {
         mechanismController = new GamepadController(gamepad2);
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
-        linearSlide = new LinearSlide(hardwareMap);
+        linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
         offsetAngle = 0;
 
@@ -58,6 +59,7 @@ public class TeleMain extends OpMode {
     // code to run once when driver hits start
     @Override
     public void start() {
+        linearSlide.undump();
     }
 
     // code to loop while opmode is running
@@ -107,6 +109,7 @@ public class TeleMain extends OpMode {
         telemetry.addData("controller pwm status", servo.getPortNumber());
         telemetry.addData("servo variable position", servoPos);
 
+        // region movement
         if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
             intake.intakeOut();
         } else if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_UP) {
@@ -118,6 +121,31 @@ public class TeleMain extends OpMode {
         } else if (movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_UP) {
             intake.stop();
         }
+
+
+        if(movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN){
+            if(direction == 1){
+                direction = -1;
+            }
+
+            else{
+                direction = 1;
+            }
+        }
+
+        if(movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN){
+            if(factor == 1){
+                factor = 2;
+            }
+            else{
+                factor = 1;
+            }
+        }
+
+
+        // endregion movement
+
+        // region mechanism
 
         // right bumper: linearslide extends while pressed
         if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
@@ -143,9 +171,6 @@ public class TeleMain extends OpMode {
         }
 
         // dpad right: linearslide goes to first level
-        if (mechanismController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
-            linearSlide.setPosition(servoPos);
-        }
 
         // dpad left: linearslide goes to second level
 //        if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
@@ -159,25 +184,6 @@ public class TeleMain extends OpMode {
 //            linearSlide.level1();
 //        }
 
-
-        if(movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN){
-            if(direction == 1){
-                direction = -1;
-            }
-
-            else{
-                direction = 1;
-            }
-        }
-
-        if(movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN){
-            if(factor == 1){
-                factor = 2;
-            }
-            else{
-                factor = 1;
-            }
-        }
 
 
         // dpad up: linearslide goes to third level
@@ -215,6 +221,22 @@ public class TeleMain extends OpMode {
         } else if (mechanismController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_UP) {
             carousel.stop();
         }
+
+
+        if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
+            linearSlide.level3();
+        }
+
+        if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+            linearSlide.level1();
+        }
+
+        if (mechanismController.getButtonState(ToggleButton.START_BUTTON) == ButtonState.KEY_DOWN) {
+            linearSlide.getSlideMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            linearSlide.getSlideMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        // endregion mechanism
     }
 
 

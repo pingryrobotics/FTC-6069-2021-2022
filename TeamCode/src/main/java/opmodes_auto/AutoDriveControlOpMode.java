@@ -126,7 +126,7 @@ public class AutoDriveControlOpMode extends LinearOpMode {
     public void runOpMode() {
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
-        linearSlide = new LinearSlide(hardwareMap);
+        linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
 //        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 //        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -153,7 +153,7 @@ public class AutoDriveControlOpMode extends LinearOpMode {
         if (opModeIsActive()) {
 //            telemetry.addData("Level found", ContourPipeline.getObjLevel());
 //            int objLevel = ContourPipeline.getObjLevel();
-            LinearSlide slide = new LinearSlide(hardwareMap);
+            LinearSlide slide = new LinearSlide(hardwareMap, telemetry);
             driveControl.moveXDist(46, 0.5);
             sleep(3000);
             slide.level3();

@@ -155,7 +155,7 @@ public class AutoBlueStorageSide extends LinearOpMode {
     public void runOpMode() {
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
-        linearSlide = new LinearSlide(hardwareMap);
+        linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
 //        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 //        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

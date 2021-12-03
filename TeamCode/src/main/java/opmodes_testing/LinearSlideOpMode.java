@@ -38,7 +38,7 @@ public class LinearSlideOpMode extends OpMode {
     @Override
     public void init() {
         mechanismController = new GamepadController(gamepad1);
-		linearSlide = new LinearSlide(hardwareMap);
+		linearSlide = new LinearSlide(hardwareMap, telemetry);
 		carousel = new Carousel(hardwareMap);
     }
 
@@ -68,11 +68,15 @@ public class LinearSlideOpMode extends OpMode {
      */
     public void runControls() {
 
+        linearSlide.undump();
 
-        telemetry.addData("caption", "value");
+
 
         // button states need to be updated each loop for controls to work
         mechanismController.updateButtonStates();
+
+        telemetry.addData("current pos", linearSlide.getSlideMotor().getCurrentPosition());
+        telemetry.addData("target pos", linearSlide.getSlideMotor().getTargetPosition());
 
         // right bumper: linearslide extends while pressed
         if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
@@ -96,17 +100,24 @@ public class LinearSlideOpMode extends OpMode {
             DcMotor slideMotor = linearSlide.getSlideMotor();
             slideMotor.setTargetPosition(0);
             slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slideMotor.setPower(.3);
+            slideMotor.setPower(1);
 		}
 
 
         if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
             DcMotor slideMotor = linearSlide.getSlideMotor();
             slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            slideMotor.setTargetPosition(300);
+            slideMotor.setTargetPosition(-300);
             slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slideMotor.setPower(.3);
+            slideMotor.setPower(1);
         }
+
+        if (mechanismController.getButtonState(ToggleButton.START_BUTTON) == ButtonState.KEY_DOWN) {
+            linearSlide.getSlideMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            linearSlide.getSlideMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+
 
 
 
