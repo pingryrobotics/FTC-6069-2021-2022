@@ -119,6 +119,38 @@ public class TeleMain extends OpMode {
             intake.stop();
         }
 
+        if(movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN){
+            if(direction == 1)
+                direction = -1;
+            else
+                direction = 1;
+        }
+
+        if(movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN){
+            if(factor == 1)
+                factor = 2;
+            else
+                factor = 1;
+        }
+
+
+
+
+
+        // dpad left: linearslide goes to second level
+//        if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
+//            linearSlide.level3();
+//        }
+//
+//        if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
+//            linearSlide.level2();
+//        }
+//        if (movementController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
+//            linearSlide.level1();
+//        }
+
+
+
         // right bumper: linearslide extends while pressed
         if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
             linearSlide.extend();
@@ -146,40 +178,6 @@ public class TeleMain extends OpMode {
         if (mechanismController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
             linearSlide.setPosition(servoPos);
         }
-
-        // dpad left: linearslide goes to second level
-//        if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
-//            linearSlide.level3();
-//        }
-//
-//        if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
-//            linearSlide.level2();
-//        }
-//        if (movementController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
-//            linearSlide.level1();
-//        }
-
-
-        if(movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN){
-            if(direction == 1){
-                direction = -1;
-            }
-
-            else{
-                direction = 1;
-            }
-        }
-
-        if(movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN){
-            if(factor == 1){
-                factor = 2;
-            }
-            else{
-                factor = 1;
-            }
-        }
-
-
         // dpad up: linearslide goes to third level
         if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
             if (servoPos >= 0)
@@ -198,6 +196,35 @@ public class TeleMain extends OpMode {
         if (mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
             linearSlide.undump();
         }
+
+        if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+            if(linearSlide.level == 1){
+                linearSlide.level3();
+            }
+            else if(linearSlide.level == 3){
+                linearSlide.level4();
+            }
+
+            while(linearSlide.isBusy()){
+
+            }
+        }
+
+        // Y button; linear slide dumps and then undumps once it's pressed
+        if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
+            if(linearSlide.level == 3){
+                linearSlide.level1();
+            }
+            else if(linearSlide.level == 4){
+                linearSlide.level3();
+            }
+
+            while(linearSlide.isBusy()){
+
+            }
+        }
+
+        telemetry.addData("Linear Slide Level ", linearSlide.level);
 
         // A button: carousel spins clockwise while button is pressed
         if (mechanismController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN) {

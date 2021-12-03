@@ -228,10 +228,6 @@ public class DriveControlOpMode extends OpMode {
 		} else if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_UP) {
 			carousel.stop();
 		}
-
-		if(){
-
-		}
     }
 
 
