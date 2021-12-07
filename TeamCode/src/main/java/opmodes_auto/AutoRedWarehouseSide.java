@@ -204,10 +204,10 @@ public class AutoRedWarehouseSide extends LinearOpMode {
                 sleep(100);
             }
             linearSlide.dump();
-            sleep(1000);
+            sleep(1500);
             linearSlide.undump();
-            sleep(1000);
-            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+            sleep(1500);
+            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
 
             while (autoQueue.updateQueue()) {
                 sleep(100);
@@ -219,14 +219,25 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
             // loop iterates once every cycle
             while (rtime.time() <= 25000) { // this gives us at least 5 seconds to park
+                // move back a bit
                 autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+
+                // robot is now horizontal, faces the wall opposite of the warehouses
                 autoQueue.addAutoAction(driveControl.getTurnAction(-(90 - firstAngle), 0.5));
+
+                // press against the wall in preparation to move back
                 autoQueue.addAutoAction(driveControl.getStrafeAction(-26, 1));
+
+                // finish executing instructions
                 while (autoQueue.updateQueue()) {
                     sleep(100);
                 }
                 double inchesMoved = 0;
+
+                // start intake
                 intake.intakeIn();
+
+                // moving towards warehouse until getting an element
                 while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
                     while (autoQueue.updateQueue()) {
                         sleep(10);
@@ -247,10 +258,15 @@ public class AutoRedWarehouseSide extends LinearOpMode {
                 autoQueue.addAutoAction(driveControl.getStrafeAction(26, 1));
                 autoQueue.addAutoAction(driveControl.getTurnAction(90 - firstAngle, 0.5));
                 autoQueue.addAutoAction(driveControl.getForwardAction(2, 1));
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+                while (autoQueue.updateQueue()) {
+                    sleep(100);
+                }
                 linearSlide.dump();
-                sleep(1000);
+                sleep(1500);
                 linearSlide.undump();
-                sleep(1000);
+                sleep(1500);
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
                 while (autoQueue.updateQueue()) {
                     sleep(100);
                 }
