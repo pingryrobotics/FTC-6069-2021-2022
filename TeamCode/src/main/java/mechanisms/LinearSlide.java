@@ -27,10 +27,10 @@ public class LinearSlide {
 
     public double power;
     private int level;
-    private final int CAP = 3500;
-    private final int LEVEL_3 = 2690;
-    private final int LEVEL_2 = 1424;
-    private final int LEVEL_1 = 308;
+    private final int LEVEL_CAP = 2498;
+    private final int LEVEL_3 = 2248; // old: 2690
+    private final int LEVEL_2 = 1276; // old: 1424
+    private final int LEVEL_1 = 310; // old: 308
     private final int LEVEL_0 = 0;
     public boolean tilted = false;
 
@@ -78,7 +78,7 @@ public class LinearSlide {
     }
 
     public void levelCap() { // extend linear slide to level appropriate for capping
-        slideMotor.setTargetPosition(LEVEL_0);
+        slideMotor.setTargetPosition(LEVEL_CAP);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setPower(1);
     }
