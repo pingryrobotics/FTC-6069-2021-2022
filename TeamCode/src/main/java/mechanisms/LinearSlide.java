@@ -27,10 +27,10 @@ public class LinearSlide {
 
     public double power;
     private int level;
-    private final int LEVEL_CAP = 2498;
-    private final int LEVEL_3 = 2248; // old: 2690
-    private final int LEVEL_2 = 1276; // old: 1424
-    private final int LEVEL_1 = 310; // old: 308
+    private final int LEVEL_CAP = 2248;
+    private final int LEVEL_3 = 2248;
+    private final int LEVEL_2 = 1209;
+    private final int LEVEL_1 = 353;
     private final int LEVEL_0 = 0;
     public boolean tilted = false;
 

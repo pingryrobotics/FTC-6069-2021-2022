@@ -10,7 +10,7 @@ import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
 
 
-@TeleOp(name="Slide testing: Slide OpMode", group="Testing")
+@TeleOp(name="Level testing: Testing levels OpMode", group="Testing")
 public class TestLevelsOpMode extends OpMode {
     // tag is used in logcat logs (Log.d()) to identify where the log is coming from
     // logcat is basically like System.out.print (standard output) except through adb
@@ -91,14 +91,6 @@ public class TestLevelsOpMode extends OpMode {
             linearSlide.undump();
         }
 
-        // do something when A is pressed
-        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
-            slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            slideMotor.setTargetPosition(0);
-            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slideMotor.setPower(.3);
-        }
-
         if (movementController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_HOLD) {
             linearSlide.retract();
         } else if (movementController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_UP) {
@@ -118,6 +110,31 @@ public class TestLevelsOpMode extends OpMode {
         if (movementController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
             slideMotor.setTargetPosition(slideMotor.getCurrentPosition()-50);
         }
+
+        if (movementController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
+            slideMotor.setTargetPosition(slideMotor.getCurrentPosition()-50);
+        }
+
+        if (movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+            linearSlide.level0();
+        }
+
+        if (movementController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
+            linearSlide.level1();
+        }
+
+        if (movementController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
+            linearSlide.level2();
+        }
+
+        if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
+            linearSlide.level3();
+        }
+
+        if (movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN) {
+            linearSlide.levelCap();
+        }
+
 
     }
 
