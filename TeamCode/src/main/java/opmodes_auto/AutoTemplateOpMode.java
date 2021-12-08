@@ -9,6 +9,9 @@ import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
 import mechanisms.LinearSlide.SlideAction.SlideOption;
+import vision.CVManager;
+import vision.ElementCVPipeline;
+import vision.IntakeCVPipeline;
 
 
 @Autonomous(name="Template Auto OpMode", group ="Autonomous")

@@ -109,10 +109,6 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     private Intake intake;
     private LinearSlide linearSlide;
     private Carousel carousel;
-    private ElementCVPipeline pipeline;
-    private IntakeCVPipeline intakePipeline;
-    private CVManager cvManager;
-    private CVManager intakeCvManager;
     private AutoQueue autoQueue;
 
     @Override
@@ -123,16 +119,17 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
-        cvManager = new CVManager(hardwareMap, "Webcam 1");
-        intakeCvManager = new CVManager(hardwareMap, "Webcam 2");
-        pipeline = new ElementCVPipeline(cvManager.getWebcam());
-        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
-        cvManager.initializeCamera(pipeline);
-        intakeCvManager.initializeCamera(intakePipeline);
+        autoQueue = new AutoQueue();
+//        cvManager = new CVManager(hardwareMap, "Webcam 1");
+//        intakeCvManager = new CVManager(hardwareMap, "Webcam 2");
+//        pipeline = new ElementCVPipeline(cvManager.getWebcam());
+//        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
+//        cvManager.initializeCamera(pipeline);
+//        intakeCvManager.initializeCamera(intakePipeline);
         waitForStart();
-
         if (opModeIsActive()) {
-            telemetry.addData("Level found", pipeline.getObjLevel());
+//            telemetry.addData("Level found", pipeline.getObjLevel());
+            telemetry.update();
             //int objLevel = pipeline.getObjLevel();
             int objLevel = 1;
             ElapsedTime rtime = new ElapsedTime();
