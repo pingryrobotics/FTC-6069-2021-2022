@@ -179,7 +179,6 @@ public class GamepadController {
         START_BUTTON,
         LEFT_TRIGGER, // THIS IS ACTUALLY A FLOAT
         RIGHT_TRIGGER, // ^
-        MODE_BUTTON,
         BACK_BUTTON,
         CENTER_BUTTON,
     }
