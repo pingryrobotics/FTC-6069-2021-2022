@@ -111,7 +111,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     private Carousel carousel;
     private AutoQueue autoQueue;
     private CVManager cvManager;
-    private ElementCVPipeline intakePipeline;
+    private ElementCVPipeline pipeline;
 
     @Override
     public void runOpMode() {
@@ -125,7 +125,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         cvManager = new CVManager(hardwareMap, "Webcam 1");
         //intakeCvManager = new CVManager(hardwareMap, "Webcam 2");
         //pipeline = new ElementCVPipeline(cvManager.getWebcam());
-        intakePipeline = new IntakeCVPipeline(cvManager.getWebcam());
+        pipeline = new ElementCVPipeline(cvManager.getWebcam());
 //        cvManager.initializeCamera(pipeline);
 //        intakeCvManager.initializeCamera(intakePipeline);
         waitForStart();
@@ -134,8 +134,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //            telemetry.addData("Level found", pipeline.getObjLevel());
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
-            //int objLevel = pipeline.getObjLevel();
-            int objLevel = 2;
+            int objLevel = pipeline.getObjLevel();
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
