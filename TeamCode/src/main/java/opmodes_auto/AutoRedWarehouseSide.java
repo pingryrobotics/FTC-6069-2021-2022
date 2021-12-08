@@ -125,8 +125,8 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
         autoQueue = new AutoQueue();
-        cvManager = new CVManager(hardwareMap, "Webcam 1", true);
-        intakeCvManager = new CVManager(hardwareMap, "Webcam 2", false);
+        cvManager = new CVManager(hardwareMap, "Webcam 2", true);
+        intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);

@@ -101,8 +101,11 @@ public class ElementCVPipeline extends OpenCvPipeline {
         // red hsvs wrap around from 170 to 10 so we need to create 2 and kinda merge
         // them
         int sensitivity = 15;
-        Scalar lowHSV1 = new Scalar(60 - sensitivity, 100, 100); // lower bound HSV #1 for team shipping element
-        Scalar highHSV1 = new Scalar(60 + sensitivity, 255, 255); // higher bound HSV for team shipping element
+        //Scalar lowHSV1 = new Scalar(60 - sensitivity, 100, 100); // lower bound HSV #1 for team shipping element
+        //Scalar highHSV1 = new Scalar(60 + sensitivity, 255, 255); // higher bound HSV for team shipping element
+
+        Scalar lowHSV1 = new Scalar(30, 35, 70); // lower bound HSV #1 for team shipping element
+        Scalar highHSV1 = new Scalar(45, 120, 120); // higher bound HSV for team shipping element
         Mat thresh = new Mat();
 
         // We'll get a black and white image. The white regions represent the regular
@@ -164,6 +167,10 @@ public class ElementCVPipeline extends OpenCvPipeline {
                 biggestRectCenter = rectCenterX;
             }
         }
+
+        double[] values = mat.get(input.rows()/2, input.cols()/2);
+        System.out.println("HSV: " + values[0] + ", " + values[1]+ ", " + values[2]);
+        System.out.println("Object Level: " + getObjLevel());
 
         mat.release();
         thresh.release();
