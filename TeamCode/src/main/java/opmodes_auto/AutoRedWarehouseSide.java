@@ -117,6 +117,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     @Override
     public void runOpMode() {
         telemetry.addData("caption", "value");
+        telemetry.update();
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
