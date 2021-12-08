@@ -120,6 +120,19 @@ public class TeleMainOpMode extends OpMode {
             intake.stop();
         }
 
+        if (movementController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
+            carousel.spin();
+        } else if (movementController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_UP) {
+            carousel.stop();
+        }
+
+        if (movementController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_DOWN) {
+            carousel.reverseSpin();
+        } else if (movementController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_UP) {
+            carousel.stop();
+        }
+
+
 
         if(movementController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN){
             if(direction == 1){
@@ -159,8 +172,9 @@ public class TeleMainOpMode extends OpMode {
             linearSlide.stop();
         }
 
-        // dpad down: linearslide goes to ground level
-        if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
+
+        // X button; linear slide dumps and then undumps once it's pressed
+        if (mechanismController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN) {
             if (servoPos <= 1)
                 servoPos += .05;
             else
@@ -168,24 +182,8 @@ public class TeleMainOpMode extends OpMode {
             linearSlide.setPosition(servoPos);
         }
 
-        // dpad right: linearslide goes to first level
-
-        // dpad left: linearslide goes to second level
-//        if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
-//            linearSlide.level3();
-//        }
-//
-//        if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
-//            linearSlide.level2();
-//        }
-//        if (movementController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
-//            linearSlide.level1();
-//        }
-
-
-
-        // dpad up: linearslide goes to third level
-        if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
+        // Y button; linear slide dumps and then undumps once it's pressed
+        if (mechanismController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
             if (servoPos >= 0)
                 servoPos -= .05;
             else
@@ -193,46 +191,40 @@ public class TeleMainOpMode extends OpMode {
             linearSlide.setPosition(servoPos);
         }
 
-        // X button; linear slide dumps and then undumps once it's pressed
-        if (mechanismController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
-            linearSlide.dump();
-        }
 
-        // Y button; linear slide dumps and then undumps once it's pressed
-        if (mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
-            linearSlide.undump();
-        }
-
-        // A button: carousel spins clockwise while button is pressed
-        if (mechanismController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN) {
-            carousel.spin();
-        } else if (mechanismController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_UP) {
-            carousel.stop();
-        }
-//        if (mechanismController.getButtonState(ToggleButton.LEFT_STICK_BUTTON) == ButtonState.KEY_DOWN) {
-////			linearSlide.resetEncoder();
-//        }
-
-        // B button: carousel spins counterclockwise while button is pressed
-        if (mechanismController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
-            carousel.reverseSpin();
-        } else if (mechanismController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_UP) {
-            carousel.stop();
-        }
-
-
-        if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
+        if (mechanismController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
             linearSlide.level3();
         }
 
-        if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+        if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
             linearSlide.level0();
+        }
+
+        if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
+            linearSlide.level2();
+        }
+
+        if (mechanismController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
+            linearSlide.level1();
         }
 
         if (mechanismController.getButtonState(ToggleButton.START_BUTTON) == ButtonState.KEY_DOWN) {
             linearSlide.getSlideMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             linearSlide.getSlideMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+
+        if (mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
+            linearSlide.dump();
+        }
+
+        if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
+            linearSlide.tilt();
+        }
+
+        if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
+            linearSlide.undump();
+        }
+
 
         // endregion mechanism
     }
