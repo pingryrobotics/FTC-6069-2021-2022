@@ -131,7 +131,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //            telemetry.addData("Level found", pipeline.getObjLevel());
             telemetry.update();
             //int objLevel = pipeline.getObjLevel();
-            int objLevel = 1;
+            int objLevel = 3;
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
@@ -139,12 +139,13 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //            driveControl.moveYDist(80, 1);
 
             // move to linear slide and put square on level
+            linearSlide.tilt();
             autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
             int firstAngle = 75;
             autoQueue.addAutoAction(driveControl.getTurnAction(-firstAngle, 0.5));
             autoQueue.addAutoAction(driveControl.getForwardAction(2, 1));
 
-            if (objLevel == 0) {
+            if (objLevel == 3) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
