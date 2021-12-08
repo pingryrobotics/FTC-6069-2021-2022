@@ -93,7 +93,6 @@ import vision.IntakeCVPipeline;
 
 
 @Autonomous(name="AutoRedWarehouseSide", group ="Autonomous")
-
 public class AutoRedWarehouseSide extends LinearOpMode {
 
 
@@ -128,14 +127,14 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         intakeCvManager.initializeCamera(intakePipeline);
-        waitForStart();
+        //waitForStart();
 
         if (opModeIsActive()) {
             telemetry.addData("Level found", pipeline.getObjLevel());
             //int objLevel = pipeline.getObjLevel();
             int objLevel = 1;
-            ElapsedTime rtime = new ElapsedTime();
-            rtime.reset();
+//            ElapsedTime rtime = new ElapsedTime();
+//            rtime.reset();
 
 //            driveControl.moveXDist(-28, 0.5);
 //            driveControl.moveYDist(80, 1);
