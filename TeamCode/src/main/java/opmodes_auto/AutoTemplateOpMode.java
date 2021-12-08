@@ -36,6 +36,8 @@ public class AutoTemplateOpMode extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        telemetry.addData("caption", "data");
+
         // code to run once after initialization but prior to start being pressed
         if (!isStarted()) {
             initialize();
@@ -46,6 +48,7 @@ public class AutoTemplateOpMode extends LinearOpMode {
         while (!isStarted()) {
             autoQueue.addAutoAction(driveControl.getForwardAction(10, .5));
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+            runQueue(autoQueue);
         }
 
         waitForStart();

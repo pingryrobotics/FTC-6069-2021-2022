@@ -130,6 +130,9 @@ public class GamepadController {
         gamepadToggleValues.put(ToggleButton.LEFT_STICK_BUTTON, gamepad.left_stick_button);
         gamepadToggleValues.put(ToggleButton.RIGHT_STICK_BUTTON, gamepad.right_stick_button);
         gamepadToggleValues.put(ToggleButton.START_BUTTON, gamepad.start);
+        gamepadToggleValues.put(ToggleButton.CENTER_BUTTON, gamepad.guide);
+        gamepadToggleValues.put(ToggleButton.BACK_BUTTON, gamepad.back);
+
 
         gamepadToggleValues.put(ToggleButton.LEFT_TRIGGER, (gamepad.left_trigger > 0)); // ACTUALLY A FLOAT
         gamepadToggleValues.put(ToggleButton.RIGHT_TRIGGER, (gamepad.right_trigger > 0)); // ^
@@ -176,6 +179,9 @@ public class GamepadController {
         START_BUTTON,
         LEFT_TRIGGER, // THIS IS ACTUALLY A FLOAT
         RIGHT_TRIGGER, // ^
+        MODE_BUTTON,
+        BACK_BUTTON,
+        CENTER_BUTTON,
     }
 
     // enum of buttons that have floats as values rather than booleans
