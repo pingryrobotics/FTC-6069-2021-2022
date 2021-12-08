@@ -210,9 +210,9 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             sleep(1500);
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
 
-//            while (autoQueue.updateQueue()) {
-////                sleep(100);
-////            }
+            while (autoQueue.updateQueue()) {
+                sleep(100);
+            }
 ////
 ////            // carousel spin would go here if our partner isn't doing it
 ////            // we probably wouldn't use this opmode unless partner can do carousel since you have

@@ -174,21 +174,13 @@ public class TeleMainOpMode extends OpMode {
 
 
         // X button; linear slide dumps and then undumps once it's pressed
-        if (mechanismController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN) {
-            if (servoPos <= 1)
-                servoPos += .05;
-            else
-                servoPos = 1;
-            linearSlide.setPosition(servoPos);
+        if (mechanismController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_HOLD) {
+            linearSlide.setPosition(linearSlide.getServo().getPosition() + 0.01);
         }
 
         // Y button; linear slide dumps and then undumps once it's pressed
-        if (mechanismController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
-            if (servoPos >= 0)
-                servoPos -= .05;
-            else
-                servoPos = 0;
-            linearSlide.setPosition(servoPos);
+        if (mechanismController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_HOLD) {
+            linearSlide.setPosition(linearSlide.getServo().getPosition() - 0.01);
         }
 
 
