@@ -30,17 +30,17 @@ public class AutoQueue {
 
     /**
      * Update the action queue. This must be called each loop
-     * @return true if the queue is empty and not running, false if its still running
+     * @return false if the queue is empty and not running, true if its still running
      */
     public boolean updateQueue() {
         // if theres no current action or the current action finishes, shift the queue
         if (currentAction == null || currentAction.updateAutoAction()) {
             shiftQueue();
             // if the current action is null, the queue isnt running, otherwise, its still running
-            return (currentAction == null);
+            return (currentAction != null);
         }
         // if the action isn't finished, return false because its still running
-        return false;
+        return true;
     }
 
     /**

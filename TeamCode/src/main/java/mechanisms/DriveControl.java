@@ -44,7 +44,7 @@ public class DriveControl implements QueueableMechanism {
     private final Telemetry telemetry;
 
     // auto navigation constants
-    private static final double CLOSE_ENOUGH_TO_ZERO = 0.9;
+    private static final double CLOSE_ENOUGH_TO_ZERO = 1;
 
 
 
