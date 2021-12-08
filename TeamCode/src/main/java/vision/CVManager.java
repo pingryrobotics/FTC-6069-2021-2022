@@ -17,10 +17,26 @@ public class CVManager {
      * Initialize the CV manager with the provided hardware map.
      * The webcam gets a viewport, so the camera stream is displayed on the robot.
      * @param hardwareMap the hardware map
+     * @param useDisplay if true, uses the display. THIS CAN ONLY BE USED BY ONE MANAGER AT A TIME.
+     */
+    public CVManager(HardwareMap hardwareMap, String webcamName, boolean useDisplay) {
+        if (useDisplay) {
+            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
+        } else {
+            webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName));
+        }
+
+
+    }
+
+    /**
+     * Initialize the CV manager with the provided hardware map.
+     * The webcam gets a viewport, so the camera stream is displayed on the robot.
+     * @param hardwareMap the hardware map
      */
     public CVManager(HardwareMap hardwareMap, String webcamName) {
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName), cameraMonitorViewId);
+        this(hardwareMap, webcamName, false);
     }
 
     /**

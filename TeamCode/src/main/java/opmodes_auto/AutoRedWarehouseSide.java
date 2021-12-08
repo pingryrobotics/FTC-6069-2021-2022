@@ -111,6 +111,11 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     private Carousel carousel;
     private AutoQueue autoQueue;
 
+    private CVManager cvManager;
+    private CVManager intakeCvManager;
+    private ElementCVPipeline pipeline;
+    private IntakeCVPipeline intakePipeline;
+
     @Override
     public void runOpMode() {
         telemetry.addData("caption", "value");
@@ -120,12 +125,14 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
         autoQueue = new AutoQueue();
-//        cvManager = new CVManager(hardwareMap, "Webcam 1");
-//        intakeCvManager = new CVManager(hardwareMap, "Webcam 2");
-//        pipeline = new ElementCVPipeline(cvManager.getWebcam());
-//        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
-//        cvManager.initializeCamera(pipeline);
-//        intakeCvManager.initializeCamera(intakePipeline);
+        cvManager = new CVManager(hardwareMap, "Webcam 1", true);
+        intakeCvManager = new CVManager(hardwareMap, "Webcam 2", false);
+        pipeline = new ElementCVPipeline(cvManager.getWebcam());
+        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
+        cvManager.initializeCamera(pipeline);
+        intakeCvManager.initializeCamera(intakePipeline);
+
+
         waitForStart();
         if (opModeIsActive()) {
             linearSlide.tilt();
