@@ -54,17 +54,19 @@ public class AutoTemplateOpMode extends LinearOpMode {
 
         // runs once when the opmode is activated
         if (opModeIsActive()) {
+            autoQueue.addAutoAction(driveControl.getForwardAction(10, .5));
+            autoQueue.addAutoAction(driveControl.getTurnAction(-75, .5));
+            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+            runQueue(autoQueue);
+            telemetry.update();
+            sleep(100);
 
             telemetry.update();
         }
 
         // loop while the opmode is active
         while (opModeIsActive()) {
-            autoQueue.addAutoAction(driveControl.getForwardAction(10, .5));
-            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
-            runQueue(autoQueue);
-            telemetry.update();
-            sleep(100);
+
         }
 
         // code to run once when stop is called

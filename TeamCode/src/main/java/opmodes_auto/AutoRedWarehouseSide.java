@@ -130,10 +130,12 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //        intakeCvManager.initializeCamera(intakePipeline);
         waitForStart();
         if (opModeIsActive()) {
+            linearSlide.tilt();
 //            telemetry.addData("Level found", pipeline.getObjLevel());
+            telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
             //int objLevel = pipeline.getObjLevel();
-            int objLevel = 3;
+            int objLevel = 2;
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
@@ -141,32 +143,28 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //            driveControl.moveYDist(80, 1);
 
             // move to linear slide and put square on level
-            linearSlide.tilt();
             autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
-            int firstAngle = 75;
+            int firstAngle = 65;
             autoQueue.addAutoAction(driveControl.getTurnAction(-firstAngle, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(2, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(4, 1));
 
-            if (objLevel == 3) {
+            if (objLevel == 0) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
+            runQueue(autoQueue);
 
-
-            while (autoQueue.updateQueue()) {
-                sleep(100);
-            }
             linearSlide.dump();
-            sleep(1500);
+            sleep(700);
             linearSlide.undump();
-            sleep(1500);
+            sleep(700);
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
 
             while (autoQueue.updateQueue()) {
-                sleep(100);
+                sleep(50);
             }
 ////
 ////            // carousel spin would go here if our partner isn't doing it
@@ -243,6 +241,16 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 ////            sleep(100);
 ////        }
 ////    }
+        }
+    }
+
+    /**
+     * Runs the queued actions to completion
+     * @param autoQueue the queue to run
+     */
+    public void runQueue(AutoQueue autoQueue) {
+        while (autoQueue.updateQueue()) {
+            sleep(100);
         }
     }
 }
