@@ -178,16 +178,18 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
             if (objLevel == 0) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
-                autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
-                autoQueue.addAutoAction(driveControl.getForwardAction(-5, 1));
-                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
-                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
+                //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
+                autoQueue.addAutoAction(driveControl.getTurnAction(-5, 1));
+//                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
+//                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
             } else if (objLevel == 1 || objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
-                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
-                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));
-                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
-                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
+                autoQueue.addAutoAction(driveControl.getTurnAction(-57, 1));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(-20, 1));
+//                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
+//                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));
+
+
             }
 //
 //            // carousel spin would go here if our partner isn't doing it
