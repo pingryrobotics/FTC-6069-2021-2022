@@ -136,22 +136,27 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()) {
             linearSlide.tilt();
-//            telemetry.addData("Level found", pipeline.getObjLevel());
+            telemetry.addData("Level found", pipeline.getObjLevel());
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
-            //int objLevel = pipeline.getObjLevel();
-            int objLevel = 2;
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-//            driveControl.moveXDist(-28, 0.5);
-//            driveControl.moveYDist(80, 1);
+            double cnt = 0;
+            for (int i = 0; i < 20; i++) {
+                cnt += pipeline.getObjLevel();
+            }
 
-            // move to linear slide and put square on level
-            autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
-            int firstAngle = 65;
-            autoQueue.addAutoAction(driveControl.getTurnAction(-firstAngle, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(4, 1));
+            int objLevel = (int)(cnt/20);
+            if (objLevel == 0) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(-24, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
+            } else if (objLevel == 1 || objLevel == 2) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(6, 1));
+                autoQueue.addAutoAction(driveControl.getTurnAction(-37, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
+            }
 
             if (objLevel == 0) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
@@ -167,10 +172,20 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             linearSlide.undump();
             sleep(700);
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
+            runQueue(autoQueue);
 
-            while (autoQueue.updateQueue()) {
-                sleep(50);
+            if (objLevel == 0) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-5, 1));
+            } else if (objLevel == 1 || objLevel == 2) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
+                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));
             }
+            autoQueue.addAutoAction(driveControl.getForwardAction(-5, 1));
+
+            runQueue(autoQueue);
 ////
 ////            // carousel spin would go here if our partner isn't doing it
 ////            // we probably wouldn't use this opmode unless partner can do carousel since you have
