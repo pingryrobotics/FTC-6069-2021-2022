@@ -80,6 +80,8 @@ public class VuforiaManager {
     // 0,0 is a coordinate, keep that in mind for testing calculations
     private float mmFieldLength;
 
+    private String webcamName;
+
 
     // region initialization
 
@@ -95,6 +97,23 @@ public class VuforiaManager {
         initializeImageTargets();
 
     }
+
+    /**
+     * Initialize the vuforia localizer, trackable locations, and everything else
+     * @param hardwareMap the hardware map
+     * @param useDisplay if true, then the camera stream is displayed on the robot
+     * @param webcamName the name of the camera to use
+     */
+    public VuforiaManager(HardwareMap hardwareMap, int mmFieldLength, boolean useDisplay, String webcamName) {
+        this.hardwareMap = hardwareMap;
+        this.webcamName = webcamName;
+        initializeVuforia(useDisplay);
+        this.mmFieldLength = mmFieldLength;
+        setCameraLocation();
+        initializeImageTargets();
+
+    }
+
 
     /**
      * Initialize vuforia without initializing trackables. Used exclusively as a frame source
@@ -133,9 +152,14 @@ public class VuforiaManager {
 
         List<WebcamName> webcamNameList = ClassFactory.getInstance().getCameraManager().getAllWebcams();
         if (webcamNameList.size() > 0) {
-            this.cameraName = webcamNameList.get(1);
+            if (webcamName == null) {
+                this.cameraName = webcamNameList.get(1);
+            } else {
+                this.cameraName = hardwareMap.get(WebcamName.class, webcamName);
+            }
             parameters.cameraName = cameraName;
             Log.d(TAG, "Adding webcam to vuforia");
+
         } else {
             Log.d(TAG, "No named cameras found");
         }

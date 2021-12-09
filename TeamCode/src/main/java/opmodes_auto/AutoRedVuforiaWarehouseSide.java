@@ -29,20 +29,27 @@
 
 package opmodes_auto;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import localization.FieldMap;
+import localization.SpaceMap;
+import localization.VuforiaManager;
+import mechanisms.AutoQueue;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
-import mechanisms.AutoQueue;
 import mechanisms.LinearSlide.SlideAction.SlideOption;
 import vision.CVManager;
 import vision.ElementCVPipeline;
@@ -87,9 +94,9 @@ import vision.IntakeCVPipeline;
  */
 
 
-@Autonomous(name="AutoRedWarehouseSide", group ="Autonomous")
+@Autonomous(name="Vuforia AutoRedWarehouseSide", group ="Autonomous")
 
-public class AutoRedWarehouseSide extends LinearOpMode {
+public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
 
 
 //    private MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap);
@@ -111,10 +118,14 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     private ElementCVPipeline pipeline;
     private IntakeCVPipeline intakePipeline;
 
-    @Override
-    public void runOpMode() {
-        telemetry.addData("caption", "value");
-        telemetry.update();
+    private VuforiaManager vuforiaManager;
+    private FieldMap fieldMap;
+    private static final int fieldLength = 3660;
+    private static final long nanoToMilli = 1000000;
+    private static final String TAG = "teamcode.autoredvuf";
+
+
+    public void initialize() {
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
@@ -126,8 +137,38 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         intakeCvManager.initializeCamera(intakePipeline);
-        telemetry.addData("Object Level", pipeline.getObjLevel());
+
+
+        vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, false, "Webcam 2");
+        HashMap<SpaceMap.Space, ArrayList<OpenGLMatrix>> staticCoordsGL = new HashMap<>();
+        staticCoordsGL.put(SpaceMap.Space.IMAGE_TARGET, vuforiaManager.getTrackablePositions());
+        fieldMap = new FieldMap(fieldLength, staticCoordsGL, null,false);
+        fieldMap.updateDisplay();
+
+    }
+
+    @Override
+    public void runOpMode() {
+        telemetry.addData("Initialization status", "In progress");
         telemetry.update();
+        initialize();
+
+        telemetry.addData("Initialization status", "Complete");
+
+        double cnt = 0;
+        for (int i = 0; i < 20; i++) {
+            cnt += pipeline.getObjLevel();
+        }
+
+        int objLevel = (int) (cnt / 20);
+
+
+
+        while (!opModeIsActive()) {
+            updateVuforia();
+            telemetry.addData("Level found", objLevel);
+            telemetry.update();
+        }
 
         waitForStart();
         if (opModeIsActive()) {
@@ -139,12 +180,6 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            double cnt = 0;
-            for (int i = 0; i < 20; i++) {
-                cnt += pipeline.getObjLevel();
-            }
-
-            int objLevel = (int) (cnt / 20);
             if (objLevel == 0) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
                 autoQueue.addAutoAction(driveControl.getStrafeAction(-24, 1));
@@ -192,24 +227,27 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
             runQueue(autoQueue);
 
-            driveControl.setStrafeVelocity(.5);
-            sleep(1500);
-            driveControl.setStrafeVelocity(0);
-            if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 1));
-//                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
-//                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
-            } else if (objLevel == 1 || objLevel == 2) {
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
-                autoQueue.addAutoAction(driveControl.getForwardAction(-25, 0.8));
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.5));
-                //autoQueue.addAutoAction(driveControl.getForwardAction(-22, 0.8));
-//                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
-//                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));
 
-            }
+//
+//
+//            driveControl.setStrafeVelocity(.5);
+//            sleep(1500);
+//            driveControl.setStrafeVelocity(0);
+//            if (objLevel == 0) {
+//                autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
+//                //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
+//                //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 1));
+////                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
+////                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
+//            } else if (objLevel == 1 || objLevel == 2) {
+//                //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
+//                autoQueue.addAutoAction(driveControl.getForwardAction(-25, 0.8));
+//                //autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.5));
+//                //autoQueue.addAutoAction(driveControl.getForwardAction(-22, 0.8));
+////                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
+////                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));
+//
+//            }
 //
 //            // carousel spin would go here if our partner isn't doing it
 //            // we probably wouldn't use this opmode unless partner can do carousel since you have
@@ -291,14 +329,44 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
 
         }
+
+        while (opModeIsActive()) {
+            updateVuforia();
+        }
+
+        // code to run once when stop is called
+        if (isStopRequested()) {
+
+        }
     }
     /**
      * Runs the queued actions to completion
+     * also updates vuforia
      * @param autoQueue the queue to run
      */
     public void runQueue(AutoQueue autoQueue) {
         while (autoQueue.updateQueue()) {
+            updateVuforia();
             sleep(100);
+            telemetry.update();
         }
+    }
+
+    /**
+     * Update vuforia and the fieldmap
+     * @return true if vuforia has a position, otherwise false
+     */
+    public boolean updateVuforia() {
+        OpenGLMatrix robotPosition = vuforiaManager.getUpdatedRobotPosition();
+        if (robotPosition != null) {
+            fieldMap.update(robotPosition);
+            telemetry.addData("Robot position", VuforiaManager.format(robotPosition));
+        }
+
+        for (VuforiaManager.ImageTarget trackable : VuforiaManager.ImageTarget.cachedValues()) {
+            telemetry.addData(trackable.name(), vuforiaManager.isTrackableVisible(trackable) ? "Visible" : "Not Visible");
+        }
+
+        return (robotPosition != null);
     }
 }

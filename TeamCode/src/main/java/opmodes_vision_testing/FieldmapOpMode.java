@@ -70,6 +70,7 @@ public class FieldmapOpMode extends OpMode {
     public void runControls() {
 
         movementController.updateButtonStates();
+
 //        // update map
         OpenGLMatrix robotPosition = vuforiaManager.getUpdatedRobotPosition();
         if (robotPosition != null) {

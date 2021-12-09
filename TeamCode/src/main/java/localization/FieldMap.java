@@ -226,8 +226,10 @@ public class FieldMap {
      * @param robotPositionGL the robot's position
      */
     public void update(OpenGLMatrix robotPositionGL) {
-        setRobotPosition(robotPositionGL);
-        updateDisplay();
+        if (robotPositionGL != null) {
+            setRobotPosition(robotPositionGL);
+            updateDisplay();
+        }
     }
 
     /**
