@@ -197,7 +197,7 @@ public class DriveControl implements QueueableMechanism {
      * might not be necessary if run to position disregards power sign
      * @param velocity the velocity to set
      */
-    private void setStrafeVelocity(double velocity) {
+    public void setStrafeVelocity(double velocity) {
         leftFront.setPower(velocity);
         leftRear.setPower(-velocity);
         rightFront.setPower(-velocity);
