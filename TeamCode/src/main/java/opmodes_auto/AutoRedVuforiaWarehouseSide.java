@@ -150,13 +150,17 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        telemetry.addData("Initialization status", "In progress");
+        telemetry.update();
+        initialize();
+
+
+
+        telemetry.addData("Initialization status", "Complete");
+
+
         waitForStart();
         if (opModeIsActive()) {
-            telemetry.addData("Initialization status", "In progress");
-            telemetry.update();
-            initialize();
-
-            telemetry.addData("Initialization status", "Complete");
 
             double cnt = 0;
             for (int i = 0; i < 20; i++) {
@@ -168,11 +172,12 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
             telemetry.addData("Level found", objLevel);
             telemetry.update();
 
+
+
             cvManager.stopPipeline();
 
 
             linearSlide.tilt();
-            telemetry.addData("Level found", objLevel);
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
 
