@@ -147,13 +147,14 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
+        telemetry.addData("Initialization status", "In progress");
+        telemetry.update();
+        initialize();
+
+        telemetry.addData("Initialization status", "Complete");
+        telemetry.update();
+        
         if (opModeIsActive()) {
-            telemetry.addData("Initialization status", "In progress");
-            telemetry.update();
-            initialize();
-
-            telemetry.addData("Initialization status", "Complete");
-
             double cnt = 0;
             for (int i = 0; i < 20; i++) {
                 cnt += pipeline.getObjLevel();
