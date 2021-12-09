@@ -198,6 +198,7 @@ public class DriveControl implements QueueableMechanism {
      * @param velocity the velocity to set
      */
     public void setStrafeVelocity(double velocity) {
+        setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftFront.setPower(velocity);
         leftRear.setPower(-velocity);
         rightFront.setPower(-velocity);
@@ -427,6 +428,7 @@ public class DriveControl implements QueueableMechanism {
     public DriveAction getForwardAction(double incrementInches, double percentSpeed) {
         return new DriveAction(DriveAction.DriveOption.FORWARD, incrementInches, percentSpeed, this);
     }
+
 
     /**
      * Convenience method to get a drive action for strafing by the specified number of inches

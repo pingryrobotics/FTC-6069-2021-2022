@@ -31,17 +31,12 @@ package opmodes_auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
@@ -156,7 +151,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
                 autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
             } else if (objLevel == 1 || objLevel == 2) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
-                autoQueue.addAutoAction(driveControl.getTurnAction(-35, 0.5));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-35, 0.5));
                 autoQueue.addAutoAction(driveControl.getForwardAction(22, 1));
 
             }
@@ -181,13 +176,13 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             if (objLevel == 0) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
-                autoQueue.addAutoAction(driveControl.getTurnAction(-90, 1));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 1));
 //                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
 //                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
             } else if (objLevel == 1 || objLevel == 2) {
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
-                autoQueue.addAutoAction(driveControl.getTurnAction(-55, 0.8));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-55, 0.8));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.5));
                 //autoQueue.addAutoAction(driveControl.getForwardAction(-22, 0.8));
 //                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
@@ -197,7 +192,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
             runQueue(autoQueue);
 
-            driveControl.setStrafeVelocity(.5);
+            driveControl.setStrafeVelocity(-.5);
             sleep(1500);
             driveControl.setStrafeVelocity(0);
             if (objLevel == 0) {
