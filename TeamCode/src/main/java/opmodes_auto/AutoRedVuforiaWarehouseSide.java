@@ -188,7 +188,7 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
             initializeVuforia();
 
             autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-24, 1));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 1));
             autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
 //            } else if (objLevel == 1 || objLevel == 2) {
 //                autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
@@ -217,7 +217,7 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
             //if (objLevel == 0) {
             autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
-            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 1));
+            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 0.5));
 
             runQueue(autoQueue);
             sleep(1000);
@@ -226,6 +226,8 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
                 runQueue(autoQueue);
                 sleep(1000);
             }
+
+            //runQueue(autoQueue);
 
 
 
