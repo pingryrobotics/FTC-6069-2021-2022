@@ -132,6 +132,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         cvManager.initializeCamera(pipeline);
         intakeCvManager.initializeCamera(intakePipeline);
         telemetry.addData("Object Level", pipeline.getObjLevel());
+        telemetry.update();
 
         waitForStart();
         if (opModeIsActive()) {
@@ -155,7 +156,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
                 autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
             } else if (objLevel == 1 || objLevel == 2) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(6, 1));
-                autoQueue.addAutoAction(driveControl.getTurnAction(-37, 0.5));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-37, 0.5));
                 autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
             }
 
@@ -179,12 +180,12 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             if (objLevel == 0) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
-                autoQueue.addAutoAction(driveControl.getTurnAction(-5, 1));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-5, 1));
 //                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
 //                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
             } else if (objLevel == 1 || objLevel == 2) {
                 autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
-                autoQueue.addAutoAction(driveControl.getTurnAction(-57, 1));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-57, 1));
                 autoQueue.addAutoAction(driveControl.getStrafeAction(-20, 1));
 //                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
 //                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));

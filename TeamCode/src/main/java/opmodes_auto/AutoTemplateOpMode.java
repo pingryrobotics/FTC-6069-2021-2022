@@ -9,9 +9,6 @@ import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
 import mechanisms.LinearSlide.SlideAction.SlideOption;
-import vision.CVManager;
-import vision.ElementCVPipeline;
-import vision.IntakeCVPipeline;
 
 
 @Autonomous(name="Template Auto OpMode", group ="Autonomous")
@@ -55,7 +52,7 @@ public class AutoTemplateOpMode extends LinearOpMode {
         // runs once when the opmode is activated
         if (opModeIsActive()) {
             autoQueue.addAutoAction(driveControl.getForwardAction(10, .5));
-            autoQueue.addAutoAction(driveControl.getTurnAction(-75, .5));
+            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-75, .5));
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             runQueue(autoQueue);
             telemetry.update();
