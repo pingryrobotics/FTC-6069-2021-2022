@@ -42,7 +42,7 @@ public class FieldmapOpMode extends OpMode {
     @Override
     public void init() {
         movementController = new GamepadController(gamepad1);
-        vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, false);
+        vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, true);
 
         HashMap<SpaceMap.Space, ArrayList<OpenGLMatrix>> staticCoordsGL = new HashMap<>();
         staticCoordsGL.put(SpaceMap.Space.IMAGE_TARGET, vuforiaManager.getTrackablePositions());

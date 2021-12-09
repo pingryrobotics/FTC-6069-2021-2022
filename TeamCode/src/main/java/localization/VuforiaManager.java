@@ -133,7 +133,7 @@ public class VuforiaManager {
 
         List<WebcamName> webcamNameList = ClassFactory.getInstance().getCameraManager().getAllWebcams();
         if (webcamNameList.size() > 0) {
-            this.cameraName = webcamNameList.get(0);
+            this.cameraName = webcamNameList.get(1);
             parameters.cameraName = cameraName;
             Log.d(TAG, "Adding webcam to vuforia");
         } else {
@@ -157,7 +157,7 @@ public class VuforiaManager {
         infoMap = new HashMap<>();
 
         // custom datasets also use this, but you load a different thing obviously
-        VuforiaTrackables vuforiaTrackables = vuforiaLocalizer.loadTrackablesFromAsset("UltimateGoal");
+        VuforiaTrackables vuforiaTrackables = vuforiaLocalizer.loadTrackablesFromAsset("FreightFrenzy");
 
         // give basic information for each trackable
         List<ImageTarget> trackableLabels = ImageTarget.cachedValues();
