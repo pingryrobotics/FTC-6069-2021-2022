@@ -137,11 +137,15 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         intakeCvManager.initializeCamera(intakePipeline);
+
+    }
+
+    public void initializeVuforia() {
+        vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, false, "Webcam 2");
         HashMap<SpaceMap.Space, ArrayList<OpenGLMatrix>> staticCoordsGL = new HashMap<>();
         staticCoordsGL.put(SpaceMap.Space.IMAGE_TARGET, vuforiaManager.getTrackablePositions());
         fieldMap = new FieldMap(fieldLength, staticCoordsGL, null,false);
         fieldMap.updateDisplay();
-
     }
 
     @Override
@@ -166,26 +170,27 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
             telemetry.update();
 
             cvManager.stopPipeline();
-            vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, false, "Webcam 2");
+
 
             linearSlide.tilt();
-            telemetry.addData("Level found", pipeline.getObjLevel());
+            telemetry.addData("Level found", objLevel);
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
 
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
-                autoQueue.addAutoAction(driveControl.getStrafeAction(-24, 1));
-                autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
-            } else if (objLevel == 1 || objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
-                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-35, 0.5));
-                autoQueue.addAutoAction(driveControl.getForwardAction(22, 1));
+            initializeVuforia();
 
-            }
+            autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-24, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
+//            } else if (objLevel == 1 || objLevel == 2) {
+//                autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
+//                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-35, 0.5));
+//                autoQueue.addAutoAction(driveControl.getForwardAction(22, 1));
+//
+//            }
 
             if (objLevel == 0) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
@@ -204,24 +209,25 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
             runQueue(autoQueue);
 
-            if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
+            //if (objLevel == 0) {
+            autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
-                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 1));
+            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 1));
 //                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
 //                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
-            } else if (objLevel == 1 || objLevel == 2) {
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
-                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-55, 0.8));
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.5));
-                //autoQueue.addAutoAction(driveControl.getForwardAction(-22, 0.8));
-//                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
-//                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));
-
-            }
+//            } else if (objLevel == 1 || objLevel == 2) {
+//                //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
+//                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-55, 0.8));
+//                //autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.5));
+//                //autoQueue.addAutoAction(driveControl.getForwardAction(-22, 0.8));
+////                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
+////                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));
+//
+//            }
 
             runQueue(autoQueue);
+
 
 
 //
@@ -327,7 +333,8 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
-            updateVuforia();
+
+            telemetry.update();
         }
 
         // code to run once when stop is called
