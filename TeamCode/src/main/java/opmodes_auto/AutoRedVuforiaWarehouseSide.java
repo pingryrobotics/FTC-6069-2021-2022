@@ -146,30 +146,27 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        telemetry.addData("Initialization status", "In progress");
-        telemetry.update();
-        initialize();
-
-        telemetry.addData("Initialization status", "Complete");
-
-        double cnt = 0;
-        for (int i = 0; i < 20; i++) {
-            cnt += pipeline.getObjLevel();
-        }
-
-        int objLevel = (int) (cnt / 20);
-
-        cvManager.stopPipeline();
-        vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, false, "Webcam 2");
-
-        while (!opModeIsActive()) {
-            updateVuforia();
-            telemetry.addData("Level found", objLevel);
-            telemetry.update();
-        }
-
         waitForStart();
         if (opModeIsActive()) {
+            telemetry.addData("Initialization status", "In progress");
+            telemetry.update();
+            initialize();
+
+            telemetry.addData("Initialization status", "Complete");
+
+            double cnt = 0;
+            for (int i = 0; i < 20; i++) {
+                cnt += pipeline.getObjLevel();
+            }
+
+            int objLevel = (int) (cnt / 20);
+
+            telemetry.addData("Level found", objLevel);
+            telemetry.update();
+
+            cvManager.stopPipeline();
+            vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, false, "Webcam 2");
+
             linearSlide.tilt();
             telemetry.addData("Level found", pipeline.getObjLevel());
             telemetry.addData("starting angle", driveControl.getGyroAngle());
