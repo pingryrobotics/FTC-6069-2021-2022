@@ -132,6 +132,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         cvManager.initializeCamera(pipeline);
         intakeCvManager.initializeCamera(intakePipeline);
         telemetry.addData("Object Level", pipeline.getObjLevel());
+        telemetry.update();
 
         waitForStart();
         if (opModeIsActive()) {

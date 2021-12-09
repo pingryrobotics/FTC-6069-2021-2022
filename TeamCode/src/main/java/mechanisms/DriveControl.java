@@ -446,9 +446,21 @@ public class DriveControl implements QueueableMechanism {
      * @param percentSpeed the percent of the maximum speed to run at
      * @return the DriveAction for a turn movement
      */
-    public DriveAction getTurnAction(double incrementAngle, double percentSpeed) {
-        return new DriveAction(DriveAction.DriveOption.TURN, incrementAngle, percentSpeed, this);
+    public DriveAction getTurnIncrementAction(double incrementAngle, double percentSpeed) {
+        return new DriveAction(DriveAction.DriveOption.TURN_INCREMENT, incrementAngle, percentSpeed, this);
     }
+
+    /**
+     * Convenience method to get a drive action for turning by the specified angle in degrees
+     * @param targetAngle the angle to turn to [-180, 180]
+     * @param percentSpeed the percent of the maximum speed to run at
+     * @return the DriveAction for a turn movement
+     */
+    public DriveAction getTurnPositionAction(double targetAngle, double percentSpeed) {
+        return new DriveAction(DriveAction.DriveOption.TURN_POSITION, targetAngle, percentSpeed, this);
+    }
+
+
 
     /**
      * A class to represent auto drive actions to queue for execution
@@ -465,8 +477,9 @@ public class DriveControl implements QueueableMechanism {
          * @param driveOption the type of action to perform
          * @param targetIncrement the increment to add to the current position. If the driveOption is:
          *                        FORWARD/STRAFE: the increment is in inches
-         *                        TURN: the increment is an imu angle within the range of [-180,180], and values
-         *                       outside this range will be wrapped to this range.
+         *                        TURN_INCREMENT: the increment is an imu angle within the range of [-180,180], and values
+         *                        outside this range will be wrapped to this range.
+         *                        TURN_POSITION: turns to the specified imu angle
          * @param percentSpeed the percent of the motors maximum speed to run at [0,1]
          */
         public DriveAction(DriveOption driveOption, double targetIncrement, double percentSpeed, DriveControl driveControl) {
@@ -474,7 +487,7 @@ public class DriveControl implements QueueableMechanism {
             this.driveOption = driveOption;
             this.percentSpeed = percentSpeed;
 
-            if (driveOption == DriveOption.TURN) {
+            if (driveOption == DriveOption.TURN_INCREMENT || driveOption == DriveOption.TURN_POSITION) {
                 // negative wrapped because its added to the target position in setTargetPosition,
                 // so it needs to be negative
                 this.targetIncrement = -wrapAngle(targetIncrement);
@@ -496,9 +509,12 @@ public class DriveControl implements QueueableMechanism {
                 case STRAFE:
                     driveControl.moveXDist(targetIncrement, percentSpeed);
                     break;
-                case TURN:
+                case TURN_INCREMENT:
                     driveControl.setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     setTargetPosition(driveControl.getGyroAngle());
+                    break;
+                case TURN_POSITION:
+                    driveControl.setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     break;
                 case WAIT:
                     driveControl.setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -519,7 +535,8 @@ public class DriveControl implements QueueableMechanism {
                 case STRAFE:
                     finished = !driveControl.isRunningToPosition();
                     break;
-                case TURN:
+                case TURN_POSITION:
+                case TURN_INCREMENT:
                     finished = driveControl.updateTurnTarget(this);
                     break;
                 case WAIT:
@@ -551,7 +568,8 @@ public class DriveControl implements QueueableMechanism {
         public enum DriveOption {
             FORWARD,
             STRAFE,
-            TURN,
+            TURN_INCREMENT,
+            TURN_POSITION,
             WAIT,
         }
     }
