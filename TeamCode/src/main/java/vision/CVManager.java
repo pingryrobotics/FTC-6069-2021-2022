@@ -68,6 +68,12 @@ public class CVManager {
         });
     }
 
+    /**
+     * Stop the current pipeline
+     */
+    public void stopPipeline() {
+        webcam.stopStreaming();
+    }
 
     /**
      * Get the currently used webcam
