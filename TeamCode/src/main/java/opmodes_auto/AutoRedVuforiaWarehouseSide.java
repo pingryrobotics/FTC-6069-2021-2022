@@ -218,20 +218,14 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
             autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
             autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 1));
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 1));
-//                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
-//                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
-//            } else if (objLevel == 1 || objLevel == 2) {
-//                //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
-//                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-55, 0.8));
-//                //autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.5));
-//                //autoQueue.addAutoAction(driveControl.getForwardAction(-22, 0.8));
-////                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
-////                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));
-//
-//            }
 
             runQueue(autoQueue);
+            sleep(1000);
+            while (vuforiaManager.getUpdatedRobotPosition() == null) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(5, .8));
+                runQueue(autoQueue);
+                sleep(1000);
+            }
 
 
 
