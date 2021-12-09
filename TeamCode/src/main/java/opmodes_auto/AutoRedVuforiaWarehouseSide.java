@@ -137,11 +137,15 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         intakeCvManager.initializeCamera(intakePipeline);
+
+    }
+
+    public void initializeVuforia() {
+        vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, false, "Webcam 2");
         HashMap<SpaceMap.Space, ArrayList<OpenGLMatrix>> staticCoordsGL = new HashMap<>();
         staticCoordsGL.put(SpaceMap.Space.IMAGE_TARGET, vuforiaManager.getTrackablePositions());
         fieldMap = new FieldMap(fieldLength, staticCoordsGL, null,false);
         fieldMap.updateDisplay();
-
     }
 
     @Override
@@ -165,7 +169,7 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
             telemetry.update();
 
             cvManager.stopPipeline();
-            vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, false, "Webcam 2");
+
 
             linearSlide.tilt();
             telemetry.addData("Level found", objLevel);
@@ -174,6 +178,8 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
 
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
+
+            initializeVuforia();
 
             autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
             autoQueue.addAutoAction(driveControl.getStrafeAction(-24, 1));
