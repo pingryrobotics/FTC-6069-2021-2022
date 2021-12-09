@@ -131,7 +131,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         intakeCvManager.initializeCamera(intakePipeline);
-
+        telemetry.addData("Object Level", pipeline.getObjLevel());
 
         waitForStart();
         if (opModeIsActive()) {
@@ -139,8 +139,8 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //            telemetry.addData("Level found", pipeline.getObjLevel());
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
-            //int objLevel = pipeline.getObjLevel();
-            int objLevel = 2;
+            int objLevel = pipeline.getObjLevel();
+
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
@@ -151,15 +151,16 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
             int firstAngle = 65;
             autoQueue.addAutoAction(driveControl.getTurnAction(-firstAngle, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(4, 1));
-
+            int inches = 0;
             if (objLevel == 0) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+                inches = 2;
             } else if (objLevel == 1) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
+            autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
             runQueue(autoQueue);
 
             linearSlide.dump();
@@ -171,81 +172,79 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             while (autoQueue.updateQueue()) {
                 sleep(50);
             }
-////
-////            // carousel spin would go here if our partner isn't doing it
-////            // we probably wouldn't use this opmode unless partner can do carousel since you have
-////            // to move all the way to the carousel and then back in order to park
-////
-////            // loop iterates once every cycle
-////            while (rtime.time() <= 25000) { // this gives us at least 5 seconds to park
-////                // move back a bit
-////                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
-////
-////                // robot is now horizontal, faces the wall opposite of the warehouses
-////                autoQueue.addAutoAction(driveControl.getTurnAction(-(90 - firstAngle), 0.5));
-////
-////                // press against the wall in preparation to move back
-////                autoQueue.addAutoAction(driveControl.getStrafeAction(-26, 1));
-////
-////                // finish executing instructions
-////                while (autoQueue.updateQueue()) {
-////                    sleep(100);
-////                }
-////                double inchesMoved = 0;
-////
-////                // start intake
-////                intake.intakeIn();
-////
-////                // moving towards warehouse until getting an element
-////                while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
-////                    while (autoQueue.updateQueue()) {
-////                        sleep(10);
-////                    }
-////                    autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
-////                    inchesMoved += 2;
-////                    if (inchesMoved >= 80) { // couldn't intake anything
-////                                             // so we can just park for the rest
-////                        sleep(100000);
-////                    }
-////                }
-////                intake.intakeOut();
-////                autoQueue.addAutoAction(driveControl.getForwardAction(inchesMoved, 1));
-////                while (autoQueue.updateQueue()) {
-////                    sleep(100);
-////                }
-////                intake.stop();
-////                autoQueue.addAutoAction(driveControl.getStrafeAction(26, 1));
-////                autoQueue.addAutoAction(driveControl.getTurnAction(90 - firstAngle, 0.5));
-////                autoQueue.addAutoAction(driveControl.getForwardAction(2, 1));
-////                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
-////                while (autoQueue.updateQueue()) {
-////                    sleep(100);
-////                }
-////                linearSlide.dump();
-////                sleep(1500);
-////                linearSlide.undump();
-////                sleep(1500);
-////                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
-////                while (autoQueue.updateQueue()) {
-////                    sleep(100);
-////                }
-////            }
-////
-////            // park in warehouse
-////            autoQueue.addAutoAction(driveControl.getTurnAction(-(90 - firstAngle), 0.5));
-////            autoQueue.addAutoAction(driveControl.getStrafeAction(-26, 1)); // go against wall
-////            autoQueue.addAutoAction(driveControl.getForwardAction(-40, 1)); // drive into warehouse
-////            while (autoQueue.updateQueue()) {
-////                sleep(100);
-////            }
-////            telemetry.update();
-////        }
-////        while (opModeIsActive()) {
-////            autoQueue.updateQueue();
-////            telemetry.update();
-////            sleep(100);
-////        }
-////    }
+//
+//            // carousel spin would go here if our partner isn't doing it
+//            // we probably wouldn't use this opmode unless partner can do carousel since you have
+//            // to move all the way to the carousel and then back in order to park
+//
+//            // loop iterates once every cycle
+            while (rtime.time() <= 25000) { // this gives us at least 5 seconds to park
+                // move back a bit
+                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+
+                // robot is now horizontal, faces the wall opposite of the warehouses
+                autoQueue.addAutoAction(driveControl.getTurnAction(-(90 - firstAngle), 0.5));
+
+                // press against the wall in preparation to move back
+                autoQueue.addAutoAction(driveControl.getStrafeAction(-26, 1));
+
+                // finish executing instructions
+                while (autoQueue.updateQueue()) {
+                    sleep(100);
+                }
+                double inchesMoved = 0;
+
+                // start intake
+                intake.intakeIn();
+
+                // moving towards warehouse until getting an element
+                while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
+                    while (autoQueue.updateQueue()) {
+                        sleep(10);
+                    }
+                    autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+                    inchesMoved += 2;
+                    if (inchesMoved >= 80) { // couldn't intake anything
+                                             // so we can just park for the rest
+                        sleep(100000);
+                    }
+                }
+                intake.intakeOut();
+                autoQueue.addAutoAction(driveControl.getForwardAction(inchesMoved, 1));
+                while (autoQueue.updateQueue()) {
+                    sleep(100);
+                }
+                intake.stop();
+                autoQueue.addAutoAction(driveControl.getStrafeAction(26, 1));
+                autoQueue.addAutoAction(driveControl.getTurnAction(90 - firstAngle, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(2, 1));
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+                while (autoQueue.updateQueue()) {
+                    sleep(100);
+                }
+                linearSlide.dump();
+                sleep(1500);
+                linearSlide.undump();
+                sleep(1500);
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
+                while (autoQueue.updateQueue()) {
+                    sleep(100);
+                }
+            }
+
+            // park in warehouse
+            autoQueue.addAutoAction(driveControl.getTurnAction(-(90 - firstAngle), 0.5));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-26, 1)); // go against wall
+            autoQueue.addAutoAction(driveControl.getForwardAction(-40, 1)); // drive into warehouse
+            while (autoQueue.updateQueue()) {
+                sleep(100);
+            }
+            telemetry.update();
+        }
+        while (opModeIsActive()) {
+            autoQueue.updateQueue();
+            telemetry.update();
+            sleep(100);
         }
     }
 
