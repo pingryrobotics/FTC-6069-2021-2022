@@ -144,10 +144,10 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
         vuforiaManager = new VuforiaManager(hardwareMap, fieldLength, false, "Webcam 2");
         HashMap<SpaceMap.Space, ArrayList<OpenGLMatrix>> staticCoordsGL = new HashMap<>();
         staticCoordsGL.put(SpaceMap.Space.IMAGE_TARGET, vuforiaManager.getTrackablePositions());
-        fieldMap = new FieldMap(fieldLength, staticCoordsGL, null,false);
+        fieldMap = new FieldMap(fieldLength, staticCoordsGL, null,true);
         fieldMap.updateDisplay();
     }
-
+    
     @Override
     public void runOpMode() {
         telemetry.addData("Initialization status", "In progress");
@@ -157,6 +157,7 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
 
 
         telemetry.addData("Initialization status", "Complete");
+        telemetry.update();
 
 
         waitForStart();
@@ -337,7 +338,7 @@ public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
-
+            updateVuforia();
             telemetry.update();
         }
 
