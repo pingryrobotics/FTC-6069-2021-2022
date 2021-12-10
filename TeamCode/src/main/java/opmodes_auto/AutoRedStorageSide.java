@@ -43,6 +43,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import localization.FieldMap;
+import localization.SpaceMap;
+import localization.VuforiaManager;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
@@ -162,79 +168,116 @@ public class AutoRedStorageSide extends LinearOpMode {
     private CVManager intakeCvManager;
     private AutoQueue autoQueue;
 
-    @Override
-    public void runOpMode() {
+
+    public void initialize() {
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
-        cvManager = new CVManager(hardwareMap, "Webcam 1");
-        intakeCvManager = new CVManager(hardwareMap, "Webcam 2");
+        autoQueue = new AutoQueue();
+        cvManager = new CVManager(hardwareMap, "Webcam 2", true);
+        intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         intakeCvManager.initializeCamera(intakePipeline);
-        waitForStart();
 
+    }
+
+    @Override
+    public void runOpMode() {
+        telemetry.addData("Initialization status", "In progress");
+        telemetry.update();
+        initialize();
+
+
+
+        telemetry.addData("Initialization status", "Complete");
+        telemetry.update();
+
+
+        waitForStart();
         if (opModeIsActive()) {
-            telemetry.addData("Level found", pipeline.getObjLevel());
-            int objLevel = pipeline.getObjLevel();
+
+            double cnt = 0;
+            for (int i = 0; i < 20; i++) {
+                cnt += pipeline.getObjLevel();
+            }
+
+            int objLevel = (int) (cnt / 20);
+
+            telemetry.addData("Level found", objLevel);
+            telemetry.update();
+
+
+
+            cvManager.stopPipeline();
+
+
+            linearSlide.tilt();
+            telemetry.addData("starting angle", driveControl.getGyroAngle());
+            telemetry.update();
+
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-//            driveControl.moveXDist(-28, 0.5);
-//            driveControl.moveYDist(80, 1);
-
-            // move to linear slide and put square on level
-            autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
-            int firstAngle = 75;
-            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(firstAngle, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(2, 1));
+            if (objLevel == 2) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(40, 1));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(6, 1));
+            } else if (objLevel == 0 || objLevel == 1) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(35, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(22, 1));
+            }
 
             if (objLevel == 0) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
-            } else if (objLevel == 2){
+            } else if (objLevel == 2) {
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
-
-            while (autoQueue.updateQueue()) {
-                sleep(100);
-            }
+            //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
+            runQueue(autoQueue);
 
             linearSlide.dump();
-            sleep(1000);
+            sleep(500);
             linearSlide.undump();
+            sleep(500);
+            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
+            runQueue(autoQueue);
+
+            if (objLevel == 2) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-24, 1));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-30, 1));
+            } else if (objLevel == 0 || objLevel == 1) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-22, 1));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(55, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-35, 1));
+            }
+
+            runQueue(autoQueue);
             sleep(1000);
-            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
 
-            while (autoQueue.updateQueue()) {
-                sleep(100);
-            }
-
-            // carousel spin would go here if our partner isn't doing it
-            // we probably wouldn't use this opmode unless partner can do carousel since you have
-            // to move all the way to the carousel and then back in order to park
-
-            autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
-            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-10, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(-27, 1));
-            while (autoQueue.updateQueue()) {
-                sleep(100);
-            }
             carousel.reverseSpin();
             sleep(5000);
             carousel.stop();
             sleep(5000);
 
             // park in warehouse
-            autoQueue.addAutoAction(driveControl.getForwardAction(-10, 1));
-            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(25, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(100, 1));
-            while (autoQueue.updateQueue()) {
-                sleep(100);
+            if (objLevel == 2) {
+                autoQueue.addAutoAction(driveControl.getStrafeAction(10, 1));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 0.5));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(10, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(100, 1));
+            } else if (objLevel == 0 || objLevel == 1) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-10, 1));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(-10, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-100, 1));
             }
+            runQueue(autoQueue);
 
             telemetry.update();
         }
@@ -242,6 +285,17 @@ public class AutoRedStorageSide extends LinearOpMode {
             autoQueue.updateQueue();
             telemetry.update();
             sleep(100);
+        }
+    }
+    /**
+     * Runs the queued actions to completion
+     * also updates vuforia
+     * @param autoQueue the queue to run
+     */
+    public void runQueue(AutoQueue autoQueue) {
+        while (autoQueue.updateQueue()) {
+            sleep(100);
+            telemetry.update();
         }
     }
 }
