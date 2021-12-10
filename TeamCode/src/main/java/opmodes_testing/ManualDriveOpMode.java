@@ -71,7 +71,12 @@ public class ManualDriveOpMode extends OpMode {
         driveControl.drive(theta, magnitude, turn);
 
         if (movementController.getButtonState(GamepadController.ToggleButton.B) == GamepadController.ButtonState.KEY_HOLD) {
-            driveControl.setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            driveControl.drive(Math.PI/3, 3, 0);
+        }
+
+
+        if (movementController.getButtonState(GamepadController.ToggleButton.A) == GamepadController.ButtonState.KEY_HOLD) {
+            driveControl.drive(Math.PI/6, 3, 0);
         }
 
     }

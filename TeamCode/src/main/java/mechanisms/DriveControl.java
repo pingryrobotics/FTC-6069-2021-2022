@@ -44,7 +44,7 @@ public class DriveControl implements QueueableMechanism {
     private final Telemetry telemetry;
 
     // auto navigation constants
-    private static final double CLOSE_ENOUGH_TO_ZERO = 1;
+    private static final double CLOSE_ENOUGH_TO_ZERO = .6;
 
 
 
@@ -489,10 +489,13 @@ public class DriveControl implements QueueableMechanism {
             this.driveOption = driveOption;
             this.percentSpeed = percentSpeed;
 
-            if (driveOption == DriveOption.TURN_INCREMENT || driveOption == DriveOption.TURN_POSITION) {
+            if (driveOption == DriveOption.TURN_INCREMENT) {
                 // negative wrapped because its added to the target position in setTargetPosition,
                 // so it needs to be negative
                 this.targetIncrement = -wrapAngle(targetIncrement);
+            } else if (driveOption == DriveOption.TURN_POSITION) {
+                this.targetPosition = wrapAngle(targetIncrement);
+                this.targetIncrement = -1;
             }
             else {
                 this.targetIncrement = targetIncrement;
