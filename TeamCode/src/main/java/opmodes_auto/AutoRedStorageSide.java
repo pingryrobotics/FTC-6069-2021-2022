@@ -222,16 +222,16 @@ public class AutoRedStorageSide extends LinearOpMode {
             rtime.reset();
 
             autoQueue.addAutoAction(driveControl.getForwardAction(7, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-31, 0.6));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.4));
             runQueue(autoQueue);
             carousel.reverseSpin();
-            sleep(5000);
+            sleep(4000);
             carousel.stop();
             autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.6));
-            autoQueue.addAutoAction(driveControl.getForwardAction(30, 0.8));
+            autoQueue.addAutoAction(driveControl.getForwardAction(31, 0.8));
             autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(27, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
 
 
             if (objLevel == 0) {
@@ -251,14 +251,14 @@ public class AutoRedStorageSide extends LinearOpMode {
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
             runQueue(autoQueue);
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(-27, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(24, 0.8));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-34, 0.8));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(23, 0.8));
 //            autoQueue.addAutoAction(driveControl.getForwardAction(40, 1));
 //            autoQueue.addAutoAction(driveControl.getStrafeAction(25, 0.8));
 //            autoQueue.addAutoAction(driveControl.getForwardAction(50, 1));
 
             runQueue(autoQueue);
-            sleep(1000);
+            //sleep(1000);
 
 //            carousel.spin();
 //            sleep(5000);
