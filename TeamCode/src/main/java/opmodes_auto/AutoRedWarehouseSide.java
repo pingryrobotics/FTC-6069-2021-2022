@@ -165,7 +165,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             int robotAngle = 0;
 
             autoQueue.addAutoAction(driveControl.getForwardAction(5, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-31, 0.8));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.8));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.5));
 //            } else if (objLevel == 1 || objLevel == 2) {
 //                autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
@@ -210,7 +210,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             //sleep(1500);
 
             driveControl.setStrafeVelocity(-.5);
-            sleep(1000);
+            sleep(1200);
             driveControl.setStrafeVelocity(0);
             //autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
@@ -219,14 +219,27 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(-100, 0.8));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-70, 0.8));
 
             //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 0.5));
             //autoQueue.addAutoAction(driveControl.getForwardAction(-40, 0.8));
-            runQueue(autoQueue);
             intake.intakeIn();
+            runQueue(autoQueue);
+
 //            int inchesMoved = 0;
 //            // moving towards warehouse until getting an element
+            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+                runQueue(autoQueue);
+//                while (autoQueue.updateQueue()) {
+//                    sleep(10);
+//                }
+//                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+//                runQueue(autoQueue);
+//                inchesMoved -= 2;
+//                sleep(1000);
+            }
+            intake.stop();
 //            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
 //                while (autoQueue.updateQueue()) {
 //                    sleep(10);
