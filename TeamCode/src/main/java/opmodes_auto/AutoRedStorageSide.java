@@ -222,10 +222,10 @@ public class AutoRedStorageSide extends LinearOpMode {
             rtime.reset();
 
             if (objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getStrafeAction(-20, 1));
-                autoQueue.addAutoAction(driveControl.getForwardAction(40, 1));
-                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 1));
-                autoQueue.addAutoAction(driveControl.getForwardAction(10, 1));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(-20, 0.8));
+                autoQueue.addAutoAction(driveControl.getForwardAction(40, 0.8));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(16, 1));
             } else if (objLevel == 0 || objLevel == 1) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
                 autoQueue.addAutoAction(driveControl.getTurnIncrementAction(35, 0.5));
@@ -250,9 +250,9 @@ public class AutoRedStorageSide extends LinearOpMode {
             runQueue(autoQueue);
 
             if (objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-35, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-27, 0.8));
                 autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 0.5));
-                autoQueue.addAutoAction(driveControl.getForwardAction(-30, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-40, 0.6));
             } else if (objLevel == 0 || objLevel == 1) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(-22, 1));
                 autoQueue.addAutoAction(driveControl.getTurnIncrementAction(55, 0.5));
