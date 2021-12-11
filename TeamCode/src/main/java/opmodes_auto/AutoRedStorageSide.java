@@ -253,7 +253,32 @@ public class AutoRedStorageSide extends LinearOpMode {
 
             autoQueue.addAutoAction(driveControl.getForwardAction(-34, 0.8));
             autoQueue.addAutoAction(driveControl.getStrafeAction(20, 0.8));
-            runQueue(autoQueue);
+//            autoQueue.addAutoAction(driveControl.getForwardAction(40, 1));
+//            autoQueue.addAutoAction(driveControl.getStrafeAction(25, 0.8));
+//            autoQueue.addAutoAction(driveControl.getForwardAction(50, 1));
+//
+//            autoQueue.addAutoAction(driveControl.getStrafeAction(23, 0.8));
+//
+//            runQueue(autoQueue);
+//
+//            carousel.spin();
+//            sleep(5000);
+//            carousel.stop();
+//            sleep(5000);
+//
+//            // park in warehouse
+//            if (objLevel == 2) {
+//                autoQueue.addAutoAction(driveControl.getStrafeAction(10, 1));
+//                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 0.5));
+//                autoQueue.addAutoAction(driveControl.getStrafeAction(10, 1));
+//                autoQueue.addAutoAction(driveControl.getForwardAction(100, 1));
+//            } else if (objLevel == 0 || objLevel == 1) {
+//                autoQueue.addAutoAction(driveControl.getForwardAction(-10, 1));
+//                autoQueue.addAutoAction(driveControl.getStrafeAction(-10, 0.5));
+//                autoQueue.addAutoAction(driveControl.getForwardAction(-100, 1));
+//            }
+//            runQueue(autoQueue);
+
         }
     }
     /**
