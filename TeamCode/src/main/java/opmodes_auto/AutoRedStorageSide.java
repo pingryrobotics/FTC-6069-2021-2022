@@ -224,7 +224,7 @@ public class AutoRedStorageSide extends LinearOpMode {
             if (objLevel == 2) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(40, 1));
                 autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 1));
-                autoQueue.addAutoAction(driveControl.getForwardAction(6, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(10, 1));
             } else if (objLevel == 0 || objLevel == 1) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
                 autoQueue.addAutoAction(driveControl.getTurnIncrementAction(35, 0.5));
@@ -249,7 +249,7 @@ public class AutoRedStorageSide extends LinearOpMode {
             runQueue(autoQueue);
 
             if (objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-24, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-27, 1));
                 autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 0.5));
                 autoQueue.addAutoAction(driveControl.getForwardAction(-30, 1));
             } else if (objLevel == 0 || objLevel == 1) {
@@ -259,12 +259,10 @@ public class AutoRedStorageSide extends LinearOpMode {
             }
 
             runQueue(autoQueue);
-            sleep(1000);
 
-            carousel.reverseSpin();
+            carousel.spin();
             sleep(5000);
             carousel.stop();
-            sleep(5000);
 
             // park in warehouse
             if (objLevel == 2) {
@@ -280,11 +278,6 @@ public class AutoRedStorageSide extends LinearOpMode {
             runQueue(autoQueue);
 
             telemetry.update();
-        }
-        while (opModeIsActive()) {
-            autoQueue.updateQueue();
-            telemetry.update();
-            sleep(100);
         }
     }
     /**
