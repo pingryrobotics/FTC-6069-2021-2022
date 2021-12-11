@@ -176,7 +176,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
 
             if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(14, 0.8));
+                autoQueue.addAutoAction(driveControl.getForwardAction(15, 0.8));
                 //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
                 linearSlide.level1();
             } else if (objLevel == 1) {
@@ -184,7 +184,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
                 //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
                 linearSlide.level2();
             } else if (objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(16, 0.8));
+                autoQueue.addAutoAction(driveControl.getForwardAction(17, 0.8));
                 //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
                 linearSlide.level3();
             }
@@ -219,27 +219,28 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(-70, 0.8));
 
+            autoQueue.addAutoAction(driveControl.getForwardAction(-60, 0.8));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(25, 1));
             //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 0.5));
             //autoQueue.addAutoAction(driveControl.getForwardAction(-40, 0.8));
-            intake.intakeIn();
+            //intake.intakeIn();
             runQueue(autoQueue);
 
 //            int inchesMoved = 0;
 //            // moving towards warehouse until getting an element
-            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
-                runQueue(autoQueue);
-//                while (autoQueue.updateQueue()) {
-//                    sleep(10);
-//                }
+//            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
 //                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
 //                runQueue(autoQueue);
-//                inchesMoved -= 2;
-//                sleep(1000);
-            }
-            intake.stop();
+////                while (autoQueue.updateQueue()) {
+////                    sleep(10);
+////                }
+////                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+////                runQueue(autoQueue);
+////                inchesMoved -= 2;
+////                sleep(1000);
+//            }
+//            intake.stop();
 //            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
 //                while (autoQueue.updateQueue()) {
 //                    sleep(10);

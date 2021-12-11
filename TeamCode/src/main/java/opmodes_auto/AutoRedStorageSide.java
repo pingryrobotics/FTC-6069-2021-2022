@@ -279,6 +279,7 @@ public class AutoRedStorageSide extends LinearOpMode {
 //            }
 //            runQueue(autoQueue);
 
+            runQueue(autoQueue);
         }
     }
     /**

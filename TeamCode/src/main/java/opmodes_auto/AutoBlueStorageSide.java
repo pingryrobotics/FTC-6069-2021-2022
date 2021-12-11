@@ -221,26 +221,35 @@ public class AutoBlueStorageSide extends LinearOpMode {
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(5, 0.8));
-            autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 0.6));
-            autoQueue.addAutoAction(driveControl.getForwardAction(-28, 0.4));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-1, 0.2));
+            autoQueue.addAutoAction(driveControl.getForwardAction(10, 1));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-28, 1));
+
             runQueue(autoQueue);
+            driveControl.setStrafeVelocity(-.5);
+            sleep(500);
+            driveControl.setStrafeVelocity(0);
             carousel.spin();
-            sleep(4000);
+            sleep(2000);
             carousel.stop();
+
             autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
-            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.6));
-            autoQueue.addAutoAction(driveControl.getForwardAction(29, 0.8));
-            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(37, 1));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 1));
+//            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.8));
+//            autoQueue.addAutoAction(driveControl.getForwardAction(29, 0.8));
+//            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 0.8));
+
 
 
             if (objLevel == 0) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
             //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
@@ -249,12 +258,12 @@ public class AutoBlueStorageSide extends LinearOpMode {
             linearSlide.dump();
             sleep(500);
             linearSlide.undump();
-            sleep(500);
+            //sleep(500);
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
             runQueue(autoQueue);
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(-32, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-20, 0.8));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-32, 1));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-15, 1));
 
             runQueue(autoQueue);
         }
