@@ -221,17 +221,17 @@ public class AutoRedStorageSide extends LinearOpMode {
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(8, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-32, 0.6));
+            autoQueue.addAutoAction(driveControl.getForwardAction(7, 0.8));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-31, 0.6));
             runQueue(autoQueue);
             carousel.reverseSpin();
             sleep(5000);
             carousel.stop();
             autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.6));
-            autoQueue.addAutoAction(driveControl.getForwardAction(35, 0.8));
+            autoQueue.addAutoAction(driveControl.getForwardAction(30, 0.8));
             autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(27, 1));
 
 
             if (objLevel == 0) {
@@ -252,7 +252,7 @@ public class AutoRedStorageSide extends LinearOpMode {
             runQueue(autoQueue);
 
             autoQueue.addAutoAction(driveControl.getForwardAction(-27, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(25, 0.8));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(24, 0.8));
 //            autoQueue.addAutoAction(driveControl.getForwardAction(40, 1));
 //            autoQueue.addAutoAction(driveControl.getStrafeAction(25, 0.8));
 //            autoQueue.addAutoAction(driveControl.getForwardAction(50, 1));
