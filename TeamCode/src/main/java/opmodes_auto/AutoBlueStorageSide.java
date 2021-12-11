@@ -221,18 +221,19 @@ public class AutoBlueStorageSide extends LinearOpMode {
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(20, 0.8));
-            autoQueue.addAutoAction(driveControl.getTurnPositionAction(-90, 0.6));
-            autoQueue.addAutoAction(driveControl.getForwardAction(-33, 0.4));
+            autoQueue.addAutoAction(driveControl.getForwardAction(5, 0.8));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 0.6));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-28, 0.4));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-1, 0.2));
             runQueue(autoQueue);
             carousel.spin();
             sleep(4000);
             carousel.stop();
-            autoQueue.addAutoAction(driveControl.getForwardAction(-5, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.6));
-            autoQueue.addAutoAction(driveControl.getForwardAction(30, 0.8));
+            autoQueue.addAutoAction(driveControl.getForwardAction(29, 0.8));
             autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
 
 
             if (objLevel == 0) {
@@ -252,8 +253,8 @@ public class AutoBlueStorageSide extends LinearOpMode {
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
             runQueue(autoQueue);
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(-34, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-23, 0.8));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-32, 0.8));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-20, 0.8));
 
             runQueue(autoQueue);
         }
