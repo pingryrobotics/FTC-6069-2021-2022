@@ -38,14 +38,26 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import localization.FieldMap;
+import localization.SpaceMap;
+import localization.VuforiaManager;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
+import mechanisms.AutoQueue;
+import mechanisms.LinearSlide.SlideAction.SlideOption;
+import vision.CVManager;
+import vision.ElementCVPipeline;
+import vision.IntakeCVPipeline;
 
 /**
  * TODO:
@@ -150,73 +162,111 @@ public class AutoBlueStorageSide extends LinearOpMode {
     private Intake intake;
     private LinearSlide linearSlide;
     private Carousel carousel;
+    private ElementCVPipeline pipeline;
+    private IntakeCVPipeline intakePipeline;
+    private CVManager cvManager;
+    private CVManager intakeCvManager;
+    private AutoQueue autoQueue;
 
-    @Override
-    public void runOpMode() {
+
+    public void initialize() {
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
-//        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-//        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-//        webcam.setPipeline(new ContourPipeline(webcam));
-//        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-//            @Override
-//            public void onOpened() {
-//                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-//            }
-//
-//            @Override
-//            public void onError(int errorCode) {
-//                /*
-//                 * This will be called if the camera could not be opened
-//                 */
-//            }
-//        });
+        autoQueue = new AutoQueue();
+        cvManager = new CVManager(hardwareMap, "Webcam 2", true);
+        intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
+        pipeline = new ElementCVPipeline(cvManager.getWebcam());
+        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
+        cvManager.initializeCamera(pipeline);
+        intakeCvManager.initializeCamera(intakePipeline);
+
+    }
+
+    @Override
+    public void runOpMode() {
+        telemetry.addData("Initialization status", "In progress");
+        telemetry.update();
+        initialize();
+
+
+
+        telemetry.addData("Initialization status", "Complete");
+        telemetry.update();
+
+
         waitForStart();
-
         if (opModeIsActive()) {
-//            telemetry.addData("Level found", ContourPipeline.getObjLevel());
-//            int objLevel = ContourPipeline.getObjLevel();
-            sleep(10000);
-            driveControl.moveXDist(25, 0.5);
-            sleep(1500);
-            driveControl.moveYDist(100, 1);
 
-//            // move to linear slide and put square on level
-//            driveControl.moveYDist(20, 1); // change
-//            sleep(1000);
-//            driveControl.turnAngle(20, 1); // change
-//            sleep(1000);
-//            if (objLevel == 0) {
-//                linearSlide.level1();
-//            } else if (objLevel == 1) {
-//                linearSlide.level2();
-//            } else if (objLevel == 2){
-//                linearSlide.level3();
-//            } else {
-//
-//            }
-//            linearSlide.dump();
-//            sleep(1000);
-//            linearSlide.undump();
-//            sleep(1000);
-//
-//            // park in warehouse
-//            driveControl.turnAngle(-(90 + 20), 1); // change
-//            sleep(1000);
-//            driveControl.moveXDist(13, 1);
-//            driveControl.moveYDist(1, 1); // change
-//            sleep(1000);
+            double cnt = 0;
+            for (int i = 0; i < 20; i++) {
+                cnt += pipeline.getObjLevel();
+            }
 
+            int objLevel = (int) (cnt / 20);
+
+            telemetry.addData("Level found", objLevel);
             telemetry.update();
+
+
+
+            cvManager.stopPipeline();
+
+
+            linearSlide.tilt();
+            telemetry.addData("starting angle", driveControl.getGyroAngle());
+            telemetry.update();
+
+            ElapsedTime rtime = new ElapsedTime();
+            rtime.reset();
+
+            autoQueue.addAutoAction(driveControl.getForwardAction(20, 0.8));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(-90, 0.6));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-33, 0.4));
+            runQueue(autoQueue);
+            carousel.spin();
+            sleep(4000);
+            carousel.stop();
+            autoQueue.addAutoAction(driveControl.getForwardAction(-5, 1));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.6));
+            autoQueue.addAutoAction(driveControl.getForwardAction(30, 0.8));
+            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 0.5));
+            autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
+
+
+            if (objLevel == 0) {
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+            } else if (objLevel == 1) {
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
+            } else if (objLevel == 2) {
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
+            }
+            //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
+            runQueue(autoQueue);
+
+            linearSlide.dump();
+            sleep(500);
+            linearSlide.undump();
+            sleep(500);
+            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
+            runQueue(autoQueue);
+
+            autoQueue.addAutoAction(driveControl.getForwardAction(-34, 0.8));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-23, 0.8));
+
+            runQueue(autoQueue);
         }
-        while (opModeIsActive()) {
-
-            telemetry.update();
+    }
+    /**
+     * Runs the queued actions to completion
+     * also updates vuforia
+     * @param autoQueue the queue to run
+     */
+    public void runQueue(AutoQueue autoQueue) {
+        while (autoQueue.updateQueue()) {
             sleep(100);
+            telemetry.update();
         }
     }
 }
