@@ -219,13 +219,23 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(-70, 0.8));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-50, 0.8));
 
             //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 0.5));
             //autoQueue.addAutoAction(driveControl.getForwardAction(-40, 0.8));
             runQueue(autoQueue);
             intake.intakeIn();
-            sleep(5000);
+            int inchesMoved = 0;
+            // moving towards warehouse until getting an element
+            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
+                while (autoQueue.updateQueue()) {
+                    sleep(10);
+                }
+                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+                runQueue(autoQueue);
+                inchesMoved -= 2;
+                sleep(1000);
+            }
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.5));
                 //autoQueue.addAutoAction(driveControl.getForwardAction(-22, 0.8));
 //                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
@@ -258,18 +268,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //                // start intake
 //                intake.intakeIn();
 //
-//                // moving towards warehouse until getting an element
-//                while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
-//                    while (autoQueue.updateQueue()) {
-//                        sleep(10);
-//                    }
-//                    autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
-//                    inchesMoved -= 2;
-//                    if (inchesMoved >= 80) { // couldn't intake anything
-//                                             // so we can just park for the rest
-//                        sleep(100000);
-//                    }
-//                }
+//               c
 //                intake.intakeOut();
 //                autoQueue.addAutoAction(driveControl.getForwardAction(inchesMoved, 1));
 //                while (autoQueue.updateQueue()) {
