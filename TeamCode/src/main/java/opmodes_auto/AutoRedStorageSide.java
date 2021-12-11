@@ -252,39 +252,37 @@ public class AutoRedStorageSide extends LinearOpMode {
             runQueue(autoQueue);
 
             autoQueue.addAutoAction(driveControl.getForwardAction(-34, 0.8));
+<<<<<<< HEAD
             autoQueue.addAutoAction(driveControl.getStrafeAction(20, 0.8));
 //            autoQueue.addAutoAction(driveControl.getForwardAction(40, 1));
 //            autoQueue.addAutoAction(driveControl.getStrafeAction(25, 0.8));
 //            autoQueue.addAutoAction(driveControl.getForwardAction(50, 1));
 
-            runQueue(autoQueue);
-            //sleep(1000);
-
-//            carousel.spin();
-//            sleep(5000);
-//            carousel.stop();
-//            sleep(5000);
-//
-//            // park in warehouse
-//            if (objLevel == 2) {
-//                autoQueue.addAutoAction(driveControl.getStrafeAction(10, 1));
-//                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 0.5));
-//                autoQueue.addAutoAction(driveControl.getStrafeAction(10, 1));
-//                autoQueue.addAutoAction(driveControl.getForwardAction(100, 1));
-//            } else if (objLevel == 0 || objLevel == 1) {
-//                autoQueue.addAutoAction(driveControl.getForwardAction(-10, 1));
-//                autoQueue.addAutoAction(driveControl.getStrafeAction(-10, 0.5));
-//                autoQueue.addAutoAction(driveControl.getForwardAction(-100, 1));
-//            }
+=======
+            autoQueue.addAutoAction(driveControl.getStrafeAction(23, 0.8));
+            
+>>>>>>> 1a48fa235f11ab3f3f6b428c3a5112d402d2a8bb
             runQueue(autoQueue);
 
-//            /telemetry.update();
+            carousel.spin();
+            sleep(5000);
+            carousel.stop();
+            sleep(5000);
+
+            // park in warehouse
+            if (objLevel == 2) {
+                autoQueue.addAutoAction(driveControl.getStrafeAction(10, 1));
+                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 0.5));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(10, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(100, 1));
+            } else if (objLevel == 0 || objLevel == 1) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-10, 1));
+                autoQueue.addAutoAction(driveControl.getStrafeAction(-10, 0.5));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-100, 1));
+            }
+            runQueue(autoQueue);
+
         }
-//        while (opModeIsActive()) {
-//            autoQueue.updateQueue();
-//            telemetry.update();
-//            sleep(100);
-//        }
     }
     /**
      * Runs the queued actions to completion
