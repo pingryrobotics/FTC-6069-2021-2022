@@ -80,7 +80,7 @@ public class LinearSlide {
     public void levelCap() { // extend linear slide to level appropriate for capping
         slideMotor.setTargetPosition(LEVEL_CAP);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setPower(1);
+        slideMotor.setPower(0.5);
     }
 
 
