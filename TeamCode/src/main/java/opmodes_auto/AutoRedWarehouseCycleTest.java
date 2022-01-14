@@ -30,21 +30,18 @@
 package opmodes_auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 
+import mechanisms.AutoQueue;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
-import mechanisms.AutoQueue;
-import mechanisms.LinearSlide.SlideAction.SlideOption;
 import vision.CVManager;
 import vision.ElementCVPipeline;
 import vision.IntakeCVPipeline;
@@ -90,7 +87,7 @@ import vision.IntakeCVPipeline;
 
 @Autonomous(name="AutoRedWarehouseSide", group ="Autonomous")
 
-public class AutoRedWarehouseSide extends LinearOpMode {
+public class AutoRedWarehouseCycleTest extends LinearOpMode {
 
 
 //    private MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap);
@@ -138,18 +135,6 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()) {
 
-            double cnt = 0;
-            for (int i = 0; i < 20; i++) {
-                cnt += pipeline.getObjLevel();
-            }
-
-            int objLevel = (int) (cnt / 20);
-
-            telemetry.addData("Level found", objLevel);
-            telemetry.update();
-
-
-
             cvManager.stopPipeline();
 
 
@@ -162,76 +147,14 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             rtime.reset();
 
 
-            int robotAngle = 0;
-            sleep(8000);
-            autoQueue.addAutoAction(driveControl.getForwardAction(5, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.8));
-            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.5));
-//            } else if (objLevel == 1 || objLevel == 2) {
-//                autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
-//                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-35, 0.5));
-//                autoQueue.addAutoAction(driveControl.getForwardAction(22, 1));
-//
-//            }
+           intake.intakeIn();
 
-
-            if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(15, 0.8));
-                //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
-                linearSlide.level1();
-            } else if (objLevel == 1) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(15, 0.8));
-                //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
-                linearSlide.level2();
-            } else if (objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(17, 0.8));
-                //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
-                linearSlide.level3();
-            }
-            //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
-            runQueue(autoQueue);
-
-            linearSlide.dump();
-            sleep(600);
-            linearSlide.undump();
-            //sleep(500);
-//            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
-            //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
-            linearSlide.level0();
-            //sleep(500);
-            runQueue(autoQueue);
-
-            //if (objLevel == 0) {
-            autoQueue.addAutoAction(driveControl.getForwardAction(-7, .5));
-            //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
-            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, .5));
-
-            runQueue(autoQueue);
-            //sleep(1500);
-
-            driveControl.setStrafeVelocity(-.5);
-            sleep(1200);
-            driveControl.setStrafeVelocity(0);
-            //autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 1));
-//                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
-//                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
-                //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
-            autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 0.5));
-
-            autoQueue.addAutoAction(driveControl.getForwardAction(-60, 0.8));
-            //autoQueue.addAutoAction(driveControl.getStrafeAction(25, 1));
-            //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 0.5));
-            //autoQueue.addAutoAction(driveControl.getForwardAction(-40, 0.8));
-            //intake.intakeIn();
-            runQueue(autoQueue);
 
 //            int inchesMoved = 0;
 //            // moving towards warehouse until getting an element
-//            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
-//                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
-//                runQueue(autoQueue);
+            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+                runQueue(autoQueue);
 ////                while (autoQueue.updateQueue()) {
 ////                    sleep(10);
 ////                }
@@ -239,8 +162,11 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 ////                runQueue(autoQueue);
 ////                inchesMoved -= 2;
 ////                sleep(1000);
-//            }
-//            intake.stop();
+              }
+             intake.stop();
+            if(!linearSlide.tilted){
+                linearSlide.tilt();
+            }
 //            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
 //                while (autoQueue.updateQueue()) {
 //                    sleep(10);
