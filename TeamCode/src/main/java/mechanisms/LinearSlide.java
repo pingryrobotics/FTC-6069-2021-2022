@@ -101,7 +101,7 @@ public class LinearSlide {
      */
     public void calibrateSlide() {
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setPower(1);
+        slideMotor.setPower(-1);
         telemetry.addData("calibrating status", "calibrating");
 
         double previousPosition = slideMotor.getCurrentPosition();
