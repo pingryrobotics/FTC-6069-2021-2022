@@ -43,7 +43,7 @@ public class IntakeVisionOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
-        cvManager = new CVManager(hardwareMap, "Webcam 1");
+        cvManager = new CVManager(hardwareMap, "Webcam 1", true);
         pipeline = new IntakeCVPipeline(cvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         intake = new Intake(hardwareMap);
@@ -78,7 +78,7 @@ public class IntakeVisionOpMode extends OpMode {
 
         }
         else{
-            intake.intakeOut();
+            intake.intakeIn();
             slide.undump();
         }
         // update telemetry at the end of the loop

@@ -41,7 +41,7 @@ public class LinearSlide {
         bucketServo = hardwareMap.get(Servo.class, "bucketServo");
         bucketServo.setDirection(Servo.Direction.FORWARD);
         // functional range: .15 - .55
-        bucketServo.scaleRange(0.19, 0.55);
+        bucketServo.scaleRange(0.19, 0.6);
         //bucketServo.setPosition(0);
 
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -80,7 +80,7 @@ public class LinearSlide {
     public void levelCap() { // extend linear slide to level appropriate for capping
         slideMotor.setTargetPosition(LEVEL_CAP);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor.setPower(1);
+        slideMotor.setPower(0.5);
     }
 
 
@@ -101,7 +101,7 @@ public class LinearSlide {
      */
     public void calibrateSlide() {
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setPower(1);
+        slideMotor.setPower(-1);
         telemetry.addData("calibrating status", "calibrating");
 
         double previousPosition = slideMotor.getCurrentPosition();

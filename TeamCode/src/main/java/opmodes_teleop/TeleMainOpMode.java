@@ -160,14 +160,18 @@ public class TeleMainOpMode extends OpMode {
 
         // right bumper: linearslide extends while pressed
         if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
-            linearSlide.extend();
+            if (linearSlide.getSlideMotor().getCurrentPosition() <= 2248) {
+                linearSlide.extend();
+            }
         } else if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_UP) {
             linearSlide.stop();
         }
 
         // left bumper: linearslide retracts while pressed
         if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_DOWN) {
-            linearSlide.retract();
+            if (linearSlide.getSlideMotor().getCurrentPosition() >= 10) {
+                linearSlide.retract();
+            }
         } else if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_UP) {
             linearSlide.stop();
         }
@@ -187,6 +191,7 @@ public class TeleMainOpMode extends OpMode {
         if (mechanismController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
             linearSlide.level3();
         }
+
 
         if (mechanismController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
             linearSlide.level0();

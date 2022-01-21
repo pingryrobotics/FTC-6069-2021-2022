@@ -35,6 +35,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -128,7 +129,12 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         intakeCvManager.initializeCamera(intakePipeline);
         telemetry.addData("Object Level", pipeline.getObjLevel());
         telemetry.update();
-
+        linearSlide.tilt();
+        linearSlide.extend();
+        sleep(250);
+        linearSlide.getSlideMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlide.getSlideMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.level0();
         waitForStart();
         if (opModeIsActive()) {
 
@@ -147,7 +153,8 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             cvManager.stopPipeline();
 
 
-            linearSlide.tilt();
+
+            //autoQueue.addAutoAction(driveControl.getForwardAction(5, 0.8));
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
 
@@ -156,10 +163,10 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
 
             int robotAngle = 0;
-
-            autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 1));
-            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 1));
+            sleep(8000);
+            autoQueue.addAutoAction(driveControl.getForwardAction(5, 0.8));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.8));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.5));
 //            } else if (objLevel == 1 || objLevel == 2) {
 //                autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
 //                autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-35, 0.5));
@@ -167,56 +174,86 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //
 //            }
 
+
             if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(13, 1));
-                autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
-//                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(15, 0.8));
+                //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
+                linearSlide.level1();
             } else if (objLevel == 1) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(14, 1));
-                autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
-//                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
+                autoQueue.addAutoAction(driveControl.getForwardAction(15, 0.8));
+                //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
+                linearSlide.level2();
             } else if (objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(15, 1));
-                autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
-//                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
+                autoQueue.addAutoAction(driveControl.getForwardAction(17, 0.8));
+                //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
+                linearSlide.level3();
             }
             //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
             runQueue(autoQueue);
 
             linearSlide.dump();
-            sleep(500);
+            sleep(600);
             linearSlide.undump();
-            sleep(500);
+            //sleep(500);
 //            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
-            autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
+            //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
+            linearSlide.level0();
+            //sleep(500);
             runQueue(autoQueue);
 
             //if (objLevel == 0) {
             autoQueue.addAutoAction(driveControl.getForwardAction(-7, .5));
             //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
-            autoQueue.addAutoAction(driveControl.getTurnPositionAction(70, .5));
+            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, .5));
 
             runQueue(autoQueue);
-            sleep(1500);
+            //sleep(1500);
 
             driveControl.setStrafeVelocity(-.5);
-            sleep(1500);
+            sleep(1200);
             driveControl.setStrafeVelocity(0);
-            if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
+            //autoQueue.addAutoAction(driveControl.getForwardAction(-20, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(24, 1));
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 1));
 //                autoQueue.addAutoAction(driveControl.getTurnAction(90, 1));
 //                autoQueue.addAutoAction(driveControl.getStrafeAction(3, 1));
-            } else if (objLevel == 1 || objLevel == 2) {
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-3, 1));
-                autoQueue.addAutoAction(driveControl.getForwardAction(-25, 0.8));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 0.5));
+
+            autoQueue.addAutoAction(driveControl.getForwardAction(-60, 0.8));
+            //autoQueue.addAutoAction(driveControl.getStrafeAction(25, 1));
+            //autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 0.5));
+            //autoQueue.addAutoAction(driveControl.getForwardAction(-40, 0.8));
+            //intake.intakeIn();
+            runQueue(autoQueue);
+
+//            int inchesMoved = 0;
+//            // moving towards warehouse until getting an element
+//            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
+//                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+//                runQueue(autoQueue);
+////                while (autoQueue.updateQueue()) {
+////                    sleep(10);
+////                }
+////                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+////                runQueue(autoQueue);
+////                inchesMoved -= 2;
+////                sleep(1000);
+//            }
+//            intake.stop();
+//            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
+//                while (autoQueue.updateQueue()) {
+//                    sleep(10);
+//                }
+//                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+//                runQueue(autoQueue);
+//                inchesMoved -= 2;
+//                sleep(1000);
+//            }
                 //autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.5));
                 //autoQueue.addAutoAction(driveControl.getForwardAction(-22, 0.8));
 //                autoQueue.addAutoAction(driveControl.getTurnAction(37, 0.5));
 //                autoQueue.addAutoAction(driveControl.getForwardAction(-6, 1));
-
-            }
 //
 //            // carousel spin would go here if our partner isn't doing it
 //            // we probably wouldn't use this opmode unless partner can do carousel since you have
@@ -245,18 +282,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 //                // start intake
 //                intake.intakeIn();
 //
-//                // moving towards warehouse until getting an element
-//                while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
-//                    while (autoQueue.updateQueue()) {
-//                        sleep(10);
-//                    }
-//                    autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
-//                    inchesMoved -= 2;
-//                    if (inchesMoved >= 80) { // couldn't intake anything
-//                                             // so we can just park for the rest
-//                        sleep(100000);
-//                    }
-//                }
+//               c
 //                intake.intakeOut();
 //                autoQueue.addAutoAction(driveControl.getForwardAction(inchesMoved, 1));
 //                while (autoQueue.updateQueue()) {
@@ -305,7 +331,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
      */
     public void runQueue(AutoQueue autoQueue) {
         while (autoQueue.updateQueue()) {
-            sleep(100);
+            //sleep(0);
         }
     }
 }

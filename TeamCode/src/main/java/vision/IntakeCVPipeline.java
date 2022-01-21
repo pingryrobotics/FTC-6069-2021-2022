@@ -50,10 +50,13 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class IntakeCVPipeline extends OpenCvPipeline {
     public boolean viewportPaused;
     private OpenCvCamera webcam;
-    private Mat matBlock;
-    private Mat matBall;
+    private Mat matBlockBucket;
+    private Mat matBallBucket;
+    private Mat matBallGap;
+    private Mat matBlockGap;
     private boolean blockExists = false;
     private boolean ballExists = false;
+    private boolean freightInGap = false;
     private int frameCount = 0;
 
     public IntakeCVPipeline(OpenCvCamera webcam) {
@@ -91,12 +94,20 @@ public class IntakeCVPipeline extends OpenCvPipeline {
          * we'll just return the location of the shipping element in the form of an
          * index from 0 to 2.
          */
+        int x = input.rows()/3;
+        int y = input.cols()/3;
 
-        matBlock = new Mat();
-        matBall = new Mat();
+        Mat bucket = input.submat(0, input.rows() - 1, y , input.cols() - 1);
+        Mat gap = input.submat(0, input.rows() - 1, 0, y - 1);
+        matBlockBucket = new Mat();
+        matBallBucket = new Mat();
+        matBlockGap = new Mat();
+        matBallGap = new Mat();
 
-        Imgproc.cvtColor(input, matBlock, Imgproc.COLOR_RGB2HSV);
-        Imgproc.cvtColor(input, matBall, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(bucket, matBlockBucket, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(bucket, matBallBucket, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(gap, matBallGap, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(gap, matBlockGap, Imgproc.COLOR_RGB2HSV);
 
         // We create a HSV range for yellow to detect regular stones
         // NOTE: In OpenCV's implementation,
@@ -116,12 +127,16 @@ public class IntakeCVPipeline extends OpenCvPipeline {
         highHSVBall= new Scalar(70, 5,  255);
         Mat threshBlock = new Mat();
         Mat threshBall = new Mat();
+        Mat threshBlockGap = new Mat();
+        Mat threshBallGap = new Mat();
 
         // We'll get a black and white image. The white regions represent the regular
         // stones.
         // inRange(): thresh[i][j] = {255,255,255} if mat[i][i] is within the range
-        Core.inRange(matBlock, lowHSVBlock, highHSVBlock, threshBlock); // goes through image, filters out color based on low&high hsv's
-        Core.inRange(matBall, lowHSVBall, highHSVBall, threshBall);
+        Core.inRange(matBlockBucket, lowHSVBlock, highHSVBlock, threshBlock); // goes through image, filters out color based on low&high hsv's
+        Core.inRange(matBallBucket, lowHSVBall, highHSVBall, threshBall);
+        Core.inRange(matBlockGap, lowHSVBlock, highHSVBlock, threshBlockGap); // goes through image, filters out color based on low&high hsv's
+        Core.inRange(matBallGap, lowHSVBall, highHSVBall, threshBallGap);
 
         // Core.addWeighted(thresh2, 1, thresh1, 1, 0, thresh);
         // Imgproc.GaussianBlur(thresh, thresh, new Size(9, 9), 2, 2); // should smooth
@@ -131,8 +146,12 @@ public class IntakeCVPipeline extends OpenCvPipeline {
         // you might have to tune the thresholds for hysteresis
         Mat edgesBlock = new Mat();
         Mat edgesBall = new Mat();
+        Mat edgesBlockGap = new Mat();
+        Mat edgesBallGap = new Mat();
         Imgproc.Canny(threshBlock, edgesBlock, 100, 300);
         Imgproc.Canny(threshBall, edgesBall, 100, 300);
+        Imgproc.Canny(threshBlockGap, edgesBlockGap, 100, 300);
+        Imgproc.Canny(threshBallGap, edgesBallGap, 100, 300);
 
         // https://docs.opencv.org/3.4/da/d0c/tutorial_bounding_rects_circles.html
         // Oftentimes the edges are disconnected. findContours connects these edges.
@@ -145,9 +164,16 @@ public class IntakeCVPipeline extends OpenCvPipeline {
         Mat hierarchyBall = new Mat();
         Imgproc.findContours(edgesBall, contoursBall, hierarchyBall, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
+        List<MatOfPoint> contoursBlockGap = new ArrayList<>();
+        Mat hierarchyBlockGap = new Mat();
+        Imgproc.findContours(edgesBlockGap, contoursBlockGap, hierarchyBlockGap, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        List<MatOfPoint> contoursBallGap = new ArrayList<>();
+        Mat hierarchyBallGap = new Mat();
+        Imgproc.findContours(edgesBallGap, contoursBallGap, hierarchyBallGap, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
 
         int sz = contoursBlock.size();
-        System.out.println("Contours: " + sz);
         MatOfPoint2f[] contoursPolyBlock = new MatOfPoint2f[sz];
         Rect[] boundRectBlock = new Rect[sz]; // contains bounding rectangles for each coutour (object in 2d form)
         for (int i = 0; i < sz; i++) {
@@ -158,13 +184,31 @@ public class IntakeCVPipeline extends OpenCvPipeline {
 
 
         int sz2 = contoursBall.size();
-        System.out.println("Contours: " + sz2);
         MatOfPoint2f[] contoursPolyBall = new MatOfPoint2f[sz2];
         Rect[] boundRectBall = new Rect[sz2]; // contains bounding rectangles for each coutour (object in 2d form)
         for (int i = 0; i < sz2; i++) {
             contoursPolyBall[i] = new MatOfPoint2f();
             Imgproc.approxPolyDP(new MatOfPoint2f(contoursBall.get(i).toArray()), contoursPolyBall[i], 3, true);
             boundRectBall[i] = Imgproc.boundingRect(new MatOfPoint(contoursPolyBall[i].toArray()));
+        }
+
+        int sz3 = contoursBlockGap.size();
+        MatOfPoint2f[] contoursPolyBlockGap = new MatOfPoint2f[sz3];
+        Rect[] boundRectBlockGap = new Rect[sz3]; // contains bounding rectangles for each coutour (object in 2d form)
+        for (int i = 0; i < sz3; i++) {
+            contoursPolyBlockGap[i] = new MatOfPoint2f();
+            Imgproc.approxPolyDP(new MatOfPoint2f(contoursBlockGap.get(i).toArray()), contoursPolyBlockGap[i], 3, true);
+            boundRectBlockGap[i] = Imgproc.boundingRect(new MatOfPoint(contoursPolyBlockGap[i].toArray()));
+        }
+
+
+        int sz4 = contoursBallGap.size();
+        MatOfPoint2f[] contoursPolyBallGap = new MatOfPoint2f[sz4];
+        Rect[] boundRectBallGap = new Rect[sz4]; // contains bounding rectangles for each coutour (object in 2d form)
+        for (int i = 0; i < sz4; i++) {
+            contoursPolyBallGap[i] = new MatOfPoint2f();
+            Imgproc.approxPolyDP(new MatOfPoint2f(contoursBallGap.get(i).toArray()), contoursPolyBallGap[i], 3, true);
+            boundRectBallGap[i] = Imgproc.boundingRect(new MatOfPoint(contoursPolyBallGap[i].toArray()));
         }
         // just look at which third the shipping element is in
         double biggestAreaBlock = 0;
@@ -188,15 +232,43 @@ public class IntakeCVPipeline extends OpenCvPipeline {
         }
 
 
-        blockExists = (biggestAreaBlock >= 3000);
-        ballExists = biggestAreaBall >= 3000;
+        double biggestAreaBlockGap = 0;
+        Rect biggestRectBlockGap = new Rect();
+        for (int i = 0; i < sz3; i++) {
+            if (boundRectBlockGap[i].area() >= biggestAreaBlockGap) {
+                biggestAreaBlockGap = boundRectBlockGap[i].area();
+                biggestRectBlockGap = boundRectBlockGap[i];
+            }
+        }
+
+
+
+        double biggestAreaBallGap = 0;
+        Rect biggestRectBallGap = new Rect();
+        for (int i = 0; i < sz4; i++) {
+            if (boundRectBallGap[i].area() >= biggestAreaBallGap) {
+                biggestAreaBallGap = boundRectBallGap[i].area();
+                biggestRectBallGap = boundRectBallGap[i];
+            }
+        }
+
+
+        blockExists = (biggestAreaBlock >= 17000);
+        ballExists = biggestAreaBall >= 17000;
+        freightInGap = (biggestAreaBlockGap >=10000) || (biggestAreaBallGap >= 1000);
         if(ballExists){
-            Imgproc.rectangle(input, biggestRectBall, new Scalar(255, 0, 0), 4);
+            Imgproc.rectangle(bucket, biggestRectBall, new Scalar(255, 0, 0), 4);
             frameCount++;
         }
 
         if(blockExists){
-            Imgproc.rectangle(input, biggestRectBlock, new Scalar(255, 0, 0), 4);
+            Imgproc.rectangle(bucket, biggestRectBlock, new Scalar(255, 0, 0), 4);
+            frameCount++;
+        }
+
+        if(freightInGap){
+            Imgproc.rectangle(gap, biggestRectBlockGap, new Scalar(255, 0, 0), 4);
+            Imgproc.rectangle(gap, biggestRectBallGap, new Scalar(255, 0, 0), 4);
             frameCount++;
         }
 
@@ -205,21 +277,34 @@ public class IntakeCVPipeline extends OpenCvPipeline {
         }
 
 
+
 //        double[] values = mat.get(input.rows()/2, input.cols()/2);
 //        System.out.println("HSV: " + values[0] + ", " + values[1]+ ", " + values[2]);
         // should be at least 200x200 pixels
+//        double[] values = matBlock.get(input.rows()/2, input.cols()/2);
+//        System.out.println("Block HSV: " + values[0] + ", " + values[1]+ ", " + values[2]);
+//
+//        double[] values2 = matBall.get(input.rows()/2, input.cols()/2);
+//        System.out.println("Block HSV: " + values2[0] + ", " + values2[1]+ ", " + values2[2]);
 
 
-
-        matBlock.release();
+        matBlockBucket.release();
+        matBlockGap.release();
         threshBlock.release();
         hierarchyBlock.release();
-        edgesBlock.release();
+        edgesBlockGap.release();
+        threshBlockGap.release();
+        hierarchyBlockGap.release();
+        edgesBlockGap.release();
 
-        matBall.release();
+        matBallBucket.release();
+        matBallGap.release();
         threshBall.release();
         hierarchyBall.release();
         edgesBall.release();
+        threshBallGap.release();
+        hierarchyBallGap.release();
+        edgesBallGap.release();
 
         /**
          * NOTE: to see how to get data from your pipeline to your OpMode as well as how
@@ -227,7 +312,7 @@ public class IntakeCVPipeline extends OpenCvPipeline {
          * tapped, please see {@link PipelineStageSwitchingExample}
          */
 
-        return input;
+        return gap;
     }
 
     @Override
@@ -264,7 +349,7 @@ public class IntakeCVPipeline extends OpenCvPipeline {
         // return objLevel;
         return blockExists;
     }
-
+    public boolean isFreightInGap() {return freightInGap;}
     public boolean ifBallExists(){
         return ballExists;
     }
