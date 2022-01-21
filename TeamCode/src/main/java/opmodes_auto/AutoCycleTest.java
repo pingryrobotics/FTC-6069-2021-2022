@@ -147,6 +147,7 @@ public class AutoCycleTest extends LinearOpMode {
 
 
            intake.intakeIn();
+//           while ()
 
 
 //            int inchesMoved = 0;
@@ -168,7 +169,7 @@ public class AutoCycleTest extends LinearOpMode {
                 intake.stop();
              }
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
+//            autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
             runQueue(autoQueue);
              //            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
 //                while (autoQueue.updateQueue()) {

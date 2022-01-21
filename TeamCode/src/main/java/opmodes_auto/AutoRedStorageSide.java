@@ -215,6 +215,7 @@ public class AutoRedStorageSide extends LinearOpMode {
 
 
             linearSlide.tilt();
+            linearSlide.calibrateSlide();
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
 
@@ -250,7 +251,6 @@ public class AutoRedStorageSide extends LinearOpMode {
             sleep(500);
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
             runQueue(autoQueue);
-
             autoQueue.addAutoAction(driveControl.getForwardAction(-34, 0.8));
             autoQueue.addAutoAction(driveControl.getStrafeAction(20, 0.8));
 //            autoQueue.addAutoAction(driveControl.getForwardAction(40, 1));
