@@ -85,9 +85,9 @@ import vision.IntakeCVPipeline;
  */
 
 
-@Autonomous(name="AutoRedWarehouseSide", group ="Autonomous")
+@Autonomous(name="AutoCycleTest", group ="Autonomous")
 
-public class AutoRedWarehouseCycleTest extends LinearOpMode {
+public class AutoCycleTest extends LinearOpMode {
 
 
 //    private MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap);
@@ -126,12 +126,11 @@ public class AutoRedWarehouseCycleTest extends LinearOpMode {
         intakeCvManager.initializeCamera(intakePipeline);
         telemetry.addData("Object Level", pipeline.getObjLevel());
         telemetry.update();
-        linearSlide.tilt();
-        linearSlide.extend();
         sleep(250);
         linearSlide.getSlideMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlide.getSlideMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlide.level0();
+        linearSlide.undump();
         waitForStart();
         if (opModeIsActive()) {
 
@@ -152,8 +151,8 @@ public class AutoRedWarehouseCycleTest extends LinearOpMode {
 
 //            int inchesMoved = 0;
 //            // moving towards warehouse until getting an element
-            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
+            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists() && !intakePipeline.isFreightInGap()) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-5, 1));
                 runQueue(autoQueue);
 ////                while (autoQueue.updateQueue()) {
 ////                    sleep(10);
@@ -163,11 +162,15 @@ public class AutoRedWarehouseCycleTest extends LinearOpMode {
 ////                inchesMoved -= 2;
 ////                sleep(1000);
               }
-             intake.stop();
-            if(!linearSlide.tilted){
+
+             if(!linearSlide.tilted && (intakePipeline.ifBallExists() || intakePipeline.ifBlockExists())){
                 linearSlide.tilt();
-            }
-//            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
+                intake.stop();
+             }
+
+            autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
+            runQueue(autoQueue);
+             //            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
 //                while (autoQueue.updateQueue()) {
 //                    sleep(10);
 //                }

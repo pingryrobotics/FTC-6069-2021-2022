@@ -41,7 +41,7 @@ public class LinearSlide {
         bucketServo = hardwareMap.get(Servo.class, "bucketServo");
         bucketServo.setDirection(Servo.Direction.FORWARD);
         // functional range: .15 - .55
-        bucketServo.scaleRange(0.19, 0.55);
+        bucketServo.scaleRange(0.19, 0.6);
         //bucketServo.setPosition(0);
 
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
