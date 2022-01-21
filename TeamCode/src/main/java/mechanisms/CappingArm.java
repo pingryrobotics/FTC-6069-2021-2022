@@ -13,7 +13,7 @@ public class CappingArm {
         armServo = hardwareMap.get(Servo.class, "cappingServo");
         armServo.setDirection(Servo.Direction.FORWARD);
         this.telemetry = telemetry;
-//        armServo.scaleRange(0.19, 0.5
+//        armServo.scaleRange(0.19, 0.55);
     }
 
     public void turnOutwards() {

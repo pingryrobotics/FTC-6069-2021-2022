@@ -104,8 +104,8 @@ public class ElementCVPipeline extends OpenCvPipeline {
         //Scalar lowHSV1 = new Scalar(60 - sensitivity, 100, 100); // lower bound HSV #1 for team shipping element
         //Scalar highHSV1 = new Scalar(60 + sensitivity, 255, 255); // higher bound HSV for team shipping element
 
-        Scalar lowHSV1 = new Scalar(0, 50, 130); // lower bound HSV #1 for team shipping element
-        Scalar highHSV1 = new Scalar(20, 90, 170); // higher bound HSV for team shipping element
+        Scalar lowHSV1 = new Scalar(70, 140, 100); // lower bound HSV #1 for team shipping element
+        Scalar highHSV1 = new Scalar(140, 230, 210); // higher bound HSV for team shipping element
         Mat thresh = new Mat();
 
         // We'll get a black and white image. The white regions represent the regular

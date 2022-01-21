@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import mechanisms.CappingArm;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
@@ -36,6 +37,7 @@ public class TeleMainOpMode extends OpMode {
     private double servoPos = 1;
     private int direction = 1;
     private int factor = 1;
+    private CappingArm cappingArm;
 
 
     // code to run once when driver hits init on phone
@@ -45,6 +47,7 @@ public class TeleMainOpMode extends OpMode {
         mechanismController = new GamepadController(gamepad2);
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
+        cappingArm = new CappingArm(hardwareMap, telemetry);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
         offsetAngle = 0;
@@ -108,6 +111,22 @@ public class TeleMainOpMode extends OpMode {
         telemetry.addData("target pos", linearSlide.getSlideMotor().getTargetPosition());
 
         // region movement
+
+        if (movementController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
+            cappingArm.turnOutwards();
+        }
+        if (movementController.getButtonState(ToggleButton.DPAD_DOWN) == ButtonState.KEY_DOWN) {
+            cappingArm.turnInwards();
+        }
+
+
+        if (movementController.getButtonState(ToggleButton.X) == ButtonState.KEY_DOWN) {
+            cappingArm.spinOut();
+        }
+        if (movementController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
+            cappingArm.spinIn();
+        }
+
         if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
             intake.intakeOut();
         } else if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_UP) {
