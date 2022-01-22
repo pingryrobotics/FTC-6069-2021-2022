@@ -49,6 +49,7 @@ import java.util.HashMap;
 import localization.FieldMap;
 import localization.SpaceMap;
 import localization.VuforiaManager;
+import mechanisms.CappingArm;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
@@ -167,6 +168,7 @@ public class AutoBlueStorageSide extends LinearOpMode {
     private CVManager cvManager;
     private CVManager intakeCvManager;
     private AutoQueue autoQueue;
+    private CappingArm cappingArm;
 
 
     public void initialize() {
@@ -174,6 +176,7 @@ public class AutoBlueStorageSide extends LinearOpMode {
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
+        cappingArm = new CappingArm(hardwareMap, telemetry);
         autoQueue = new AutoQueue();
         cvManager = new CVManager(hardwareMap, "Webcam 2", true);
         intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
@@ -214,6 +217,7 @@ public class AutoBlueStorageSide extends LinearOpMode {
             cvManager.stopPipeline();
 
 
+            cappingArm.spinIn();
             linearSlide.tilt();
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
@@ -230,7 +234,7 @@ public class AutoBlueStorageSide extends LinearOpMode {
             sleep(500);
             driveControl.setStrafeVelocity(0);
             carousel.spinPower(0.25);
-            sleep(2000);
+            sleep(3000);
             carousel.stop();
 
             //autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
@@ -243,13 +247,13 @@ public class AutoBlueStorageSide extends LinearOpMode {
 
 
             if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(27, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(24, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(29, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(31, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(30, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
             //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
@@ -262,7 +266,7 @@ public class AutoBlueStorageSide extends LinearOpMode {
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
             runQueue(autoQueue);
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(-32, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-30, 1));
             autoQueue.addAutoAction(driveControl.getStrafeAction(-15, 1));
 
             runQueue(autoQueue);

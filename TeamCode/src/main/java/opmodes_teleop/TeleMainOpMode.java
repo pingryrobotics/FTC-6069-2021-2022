@@ -139,13 +139,19 @@ public class TeleMainOpMode extends OpMode {
 
         if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_DOWN) {
             intake.intakeOut();
-        } else if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_UP) {
+        }
+        else if (movementController.getButtonState(ToggleButton.LEFT_TRIGGER) == ButtonState.KEY_UP) {
             intake.stop();
         }
         // right trigger: intake reverses while pressed
         if (movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_DOWN) {
-            intake.intakeIn();
-        } else if (movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_UP) {
+//            if (intake.power >= 0) {
+                intake.intakeIn();
+//            } else {
+//                intake.stop();
+//            }
+        }
+        else if (movementController.getButtonState(ToggleButton.RIGHT_TRIGGER) == ButtonState.KEY_UP) {
             intake.stop();
         }
 
@@ -189,18 +195,20 @@ public class TeleMainOpMode extends OpMode {
 
         // right bumper: linearslide extends while pressed
         if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
-            if (linearSlide.getSlideMotor().getCurrentPosition() <= 2160) {
+//            if (linearSlide.getSlideMotor().getCurrentPosition() <= 2160) {
+            // THIS IS ACTUALLY RETRACT
                 linearSlide.extend();
-            }
+//            }
         } else if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_UP) {
             linearSlide.stop();
         }
 
         // left bumper: linearslide retracts while pressed
         if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_DOWN) {
-//            if (linearSlide.getSlideMotor().getCurrentPosition() >= 10) {
+            // THIS IS ACTUALLY EXTEND
+            if (linearSlide.getSlideMotor().getCurrentPosition() <= 2160) {
                 linearSlide.retract();
-//            }
+            }
         } else if (mechanismController.getButtonState(ToggleButton.LEFT_BUMPER) == ButtonState.KEY_UP) {
             linearSlide.stop();
         }

@@ -46,6 +46,7 @@ import localization.FieldMap;
 import localization.SpaceMap;
 import localization.VuforiaManager;
 import mechanisms.AutoQueue;
+import mechanisms.CappingArm;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
@@ -117,6 +118,7 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
     private CVManager intakeCvManager;
     private ElementCVPipeline pipeline;
     private IntakeCVPipeline intakePipeline;
+    private CappingArm cappingArm;
 
     private FieldMap fieldMap;
     private static final int fieldLength = 3660;
@@ -130,6 +132,7 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
         autoQueue = new AutoQueue();
+        cappingArm = new CappingArm(hardwareMap, telemetry);
         cvManager = new CVManager(hardwareMap, "Webcam 2", true);
         intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
@@ -163,7 +166,7 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
             telemetry.addData("Level found", objLevel);
             telemetry.update();
 
-
+            cappingArm.spinIn();
 
             cvManager.stopPipeline();
 
@@ -174,9 +177,10 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
 
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
+            sleep(11000);
 
             autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(26, 1));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(25, 1));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 1));
 //            } else if (objLevel == 1 || objLevel == 2) {
 //                autoQueue.addAutoAction(driveControl.getForwardAction(7, 1));
@@ -186,11 +190,11 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
 //            }
 
             if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(15, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(15.5, 1));
                 //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(15, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(15.5, 1));
                 //autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2) {
@@ -209,11 +213,11 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
             autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
             runQueue(autoQueue);
             if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-14, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-14.5, 1));
                 autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
 //                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-14, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(-14.5, 1));
                 autoQueue.addAutoAction(new DriveControl.DriveAction(DriveControl.DriveAction.DriveOption.WAIT, 700, .1, driveControl));
 //                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2) {

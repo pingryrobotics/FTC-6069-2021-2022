@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+import mechanisms.CappingArm;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
@@ -111,6 +112,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
     private CVManager intakeCvManager;
     private ElementCVPipeline pipeline;
     private IntakeCVPipeline intakePipeline;
+    private CappingArm cappingArm;
 
     @Override
     public void runOpMode() {
@@ -121,6 +123,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
         autoQueue = new AutoQueue();
+        cappingArm = new CappingArm(hardwareMap, telemetry);
         cvManager = new CVManager(hardwareMap, "Webcam 2", true);
         intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
@@ -148,7 +151,7 @@ public class AutoRedWarehouseSide extends LinearOpMode {
             telemetry.addData("Level found", objLevel);
             telemetry.update();
 
-
+            cappingArm.spinIn();
 
             cvManager.stopPipeline();
 
@@ -163,7 +166,6 @@ public class AutoRedWarehouseSide extends LinearOpMode {
 
 
             int robotAngle = 0;
-            sleep(8000);
             autoQueue.addAutoAction(driveControl.getForwardAction(5, 0.8));
             autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.8));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.5));
