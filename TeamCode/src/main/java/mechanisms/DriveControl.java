@@ -186,6 +186,7 @@ public class DriveControl implements QueueableMechanism {
      * @param velocity the velocity to set
      */
     public void setStraightVelocity(double velocity) {
+        setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftFront.setPower(velocity);
         leftRear.setPower(velocity);
         rightFront.setPower(velocity);

@@ -243,13 +243,13 @@ public class AutoBlueStorageSide extends LinearOpMode {
 
 
             if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(22, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
                 autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
             //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
