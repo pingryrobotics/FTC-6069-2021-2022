@@ -29,14 +29,20 @@ public class ColorSensorManager {
     public double getAlpha() {
         return sensor.alpha();
     }
-    public double getRed() {
+    public int getRed() {
         return sensor.red();
     }
-    public double getBlue() {
+    public int getBlue() {
         return sensor.blue();
     }
-    public double getGreen() {
+    public int getGreen() {
         return sensor.green();
+    }
+    public void ledOn() {
+        sensor.enableLed(true);
+    }
+    public void ledOff() {
+        sensor.enableLed(false);
     }
     public float hue() {
         float hsvValues[] = {0F, 0F, 0F};

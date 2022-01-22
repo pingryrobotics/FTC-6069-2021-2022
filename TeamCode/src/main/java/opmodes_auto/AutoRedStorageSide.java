@@ -49,6 +49,7 @@ import java.util.HashMap;
 import localization.FieldMap;
 import localization.SpaceMap;
 import localization.VuforiaManager;
+import mechanisms.CappingArm;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
@@ -56,6 +57,7 @@ import mechanisms.LinearSlide;
 import mechanisms.AutoQueue;
 import mechanisms.LinearSlide.SlideAction.SlideOption;
 import vision.CVManager;
+import vision.ColorSensorManager;
 import vision.ElementCVPipeline;
 import vision.IntakeCVPipeline;
 
@@ -167,6 +169,8 @@ public class AutoRedStorageSide extends LinearOpMode {
     private CVManager cvManager;
     private CVManager intakeCvManager;
     private AutoQueue autoQueue;
+    private CappingArm cappingArm;
+    private ColorSensorManager colorSensor;
 
 
     public void initialize() {
@@ -174,9 +178,11 @@ public class AutoRedStorageSide extends LinearOpMode {
         intake = new Intake(hardwareMap);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
+        cappingArm = new CappingArm(hardwareMap, telemetry);
         autoQueue = new AutoQueue();
         cvManager = new CVManager(hardwareMap, "Webcam 2", true);
         intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
+        colorSensor = new ColorSensorManager(hardwareMap, "Color Sensor 1");
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
@@ -213,33 +219,61 @@ public class AutoRedStorageSide extends LinearOpMode {
 
             cvManager.stopPipeline();
 
-
+            cappingArm.spinIn();
             linearSlide.tilt();
             linearSlide.calibrateSlide();
+            colorSensor.ledOff();
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
 
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(7, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-30, 0.4));
+            autoQueue.addAutoAction(driveControl.getForwardAction(12, 0.8));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.6));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-38, 0.8));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.6));
             runQueue(autoQueue);
             carousel.reverseSpin();
-            sleep(4000);
+            driveControl.setStraightVelocity(0.3);
+            while (colorSensor.getRed() < 100) {
+                sleep(10);
+            }
+//            while (colorSensor.getBlue() < 200) {
+//                sleep(10);
+//            }
+            driveControl.setStraightVelocity(0);
+            sleep(1000);
+            autoQueue.addAutoAction(driveControl.getForwardAction(-14, 0.5));
+            runQueue(autoQueue);
+            sleep(1000);
             carousel.stop();
-            autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
-            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.6));
-            autoQueue.addAutoAction(driveControl.getForwardAction(29, 0.8));
-            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(90, 0.5));
-            autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
-
+            autoQueue.addAutoAction(driveControl.getForwardAction(4, 0.5));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(7, 0.6));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 1));
+            runQueue(autoQueue);
+            driveControl.setStraightVelocity(0.3);
+            colorSensor.ledOn();
+            while (colorSensor.getRed() < 100) {
+                sleep(10);
+            }
+//            while (colorSensor.getBlue() < 200) {
+//                sleep(10);
+//            }
+            driveControl.setStraightVelocity(0);
+            colorSensor.ledOff();
+            autoQueue.addAutoAction(driveControl.getForwardAction(16, 1));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(-90, 0.5));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-8, 1));
 
             if (objLevel == 0) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(31, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(34, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(34, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
             //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
@@ -251,8 +285,12 @@ public class AutoRedStorageSide extends LinearOpMode {
             sleep(500);
             autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
             runQueue(autoQueue);
-            autoQueue.addAutoAction(driveControl.getForwardAction(-34, 0.8));
-            autoQueue.addAutoAction(driveControl.getStrafeAction(20, 0.8));
+            if (objLevel == 0) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-32, 1));
+            } else {
+                autoQueue.addAutoAction(driveControl.getForwardAction(-35, 1));
+            }
+            autoQueue.addAutoAction(driveControl.getStrafeAction(20, 1));
 //            autoQueue.addAutoAction(driveControl.getForwardAction(40, 1));
 //            autoQueue.addAutoAction(driveControl.getStrafeAction(25, 0.8));
 //            autoQueue.addAutoAction(driveControl.getForwardAction(50, 1));
