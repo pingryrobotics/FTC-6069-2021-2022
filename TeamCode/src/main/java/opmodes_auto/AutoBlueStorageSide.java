@@ -223,17 +223,17 @@ public class AutoBlueStorageSide extends LinearOpMode {
 
             autoQueue.addAutoAction(driveControl.getForwardAction(10, 1));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 1));
-            autoQueue.addAutoAction(driveControl.getForwardAction(-28, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-27, 1));
 
             runQueue(autoQueue);
             driveControl.setStrafeVelocity(-.5);
             sleep(500);
             driveControl.setStrafeVelocity(0);
-            carousel.spin();
+            carousel.spinPower(0.25);
             sleep(2000);
             carousel.stop();
 
-            autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
+            //autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
             autoQueue.addAutoAction(driveControl.getStrafeAction(37, 1));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 1));
 //            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.8));
@@ -243,13 +243,13 @@ public class AutoBlueStorageSide extends LinearOpMode {
 
 
             if (objLevel == 0) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(22, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(27, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
             } else if (objLevel == 1) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(29, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
             } else if (objLevel == 2) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(25, 1));
+                autoQueue.addAutoAction(driveControl.getForwardAction(31, 1));
                 autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
             //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
