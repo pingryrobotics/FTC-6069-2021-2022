@@ -2,6 +2,7 @@ package opmodes_teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -27,6 +28,7 @@ public class TeleMainOpMode extends OpMode {
     // put any outside classes you need to use here
     private GamepadController movementController;
     private GamepadController mechanismController;
+    private ColorSensor colorSensor;
     private DriveControl driveControl;
     private Intake intake;
     private LinearSlide linearSlide;
@@ -50,6 +52,7 @@ public class TeleMainOpMode extends OpMode {
         cappingArm = new CappingArm(hardwareMap, telemetry);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
+        colorSensor = hardwareMap.get(ColorSensor.class, "Color Sensor 1");
         offsetAngle = 0;
 
     }
@@ -102,6 +105,11 @@ public class TeleMainOpMode extends OpMode {
         double turn = Range.clip(gamepad1.right_stick_x, -1, 1)/factor;
 
         driveControl.drive(theta, magnitude, turn);
+
+        telemetry.addData("red", colorSensor.red());
+        telemetry.addData("green", colorSensor.green());
+        telemetry.addData("blue", colorSensor.blue());
+        telemetry.addData("argb", colorSensor.argb());
 
 
         Servo servo = linearSlide.getServo();

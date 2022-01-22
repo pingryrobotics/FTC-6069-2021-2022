@@ -147,22 +147,25 @@ public class AutoCycleTest extends LinearOpMode {
 
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
+            driveControl.setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            driveControl.setStraightVelocity(-0.4);
 
-            driveControl.setStraightVelocity(-0.8);
-            while(!(colorSensor.red() >= 0 && colorSensor.red() <= 20)
-                    && !(colorSensor.blue() >= 0 && colorSensor.blue() <= 20)
-                    && !(colorSensor.green() >= 0 &&colorSensor.green() <= 20)){
+            while(colorSensor.argb() > 0 && !isStopRequested()){
 
             }
 
            intake.intakeIn();
 //           while ()
 
-
+            driveControl.setStraightVelocity(-0.4);
+            sleep(500);
 
 //            int inchesMoved = 0;
 //            // moving towards warehouse until getting an element
-            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists() && !intakePipeline.isFreightInGap()) {
+            while (!intakePipeline.ifBallExists()
+                    && !intakePipeline.ifBlockExists()
+                    && !intakePipeline.isFreightInGap()
+                    && !isStopRequested()) {
               }
 
             driveControl.setStraightVelocity(0);
@@ -176,9 +179,7 @@ public class AutoCycleTest extends LinearOpMode {
             runQueue(autoQueue);
             driveControl.setStraightVelocity(0.8);
 
-            while(!(colorSensor.red() >= 0 && colorSensor.red() <= 20)
-                    && !(colorSensor.blue() >= 0 && colorSensor.blue() <= 20)
-                    && !(colorSensor.green() >= 0 &&colorSensor.green() <= 20)){
+            while(colorSensor.argb() > 0  && !isStopRequested()){
 
             }
             driveControl.setStraightVelocity(0);

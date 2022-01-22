@@ -255,7 +255,7 @@ public class IntakeCVPipeline extends OpenCvPipeline {
 
         blockExists = (biggestAreaBlock >= 17000);
         ballExists = biggestAreaBall >= 17000;
-        freightInGap = (biggestAreaBlockGap >=10000) || (biggestAreaBallGap >= 1000);
+        freightInGap = (biggestAreaBlockGap >=10000) || (biggestAreaBallGap >= 10000);
         if(ballExists){
             Imgproc.rectangle(bucket, biggestRectBall, new Scalar(255, 0, 0), 4);
             frameCount++;
