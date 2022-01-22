@@ -234,7 +234,7 @@ public class AutoRedStorageSide extends LinearOpMode {
             autoQueue.addAutoAction(driveControl.getStrafeAction(-38, 0.8));
             autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.6));
             runQueue(autoQueue);
-            carousel.reverseSpin();
+            carousel.spinPower(-0.25);
             driveControl.setStraightVelocity(0.3);
             while (colorSensor.getRed() < 100) {
                 sleep(10);

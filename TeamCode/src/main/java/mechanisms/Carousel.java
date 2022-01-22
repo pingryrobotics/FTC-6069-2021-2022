@@ -9,7 +9,7 @@ public class Carousel {
 	public Carousel(HardwareMap hardwareMap) {
 		carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
         carouselMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		power = 0.25; // 1150 rpm
+		power = 0.325; // 1150 rpm
 	}
 
 	public void spin() { // spin at speed designated by "power"

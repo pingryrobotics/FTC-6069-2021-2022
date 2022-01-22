@@ -189,9 +189,9 @@ public class TeleMainOpMode extends OpMode {
 
         // right bumper: linearslide extends while pressed
         if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_DOWN) {
-//            if (linearSlide.getSlideMotor().getCurrentPosition() <= 2160) {
+            if (linearSlide.getSlideMotor().getCurrentPosition() <= 2160) {
                 linearSlide.extend();
-//            }
+            }
         } else if (mechanismController.getButtonState(ToggleButton.RIGHT_BUMPER) == ButtonState.KEY_UP) {
             linearSlide.stop();
         }
