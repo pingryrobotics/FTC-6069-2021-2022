@@ -217,7 +217,7 @@ public class TeleMainOpMode extends OpMode {
         }
 
 
-        if (mechanismController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
+        if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
             linearSlide.level3();
         }
 
@@ -226,11 +226,11 @@ public class TeleMainOpMode extends OpMode {
             linearSlide.level0();
         }
 
-        if (mechanismController.getButtonState(ToggleButton.DPAD_UP) == ButtonState.KEY_DOWN) {
+        if (mechanismController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
             linearSlide.level2();
         }
 
-        if (mechanismController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) {
+        if (mechanismController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) {
             linearSlide.level1();
         }
 
