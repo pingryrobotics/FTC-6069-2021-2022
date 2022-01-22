@@ -31,6 +31,7 @@ package opmodes_auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -108,6 +109,7 @@ public class AutoCycleTest extends LinearOpMode {
     private CVManager intakeCvManager;
     private ElementCVPipeline pipeline;
     private IntakeCVPipeline intakePipeline;
+    private ColorSensor colorSensor;
 
     @Override
     public void runOpMode() {
@@ -122,6 +124,7 @@ public class AutoCycleTest extends LinearOpMode {
         intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
+        colorSensor = hardwareMap.get(ColorSensor.class, "Color Sensor 1");
         cvManager.initializeCamera(pipeline);
         intakeCvManager.initializeCamera(intakePipeline);
         telemetry.addData("Object Level", pipeline.getObjLevel());
@@ -145,32 +148,40 @@ public class AutoCycleTest extends LinearOpMode {
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
+            driveControl.setStraightVelocity(-0.8);
+            while(!(colorSensor.red() >= 0 && colorSensor.red() <= 20)
+                    && !(colorSensor.blue() >= 0 && colorSensor.blue() <= 20)
+                    && !(colorSensor.green() >= 0 &&colorSensor.green() <= 20)){
+
+            }
 
            intake.intakeIn();
 //           while ()
 
 
+
 //            int inchesMoved = 0;
 //            // moving towards warehouse until getting an element
             while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists() && !intakePipeline.isFreightInGap()) {
-                autoQueue.addAutoAction(driveControl.getForwardAction(-5, 1));
-                runQueue(autoQueue);
-////                while (autoQueue.updateQueue()) {
-////                    sleep(10);
-////                }
-////                autoQueue.addAutoAction(driveControl.getForwardAction(-2, 1));
-////                runQueue(autoQueue);
-////                inchesMoved -= 2;
-////                sleep(1000);
               }
 
+            driveControl.setStraightVelocity(0);
              if(!linearSlide.tilted && (intakePipeline.ifBallExists() || intakePipeline.ifBlockExists())){
                 linearSlide.tilt();
                 intake.stop();
              }
 
-//            autoQueue.addAutoAction(driveControl.getForwardAction(20, 1));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 1));
+
             runQueue(autoQueue);
+            driveControl.setStraightVelocity(0.8);
+
+            while(!(colorSensor.red() >= 0 && colorSensor.red() <= 20)
+                    && !(colorSensor.blue() >= 0 && colorSensor.blue() <= 20)
+                    && !(colorSensor.green() >= 0 &&colorSensor.green() <= 20)){
+
+            }
+            driveControl.setStraightVelocity(0);
              //            while (!intakePipeline.ifBallExists() && !intakePipeline.ifBlockExists()) {
 //                while (autoQueue.updateQueue()) {
 //                    sleep(10);

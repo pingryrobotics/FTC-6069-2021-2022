@@ -62,7 +62,9 @@ public class TeleMainOpMode extends OpMode {
     // code to run once when driver hits start
     @Override
     public void start() {
+
         linearSlide.undump();
+        cappingArm.spinIn();
     }
 
     // code to loop while opmode is running
