@@ -266,6 +266,8 @@ public class AutoRedStorageV2 extends LinearOpMode {
 
             mechanumDrive.followTrajectory(traj3);
 
+            Pose2d warehouse = new Pose2d(51.85780088505222, -65.08971899867609, Math.toRadians(90));
+            mechanumDrive.setPoseEstimate(warehouse);
             Trajectory traj4 = mechanumDrive.trajectoryBuilder(traj3.end())
                     .strafeLeft(2)
                     .build();

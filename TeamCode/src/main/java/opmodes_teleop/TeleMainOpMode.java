@@ -18,8 +18,7 @@ import mechanisms.RoadRunnerMechanumDrive;
 import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
-
-
+import teamcode.Radio;
 
 
 @TeleOp(name="TeleMainOpMode: TeleOp OpMode", group="TeleOp")
@@ -46,6 +45,7 @@ public class TeleMainOpMode extends OpMode {
     private RoadRunnerMechanumDrive drive;
     private BucketSensor bucketSensor;
     private boolean freightIn = false;
+    private Radio radio;
 
 
     // code to run once when driver hits init on phone
@@ -59,6 +59,8 @@ public class TeleMainOpMode extends OpMode {
         cappingArm = new CappingArm(hardwareMap, telemetry);
         linearSlide = new LinearSlide(hardwareMap, telemetry);
         carousel = new Carousel(hardwareMap);
+        radio = new Radio(hardwareMap);
+
         colorSensor = hardwareMap.get(ColorSensor.class, "Color Sensor 1");
         offsetAngle = 0;
 
@@ -279,7 +281,9 @@ public class TeleMainOpMode extends OpMode {
 
         if(bucketSensor.freightIn() && !freightIn){
             linearSlide.tilt();
+            radio.playSound(Radio.SoundFiles.FreightDetected);
             freightIn = true;
+
         }
         else if(!bucketSensor.freightIn() && freightIn){
             freightIn = false;
