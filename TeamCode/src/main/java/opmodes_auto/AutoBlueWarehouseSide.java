@@ -177,7 +177,6 @@ public class AutoBlueWarehouseSide extends LinearOpMode {
 
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
-            sleep(11000);
 
             autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
             autoQueue.addAutoAction(driveControl.getStrafeAction(25, 1));
