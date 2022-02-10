@@ -19,7 +19,7 @@ public class Radio {
     }
 
     public enum SoundFiles {
-        FreightDetected("dominationSound");
+        FreightDetected("domination_sound");
 
         public final String filename;
         SoundFiles(String filename) {
