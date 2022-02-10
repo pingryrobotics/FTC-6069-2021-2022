@@ -49,6 +49,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import RoadRunner.StandardTrackingWheelLocalizer;
 import localization.FieldMap;
 import localization.SpaceMap;
 import localization.VuforiaManager;
@@ -196,6 +197,8 @@ public class AutoRedStorageV2 extends LinearOpMode {
         intakeCvManager.initializeCamera(intakePipeline);
         mechanumDrive = new RoadRunnerMechanumDrive(hardwareMap);
         cvManager.stopPipeline();
+        StandardTrackingWheelLocalizer myLocalizer = new StandardTrackingWheelLocalizer(hardwareMap);
+
 
         cappingArm.spinIn();
         linearSlide.tilt();
@@ -244,7 +247,7 @@ public class AutoRedStorageV2 extends LinearOpMode {
 
             Trajectory traj = mechanumDrive.trajectoryBuilder(startPose)
                     //.forward(25)
-                    .splineToLinearHeading(new Pose2d(-2.34236636245729 ,-44.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
+                    .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-42.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
                     .build();
             mechanumDrive.followTrajectory(traj);
             linearSlide.level1();
@@ -255,7 +258,7 @@ public class AutoRedStorageV2 extends LinearOpMode {
             intake.intakeIn();
             Trajectory traj2 = mechanumDrive.trajectoryBuilder(traj.end())
                     //.forward(25)
-                    .splineToLinearHeading(new Pose2d(7.85780088505222 ,-70.58971899867609, Math.toRadians(180)), Math.toRadians(105))
+                    .splineToLinearHeading(new Pose2d(7.85780088505222 ,-66.58971899867609, Math.toRadians(180)), Math.toRadians(105))
 
                     .build();
             mechanumDrive.followTrajectory(traj2);
