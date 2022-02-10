@@ -106,9 +106,9 @@ import vision.IntakeCVPipeline;
  */
 
 
-@Autonomous(name="AutoRedStorageSideV2", group ="Autonomous")
+@Autonomous(name="AutoRedWarehouseCycling", group ="Autonomous")
 
-public class AutoRedStorageV2 extends LinearOpMode {
+public class AutoRedWarehouseCycling extends LinearOpMode {
 
     // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -192,6 +192,7 @@ public class AutoRedStorageV2 extends LinearOpMode {
         cappingArm = new CappingArm(hardwareMap, telemetry);
         autoQueue = new AutoQueue();
         cvManager = new CVManager(hardwareMap, "Webcam 2", true);
+        intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
         colorSensor = new ColorSensorManager(hardwareMap, "Color Sensor 1");
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
         intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
@@ -226,16 +227,16 @@ public class AutoRedStorageV2 extends LinearOpMode {
 
         waitForStart();
         if (opModeIsActive()) {
-//
-//            double cnt = 0;
-//            for (int i = 0; i < 20; i++) {
-//                cnt += pipeline.getObjLevel();
-//            }
-//
-//            int objLevel = (int) (cnt / 20);
-//
-//            telemetry.addData("Level found", objLevel);
-//            telemetry.update();
+
+            double cnt = 0;
+            for (int i = 0; i < 20; i++) {
+                cnt += pipeline.getObjLevel();
+            }
+
+            int objLevel = (int) (cnt / 20);
+
+            telemetry.addData("Level found", objLevel);
+            telemetry.update();
 
 
 
@@ -253,7 +254,16 @@ public class AutoRedStorageV2 extends LinearOpMode {
                     .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-42.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
                     .build();
             mechanumDrive.followTrajectory(traj);
-            linearSlide.level1();
+            if(objLevel == 0){
+                linearSlide.level1();
+            }
+            else if(objLevel == 1){
+                linearSlide.level2();
+            }
+            else if(objLevel == 2){
+                linearSlide.level3();
+            }
+
             linearSlide.dump();
             sleep(500);
             linearSlide.undump();
@@ -268,45 +278,54 @@ public class AutoRedStorageV2 extends LinearOpMode {
 
             myLocalizer.setPoseEstimate(new Pose2d(7.85780088505222 ,-66.58971899867609, Math.toRadians(180)));
 
-            while(!bucketSensor.freightIn()){
-                myLocalizer.update();
-                mechanumDrive.setWeightedDrivePower(
-                        new Pose2d( -1,
-                                0,
-                                0
-                        )
-                );
+            for(int i = 0; i < 3; i++){
+                while(!bucketSensor.freightIn()){
+                    myLocalizer.update();
+                    mechanumDrive.setWeightedDrivePower(
+                            new Pose2d( -1,
+                                    0,
+                                    0
+                            )
+                    );
+                }
+
+                mechanumDrive.setPoseEstimate(myLocalizer.getPoseEstimate());
+
+                Trajectory traj4 = mechanumDrive.trajectoryBuilder(myLocalizer.getPoseEstimate())
+                        .strafeLeft(2)
+                        .build();
+                mechanumDrive.followTrajectory(traj4);
+
+                Trajectory traj45 = mechanumDrive.trajectoryBuilder(traj4.end())
+                        .forward(40)
+                        .build();
+                mechanumDrive.followTrajectory(traj45);
+
+                Trajectory traj5 = mechanumDrive.trajectoryBuilder(startPose)
+                        //.forward(25)
+                        .splineToLinearHeading(new Pose2d(-2.34236636245729 ,-44.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
+                        .build();
+                mechanumDrive.followTrajectory(traj5);
+                linearSlide.level1();
+                linearSlide.dump();
+                sleep(500);
+                linearSlide.undump();
+                linearSlide.level0();
+                intake.intakeIn();
+                Trajectory traj6 = mechanumDrive.trajectoryBuilder(traj.end())
+                        //.forward(25)
+                        .splineToLinearHeading(new Pose2d(7.85780088505222 ,-70.58971899867609, Math.toRadians(180)), Math.toRadians(105))
+
+                        .build();
+                mechanumDrive.followTrajectory(traj6);
             }
 
-            mechanumDrive.setPoseEstimate(myLocalizer.getPoseEstimate());
-
-            Trajectory traj4 = mechanumDrive.trajectoryBuilder(myLocalizer.getPoseEstimate())
-                    .strafeLeft(2)
-                    .build();
-            mechanumDrive.followTrajectory(traj4);
-
-            Trajectory traj45 = mechanumDrive.trajectoryBuilder(traj4.end())
-                    .forward(40)
-                    .build();
-            mechanumDrive.followTrajectory(traj45);
-
-            Trajectory traj5 = mechanumDrive.trajectoryBuilder(startPose)
+            Trajectory traj7 = mechanumDrive.trajectoryBuilder(traj.end())
                     //.forward(25)
-                    .splineToLinearHeading(new Pose2d(-2.34236636245729 ,-44.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
-                    .build();
-            mechanumDrive.followTrajectory(traj5);
-            linearSlide.level1();
-            linearSlide.dump();
-            sleep(500);
-            linearSlide.undump();
-            linearSlide.level0();
-            intake.intakeIn();
-            Trajectory traj6 = mechanumDrive.trajectoryBuilder(traj.end())
-                    //.forward(25)
-                    .splineToLinearHeading(new Pose2d(7.85780088505222 ,-70.58971899867609, Math.toRadians(180)), Math.toRadians(105))
+                    .back(40)
 
                     .build();
-            mechanumDrive.followTrajectory(traj6);
+            mechanumDrive.followTrajectory(traj7);
 //
 //
 ////            while (colorSensor.getBlue() < 200) {
@@ -384,17 +403,6 @@ public class AutoRedStorageV2 extends LinearOpMode {
 ////            runQueue(autoQueue);
 //
 //            runQueue(autoQueue);
-        }
-    }
-    /**
-     * Runs the queued actions to completion
-     * also updates vuforia
-     * @param autoQueue the queue to run
-     */
-    public void runQueue(AutoQueue autoQueue) {
-        while (autoQueue.updateQueue()) {
-            sleep(100);
-            telemetry.update();
         }
     }
 }
