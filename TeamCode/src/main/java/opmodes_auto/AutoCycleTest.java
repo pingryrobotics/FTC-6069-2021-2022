@@ -174,7 +174,7 @@ public class AutoCycleTest extends LinearOpMode {
                 intake.stop();
              }
 
-            autoQueue.addAutoAction(driveControl.getStrafeAction(-5, 1));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-10, 1));
 
             runQueue(autoQueue);
             driveControl.setStraightVelocity(0.8);

@@ -1,5 +1,6 @@
 package opmodes_teleop;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -7,11 +8,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import mechanisms.BucketSensor;
 import mechanisms.CappingArm;
 import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
+import mechanisms.RoadRunnerMechanumDrive;
 import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
@@ -40,6 +43,9 @@ public class TeleMainOpMode extends OpMode {
     private int direction = 1;
     private int factor = 1;
     private CappingArm cappingArm;
+    private RoadRunnerMechanumDrive drive;
+    private BucketSensor bucketSensor;
+    private boolean freightIn = false;
 
 
     // code to run once when driver hits init on phone
@@ -47,6 +53,7 @@ public class TeleMainOpMode extends OpMode {
     public void init() {
         movementController = new GamepadController(gamepad1);
         mechanismController = new GamepadController(gamepad2);
+        bucketSensor = new BucketSensor(hardwareMap, telemetry);
         driveControl = new DriveControl(hardwareMap, telemetry);
         intake = new Intake(hardwareMap);
         cappingArm = new CappingArm(hardwareMap, telemetry);
@@ -54,6 +61,10 @@ public class TeleMainOpMode extends OpMode {
         carousel = new Carousel(hardwareMap);
         colorSensor = hardwareMap.get(ColorSensor.class, "Color Sensor 1");
         offsetAngle = 0;
+
+        drive = new RoadRunnerMechanumDrive(hardwareMap);
+
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
 
@@ -104,7 +115,14 @@ public class TeleMainOpMode extends OpMode {
         double magnitude = Math.sqrt(Math.pow(leftStickX, 2) + Math.pow(leftStickY, 2)) /factor ;
         double turn = Range.clip(gamepad1.right_stick_x, -1, 1)/factor;
 
-        driveControl.drive(theta, magnitude, turn);
+        //driveControl.drive(theta, magnitude, turn);
+
+        drive.setWeightedDrivePower(
+                new Pose2d( direction* gamepad1.left_stick_y/factor,
+                        direction * gamepad1.left_stick_x/factor,
+                            -1*gamepad1.right_stick_x/factor
+                )
+        );
 
         telemetry.addData("red", colorSensor.red());
         telemetry.addData("green", colorSensor.green());
@@ -259,7 +277,16 @@ public class TeleMainOpMode extends OpMode {
             linearSlide.undump();
         }
 
+        if(bucketSensor.freightIn() && !freightIn){
+            linearSlide.tilt();
+            freightIn = true;
+        }
+        else if(!bucketSensor.freightIn() && freightIn){
+            freightIn = false;
+            linearSlide.undump();
+        }
 
+        telemetry.addData("Freight In: ", freightIn);
         // endregion mechanism
     }
 
