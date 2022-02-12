@@ -318,7 +318,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
 
                 Trajectory traj8 = mecanumDrive.trajectoryBuilder(splineOutOfWarehouse.end())
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-51.23525735344351,  Math.toRadians(110)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-48.23525735344351,  Math.toRadians(110)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(traj8);
 
