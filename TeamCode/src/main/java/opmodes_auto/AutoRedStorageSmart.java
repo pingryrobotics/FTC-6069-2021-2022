@@ -261,7 +261,7 @@ public class AutoRedStorageSmart extends LinearOpMode {
             linearSlide.dump();
             linearSlide.undump();
             Trajectory toCarousel = mecanumDrive.trajectoryBuilder(dump.end())
-                    .splineToLinearHeading(new Pose2d(-61.78, -59.45, Math.toRadians(90)), Math.toRadians(75))
+                    .splineToLinearHeading(new Pose2d(-65.78, -61.45, Math.toRadians(90)), Math.toRadians(75))
                     .build();
             mecanumDrive.followTrajectory(toCarousel);
             carousel.spinPower(-0.25);
