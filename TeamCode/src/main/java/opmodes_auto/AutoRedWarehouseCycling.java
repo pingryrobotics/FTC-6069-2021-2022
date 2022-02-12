@@ -47,13 +47,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import RoadRunner.StandardTrackingWheelLocalizer;
-import localization.FieldMap;
-import localization.SpaceMap;
-import localization.VuforiaManager;
 import mechanisms.BucketSensor;
 import mechanisms.CappingArm;
 import mechanisms.Carousel;
@@ -61,8 +54,7 @@ import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
 import mechanisms.AutoQueue;
-import mechanisms.LinearSlide.SlideAction.SlideOption;
-import mechanisms.RoadRunnerMechanumDrive;
+import mechanisms.RoadRunnerMecanumDrive;
 import vision.CVManager;
 import vision.ColorSensorManager;
 import vision.ElementCVPipeline;
@@ -180,7 +172,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
     private AutoQueue autoQueue;
     private CappingArm cappingArm;
     private ColorSensorManager colorSensor;
-    private RoadRunnerMechanumDrive mecanumDrive;
+    private RoadRunnerMecanumDrive mecanumDrive;
     private BucketSensor bucketSensor;
 
 
@@ -195,7 +187,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
         colorSensor = new ColorSensorManager(hardwareMap, "Color Sensor 1");
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
-        mecanumDrive = new RoadRunnerMechanumDrive(hardwareMap);
+        mecanumDrive = new RoadRunnerMecanumDrive(hardwareMap);
         bucketSensor = new BucketSensor(hardwareMap, telemetry);
 
 
@@ -235,8 +227,6 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
             telemetry.update();
 
             cvManager.stopPipeline();
-
-
 
 
 
@@ -334,7 +324,6 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
                 Trajectory traj6 = mecanumDrive.trajectoryBuilder(traj8.end())
                         //.forward(25)
                         .splineToLinearHeading(new Pose2d(7.85780088505222, -70.58971899867609, Math.toRadians(180)), Math.toRadians(110))
-
                         .build();
                 mecanumDrive.followTrajectory(traj6);
             }

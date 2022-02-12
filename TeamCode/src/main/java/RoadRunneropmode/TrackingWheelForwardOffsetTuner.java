@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 
 import RoadRunner.StandardTrackingWheelLocalizer;
-import mechanisms.RoadRunnerMechanumDrive;
+import mechanisms.RoadRunnerMecanumDrive;
 
 /**
  * This routine determines the effective forward offset for the lateral tracking wheel.
@@ -45,7 +45,7 @@ public class TrackingWheelForwardOffsetTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        RoadRunnerMechanumDrive drive = new RoadRunnerMechanumDrive(hardwareMap);
+        RoadRunnerMecanumDrive drive = new RoadRunnerMecanumDrive(hardwareMap);
 
         if (!(drive.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
             RobotLog.setGlobalErrorMsg("StandardTrackingWheelLocalizer is not being set in the "

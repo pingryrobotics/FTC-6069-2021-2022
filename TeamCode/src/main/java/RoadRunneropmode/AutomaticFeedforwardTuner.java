@@ -20,7 +20,7 @@ import static RoadRunner.DriveConstants.MAX_RPM;
 import static RoadRunner.DriveConstants.RUN_USING_ENCODER;
 import static RoadRunner.DriveConstants.rpmToVelocity;
 
-import mechanisms.RoadRunnerMechanumDrive;
+import mechanisms.RoadRunnerMecanumDrive;
 
 /*
  * Op mode for computing kV, kStatic, and kA from various drive routines. For the curious, here's an
@@ -47,7 +47,7 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        RoadRunnerMechanumDrive drive = new RoadRunnerMechanumDrive(hardwareMap);
+        RoadRunnerMecanumDrive drive = new RoadRunnerMecanumDrive(hardwareMap);
 
         NanoClock clock = NanoClock.system();
 

@@ -14,7 +14,7 @@ import mechanisms.Carousel;
 import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
-import mechanisms.RoadRunnerMechanumDrive;
+import mechanisms.RoadRunnerMecanumDrive;
 import teamcode.GamepadController;
 import teamcode.GamepadController.ButtonState;
 import teamcode.GamepadController.ToggleButton;
@@ -42,7 +42,7 @@ public class TeleMainOpMode extends OpMode {
     private int direction = 1;
     private int factor = 1;
     private CappingArm cappingArm;
-    private RoadRunnerMechanumDrive drive;
+    private RoadRunnerMecanumDrive drive;
     private BucketSensor bucketSensor;
     private boolean freightIn = false;
     private Radio radio;
@@ -64,7 +64,7 @@ public class TeleMainOpMode extends OpMode {
         colorSensor = hardwareMap.get(ColorSensor.class, "Color Sensor 1");
         offsetAngle = 0;
 
-        drive = new RoadRunnerMechanumDrive(hardwareMap);
+        drive = new RoadRunnerMecanumDrive(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
