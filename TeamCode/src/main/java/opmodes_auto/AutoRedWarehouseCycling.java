@@ -243,7 +243,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            Pose2d startPose = new Pose2d(11.85780088505222, -68.08971899867609, Math.toRadians(90));
+            Pose2d startPose = new Pose2d(11.85780088505222, -67.08971899867609, Math.toRadians(90));
             mecanumDrive.setPoseEstimate(startPose);
             Trajectory traj;
             if(objLevel == 0){
@@ -286,12 +286,20 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
                     .build();
             mecanumDrive.followTrajectory(traj2);
 
+            mecanumDrive.setWeightedDrivePower(
+                    new Pose2d(0,
+                            0.5,
+                            0
+                    )
+            );
+            sleep(500);
+            int offset = -2;
             for(int i = 0; i < 2; i++) {
                 mecanumDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 while (!bucketSensor.freightIn()) {
                     mecanumDrive.update();
                     mecanumDrive.setWeightedDrivePower(
-                            new Pose2d(-0.5,
+                            new Pose2d(-0.4,
                                     0,
                                     0
                             )
@@ -306,21 +314,21 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
                                 0
                         )
                 );
-                sleep(500);
+                sleep(1000);
                 mecanumDrive.update();
                 mecanumDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 mecanumDrive.update();
-                Pose2d wareshousePosition = new Pose2d(mecanumDrive.getPoseEstimate().getX(), -70.58971899867609, Math.toRadians(180));
+                Pose2d wareshousePosition = new Pose2d(mecanumDrive.getPoseEstimate().getX(), -71.58971899867609+offset, Math.toRadians(180));
                 mecanumDrive.setPoseEstimate(wareshousePosition);
                 Trajectory splineOutOfWarehouse = mecanumDrive.trajectoryBuilder(wareshousePosition) //.forward(25)
-                        .splineTo(new Vector2d(7.85780088505222, -70.58971899867609), Math.toRadians(180))
+                        .splineTo(new Vector2d(7.85780088505222, -71.58971899867609+offset), Math.toRadians(180))
                         .build();
 
                 mecanumDrive.followTrajectory(splineOutOfWarehouse);
 
                 Trajectory traj8 = mecanumDrive.trajectoryBuilder(splineOutOfWarehouse.end())
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-47.23525735344351,  Math.toRadians(110)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-51.23525735344351,  Math.toRadians(110)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(traj8);
 
@@ -333,10 +341,18 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
 
                 Trajectory traj6 = mecanumDrive.trajectoryBuilder(traj8.end())
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(7.85780088505222, -70.58971899867609, Math.toRadians(180)), Math.toRadians(110))
+                        .splineToLinearHeading(new Pose2d(7.85780088505222, -71.58971899867609 + offset, Math.toRadians(180)), Math.toRadians(110))
 
                         .build();
                 mecanumDrive.followTrajectory(traj6);
+                offset-=2;
+                mecanumDrive.setWeightedDrivePower(
+                        new Pose2d(0,
+                                0.5,
+                                0
+                        )
+                );
+                sleep(500);
             }
 
 
@@ -345,6 +361,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
                     .back(30)
                     .build();
             mecanumDrive.followTrajectory(traj9);
+
 //
 //
 ////            while (colorSensor.getBlue() < 200) {
