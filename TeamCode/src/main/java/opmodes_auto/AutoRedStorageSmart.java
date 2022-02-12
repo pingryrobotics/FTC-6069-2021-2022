@@ -40,6 +40,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -48,6 +49,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import RoadRunner.DriveConstants;
 import localization.FieldMap;
 import localization.SpaceMap;
 import localization.VuforiaManager;
@@ -240,30 +242,54 @@ public class AutoRedStorageSmart extends LinearOpMode {
             if(objLevel == 0){
                 linearSlide.level1();
                 dump = mecanumDrive.trajectoryBuilder(startPose)
-                        .splineToLinearHeading(new Pose2d(-30 ,-38, Math.toRadians(65)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-36 ,-38, Math.toRadians(30)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(dump);
             }
             else if(objLevel == 1){
                 linearSlide.level2();
                 dump = mecanumDrive.trajectoryBuilder(startPose)
-                        .splineToLinearHeading(new Pose2d(-30 ,-37,  Math.toRadians(65)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-30 ,-37,  Math.toRadians(30)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(dump);
             }
             else{
                 linearSlide.level3();
                 dump = mecanumDrive.trajectoryBuilder(startPose)
-                        .splineToLinearHeading(new Pose2d(-30 ,-36,  Math.toRadians(65)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-30 ,-36,  Math.toRadians(30)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(dump);
             }
             linearSlide.dump();
+            sleep(500);
             linearSlide.undump();
-            Trajectory toCarousel = mecanumDrive.trajectoryBuilder(dump.end())
-                    .splineToLinearHeading(new Pose2d(-65.78, -61.45, Math.toRadians(90)), Math.toRadians(75))
+            linearSlide.level0();
+            Trajectory back = mecanumDrive.trajectoryBuilder(dump.end())
+                    .strafeRight(20)
                     .build();
+
+            Trajectory toCarousel = mecanumDrive.trajectoryBuilder(back.end())
+                    .splineToLinearHeading(new Pose2d(-72, -69, Math.toRadians(90)), Math.toRadians(75),
+                    mecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                    mecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                    .build();
+
             mecanumDrive.followTrajectory(toCarousel);
+            mecanumDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            mecanumDrive.setWeightedDrivePower(
+                    new Pose2d(0,
+                            0.5,
+                            0
+                    )
+            );
+            sleep(500);
+            mecanumDrive.setWeightedDrivePower(
+                    new Pose2d(0,
+                            0,
+                            0
+                    )
+            );
+            mecanumDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             carousel.spinPower(-0.25);
             sleep(4000);
             carousel.stop();
