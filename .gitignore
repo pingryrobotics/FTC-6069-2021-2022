@@ -91,3 +91,10 @@ lint/tmp/
 .settings/org.eclipse.buildship.core.prefs
 *.prefs
 java_pid20667.hprof
+.settings/org.eclipse.buildship.core.prefs
+*.prefs
+.idea/misc.xml
+build.common.gradle
+build.gradle
+gradle/wrapper/gradle-wrapper.properties
+TeamCode/build.gradle

@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import mechanisms.RoadRunnerMechanumDrive;
+import mechanisms.RoadRunnerMecanumDrive;
 
 
 /*
@@ -17,7 +17,7 @@ public class TurnTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        RoadRunnerMechanumDrive drive = new RoadRunnerMechanumDrive(hardwareMap);
+        RoadRunnerMecanumDrive drive = new RoadRunnerMecanumDrive(hardwareMap);
 
         waitForStart();
 

@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 
 import RoadRunner.StandardTrackingWheelLocalizer;
-import mechanisms.RoadRunnerMechanumDrive;
+import mechanisms.RoadRunnerMecanumDrive;
 
 /**
  * Opmode designed to assist the user in tuning the `StandardTrackingWheelLocalizer`'s
@@ -69,7 +69,7 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        RoadRunnerMechanumDrive drive = new RoadRunnerMechanumDrive(hardwareMap);
+        RoadRunnerMecanumDrive drive = new RoadRunnerMecanumDrive(hardwareMap);
 
         if (!(drive.getLocalizer() instanceof StandardTrackingWheelLocalizer)) {
             RobotLog.setGlobalErrorMsg("StandardTrackingWheelLocalizer is not being set in the "

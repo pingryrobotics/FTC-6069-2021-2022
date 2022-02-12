@@ -95,7 +95,7 @@ import vision.IntakeCVPipeline;
 
 
 @Autonomous(name="Vuforia AutoRedWarehouseSide", group ="Autonomous")
-
+@Deprecated
 public class AutoRedVuforiaWarehouseSide extends LinearOpMode {
 
 

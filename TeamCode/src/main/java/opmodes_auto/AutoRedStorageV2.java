@@ -55,7 +55,7 @@ import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
 import mechanisms.AutoQueue;
-import mechanisms.RoadRunnerMechanumDrive;
+import mechanisms.RoadRunnerMecanumDrive;
 import vision.CVManager;
 import vision.ColorSensorManager;
 import vision.ElementCVPipeline;
@@ -100,7 +100,7 @@ import vision.ElementCVPipeline;
 
 
 @Autonomous(name="AutoRedStorageSideV2", group ="Autonomous")
-
+@Deprecated
 public class AutoRedStorageV2 extends LinearOpMode {
 
     // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
@@ -171,7 +171,7 @@ public class AutoRedStorageV2 extends LinearOpMode {
     private AutoQueue autoQueue;
     private CappingArm cappingArm;
     private ColorSensorManager colorSensor;
-    private RoadRunnerMechanumDrive mecanumDrive;
+    private RoadRunnerMecanumDrive mecanumDrive;
     private StandardTrackingWheelLocalizer myLocalizer;
     private BucketSensor bucketSensor;
 
@@ -187,7 +187,7 @@ public class AutoRedStorageV2 extends LinearOpMode {
         colorSensor = new ColorSensorManager(hardwareMap, "Color Sensor 1");
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
-        mecanumDrive = new RoadRunnerMechanumDrive(hardwareMap);
+        mecanumDrive = new RoadRunnerMecanumDrive(hardwareMap);
         bucketSensor = new BucketSensor(hardwareMap, telemetry);
         cvManager.stopPipeline();
 

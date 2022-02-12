@@ -52,7 +52,7 @@ import static RoadRunner.DriveConstants.encoderTicksToInches;
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
-public class RoadRunnerMechanumDrive extends MecanumDrive {
+public class RoadRunnerMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6, 0, 1);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(9, 1, 0);
 
@@ -75,7 +75,7 @@ public class RoadRunnerMechanumDrive extends MecanumDrive {
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public RoadRunnerMechanumDrive(HardwareMap hardwareMap) {
+    public RoadRunnerMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,

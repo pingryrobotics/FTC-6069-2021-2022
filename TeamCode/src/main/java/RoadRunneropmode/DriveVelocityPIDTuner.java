@@ -22,7 +22,7 @@ import static RoadRunner.DriveConstants.MOTOR_VELO_PID;
 import static RoadRunner.DriveConstants.RUN_USING_ENCODER;
 import static RoadRunner.DriveConstants.kV;
 
-import mechanisms.RoadRunnerMechanumDrive;
+import mechanisms.RoadRunnerMecanumDrive;
 
 /*
  * This routine is designed to tune the PID coefficients used by the REV Expansion Hubs for closed-
@@ -73,7 +73,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        RoadRunnerMechanumDrive drive = new RoadRunnerMechanumDrive(hardwareMap);
+        RoadRunnerMecanumDrive drive = new RoadRunnerMecanumDrive(hardwareMap);
 
         Mode mode = Mode.TUNING_MODE;
 
