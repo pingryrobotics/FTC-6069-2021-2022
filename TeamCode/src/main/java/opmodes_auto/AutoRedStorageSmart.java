@@ -203,6 +203,9 @@ public class AutoRedStorageSmart extends LinearOpMode {
         telemetry.addData("Initialization status", "Complete");
         telemetry.update();
 
+        cappingArm.spinIn();
+        linearSlide.tilt();
+        linearSlide.calibrateSlide();
 
         waitForStart();
         if (opModeIsActive()) {
@@ -221,10 +224,6 @@ public class AutoRedStorageSmart extends LinearOpMode {
 
             cvManager.stopPipeline();
 
-            cappingArm.spinIn();
-            linearSlide.tilt();
-            linearSlide.calibrateSlide();
-            colorSensor.ledOff();
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
 
@@ -248,17 +247,19 @@ public class AutoRedStorageSmart extends LinearOpMode {
             else if(objLevel == 1){
                 linearSlide.level2();
                 dump = mecanumDrive.trajectoryBuilder(startPose)
-                        .splineToLinearHeading(new Pose2d(-36 ,-37,  Math.toRadians(75)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-34 ,-37,  Math.toRadians(75)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(dump);
             }
             else{
                 linearSlide.level3();
                 dump = mecanumDrive.trajectoryBuilder(startPose)
-                        .splineToLinearHeading(new Pose2d(-37 ,-36,  Math.toRadians(75)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-33 ,-36,  Math.toRadians(75)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(dump);
             }
+            linearSlide.dump();
+            linearSlide.undump();
             Trajectory toCarousel = mecanumDrive.trajectoryBuilder(dump.end())
                     .splineToLinearHeading(new Pose2d(-61.78, -59.45, Math.toRadians(90)), Math.toRadians(75))
                     .build();
