@@ -232,7 +232,7 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            Pose2d startPose = new Pose2d(11.85780088505222, 67.08971899867609, Math.toRadians(270));
+            Pose2d startPose = new Pose2d(15, 67.08971899867609, Math.toRadians(270));
             mecanumDrive.setPoseEstimate(startPose);
             Trajectory traj;
             if(objLevel == 0){
