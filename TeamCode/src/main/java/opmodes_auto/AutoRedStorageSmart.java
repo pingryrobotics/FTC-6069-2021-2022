@@ -240,21 +240,21 @@ public class AutoRedStorageSmart extends LinearOpMode {
             if(objLevel == 0){
                 linearSlide.level1();
                 dump = mecanumDrive.trajectoryBuilder(startPose)
-                        .splineToLinearHeading(new Pose2d(-35 ,-38, Math.toRadians(75)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-30 ,-38, Math.toRadians(65)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(dump);
             }
             else if(objLevel == 1){
                 linearSlide.level2();
                 dump = mecanumDrive.trajectoryBuilder(startPose)
-                        .splineToLinearHeading(new Pose2d(-34 ,-37,  Math.toRadians(75)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-30 ,-37,  Math.toRadians(65)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(dump);
             }
             else{
                 linearSlide.level3();
                 dump = mecanumDrive.trajectoryBuilder(startPose)
-                        .splineToLinearHeading(new Pose2d(-33 ,-36,  Math.toRadians(75)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-30 ,-36,  Math.toRadians(65)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(dump);
             }
@@ -271,6 +271,14 @@ public class AutoRedStorageSmart extends LinearOpMode {
                     .splineToLinearHeading(new Pose2d(7.85780088505222, -70.58971899867609, Math.toRadians(180)), Math.toRadians(90))
                     .build();
             mecanumDrive.followTrajectory(parkWarehouse);
+
+            mecanumDrive.setWeightedDrivePower(
+                    new Pose2d(0,
+                            0.5,
+                            0
+                    )
+            );
+            sleep(500);
             // strafe goes here
             Trajectory finalPark = mecanumDrive.trajectoryBuilder(parkWarehouse.end())
                     .back(30)
