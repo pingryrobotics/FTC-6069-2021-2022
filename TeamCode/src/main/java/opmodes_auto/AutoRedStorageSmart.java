@@ -168,9 +168,7 @@ public class AutoRedStorageSmart extends LinearOpMode {
     private LinearSlide linearSlide;
     private Carousel carousel;
     private ElementCVPipeline pipeline;
-    private IntakeCVPipeline intakePipeline;
     private CVManager cvManager;
-    private CVManager intakeCvManager;
     private AutoQueue autoQueue;
     private CappingArm cappingArm;
     private ColorSensorManager colorSensor;
@@ -190,7 +188,7 @@ public class AutoRedStorageSmart extends LinearOpMode {
 //        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
         mecanumDrive = new RoadRunnerMecanumDrive(hardwareMap);
-        intakeCvManager.initializeCamera(intakePipeline);
+//        intakeCvManager.initializeCamera(intakePipeline);
 
     }
 
