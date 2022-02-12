@@ -192,11 +192,12 @@ public class AutoRedStorageV2 extends LinearOpMode {
         cappingArm = new CappingArm(hardwareMap, telemetry);
         autoQueue = new AutoQueue();
         cvManager = new CVManager(hardwareMap, "Webcam 2", true);
+//        intakeCvManager = new CVManager(hardwareMap, "Webcam 1", true);
         colorSensor = new ColorSensorManager(hardwareMap, "Color Sensor 1");
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
-        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
+//        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
-        intakeCvManager.initializeCamera(intakePipeline);
+//        intakeCvManager.initializeCamera(intakePipeline);
         mechanumDrive = new RoadRunnerMechanumDrive(hardwareMap);
         bucketSensor = new BucketSensor(hardwareMap, telemetry);
         cvManager.stopPipeline();

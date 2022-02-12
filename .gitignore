@@ -91,3 +91,5 @@ lint/tmp/
 .settings/org.eclipse.buildship.core.prefs
 *.prefs
 java_pid20667.hprof
+.settings/org.eclipse.buildship.core.prefs
+*.prefs

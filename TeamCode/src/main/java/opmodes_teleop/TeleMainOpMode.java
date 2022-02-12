@@ -280,14 +280,12 @@ public class TeleMainOpMode extends OpMode {
         }
 
         if(bucketSensor.freightIn() && !freightIn){
-            linearSlide.tilt();
             radio.playSound(Radio.SoundFiles.FreightDetected);
             freightIn = true;
 
         }
         else if(!bucketSensor.freightIn() && freightIn){
             freightIn = false;
-            linearSlide.undump();
         }
 
         telemetry.addData("Freight In: ", freightIn);
