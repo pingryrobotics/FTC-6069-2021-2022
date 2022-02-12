@@ -269,6 +269,7 @@ public class TeleMainOpMode extends OpMode {
 
         if (mechanismController.getButtonState(ToggleButton.Y) == ButtonState.KEY_DOWN) {
             linearSlide.dump();
+            freightIn = false;
         }
 
         if (mechanismController.getButtonState(ToggleButton.B) == ButtonState.KEY_DOWN) {
@@ -277,17 +278,18 @@ public class TeleMainOpMode extends OpMode {
 
         if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
             linearSlide.undump();
+
         }
 
         if(bucketSensor.freightIn() && !freightIn){
-            linearSlide.tilt();
+            //linearSlide.tilt();
             radio.playSound(Radio.SoundFiles.FreightDetected);
             freightIn = true;
 
         }
         else if(!bucketSensor.freightIn() && freightIn){
             freightIn = false;
-            linearSlide.undump();
+            //linearSlide.undump();
         }
 
         telemetry.addData("Freight In: ", freightIn);
