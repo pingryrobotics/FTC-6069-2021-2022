@@ -271,6 +271,7 @@ public class AutoRedStorageSmart extends LinearOpMode {
                     .splineToLinearHeading(new Pose2d(7.85780088505222, -70.58971899867609, Math.toRadians(180)), Math.toRadians(90))
                     .build();
             mecanumDrive.followTrajectory(parkWarehouse);
+            // strafe goes here
             Trajectory finalPark = mecanumDrive.trajectoryBuilder(parkWarehouse.end())
                     .back(30)
                     .build();
