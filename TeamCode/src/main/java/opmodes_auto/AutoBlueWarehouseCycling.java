@@ -270,7 +270,7 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
             intake.intakeIn();
             Trajectory traj2 = mecanumDrive.trajectoryBuilder(traj.end())
                     //.forward(25)
-                    .splineToLinearHeading(new Pose2d(7.85780088505222 , 70.58971899867609, Math.toRadians(0)), Math.toRadians(255))
+                    .splineToLinearHeading(new Pose2d(7.85780088505222 , 70.58971899867609, Math.toRadians(180)), Math.toRadians(255))
 
                     .build();
             mecanumDrive.followTrajectory(traj2);
@@ -307,10 +307,10 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
                 mecanumDrive.update();
                 mecanumDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 mecanumDrive.update();
-                Pose2d wareshousePosition = new Pose2d(mecanumDrive.getPoseEstimate().getX(), 71.58971899867609+offset, Math.toRadians(0));
+                Pose2d wareshousePosition = new Pose2d(mecanumDrive.getPoseEstimate().getX(), 71.58971899867609+offset, Math.toRadians(180));
                 mecanumDrive.setPoseEstimate(wareshousePosition);
                 Trajectory splineOutOfWarehouse = mecanumDrive.trajectoryBuilder(wareshousePosition) //.forward(25)
-                        .splineTo(new Vector2d(7.85780088505222, 71.58971899867609+offset), Math.toRadians(0))
+                        .splineTo(new Vector2d(7.85780088505222, 71.58971899867609+offset), Math.toRadians(180))
                         .build();
 
                 mecanumDrive.followTrajectory(splineOutOfWarehouse);
@@ -330,7 +330,7 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
 
                 Trajectory traj6 = mecanumDrive.trajectoryBuilder(traj8.end())
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(7.85780088505222, 70.58971899867609, Math.toRadians(0)), Math.toRadians(290))
+                        .splineToLinearHeading(new Pose2d(7.85780088505222, 70.58971899867609, Math.toRadians(180)), Math.toRadians(250))
                         .build();
                 mecanumDrive.followTrajectory(traj6);
                 offset-=2;
