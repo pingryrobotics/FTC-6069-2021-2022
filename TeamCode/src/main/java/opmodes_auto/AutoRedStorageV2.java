@@ -41,18 +41,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import RoadRunner.StandardTrackingWheelLocalizer;
-import localization.FieldMap;
-import localization.SpaceMap;
-import localization.VuforiaManager;
 import mechanisms.BucketSensor;
 import mechanisms.CappingArm;
 import mechanisms.Carousel;
@@ -60,12 +55,10 @@ import mechanisms.DriveControl;
 import mechanisms.Intake;
 import mechanisms.LinearSlide;
 import mechanisms.AutoQueue;
-import mechanisms.LinearSlide.SlideAction.SlideOption;
 import mechanisms.RoadRunnerMechanumDrive;
 import vision.CVManager;
 import vision.ColorSensorManager;
 import vision.ElementCVPipeline;
-import vision.IntakeCVPipeline;
 
 /**
  * TODO:
@@ -173,13 +166,12 @@ public class AutoRedStorageV2 extends LinearOpMode {
     private LinearSlide linearSlide;
     private Carousel carousel;
     private ElementCVPipeline pipeline;
-    private IntakeCVPipeline intakePipeline;
     private CVManager cvManager;
     private CVManager intakeCvManager;
     private AutoQueue autoQueue;
     private CappingArm cappingArm;
     private ColorSensorManager colorSensor;
-    private RoadRunnerMechanumDrive mechanumDrive;
+    private RoadRunnerMechanumDrive mecanumDrive;
     private StandardTrackingWheelLocalizer myLocalizer;
     private BucketSensor bucketSensor;
 
@@ -192,16 +184,12 @@ public class AutoRedStorageV2 extends LinearOpMode {
         cappingArm = new CappingArm(hardwareMap, telemetry);
         autoQueue = new AutoQueue();
         cvManager = new CVManager(hardwareMap, "Webcam 2", true);
-//        intakeCvManager = new CVManager(hardwareMap, "Webcam 1", true);
         colorSensor = new ColorSensorManager(hardwareMap, "Color Sensor 1");
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
-//        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
-//        intakeCvManager.initializeCamera(intakePipeline);
-        mechanumDrive = new RoadRunnerMechanumDrive(hardwareMap);
+        mecanumDrive = new RoadRunnerMechanumDrive(hardwareMap);
         bucketSensor = new BucketSensor(hardwareMap, telemetry);
         cvManager.stopPipeline();
-        myLocalizer = new StandardTrackingWheelLocalizer(hardwareMap);
 
 
         cappingArm.spinIn();
@@ -247,67 +235,73 @@ public class AutoRedStorageV2 extends LinearOpMode {
 
             //Pose2d startPose = new Pose2d(38.49849911441041, -65.08971899867609, Math.toRadians(180));
             Pose2d startPose = new Pose2d(11.85780088505222, -65.08971899867609, Math.toRadians(90));
-            mechanumDrive.setPoseEstimate(startPose);
+            mecanumDrive.setPoseEstimate(startPose);
 
-            Trajectory traj = mechanumDrive.trajectoryBuilder(startPose)
+            Trajectory traj = mecanumDrive.trajectoryBuilder(startPose)
                     //.forward(25)
                     .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-42.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
                     .build();
-            mechanumDrive.followTrajectory(traj);
+            mecanumDrive.followTrajectory(traj);
             linearSlide.level1();
             linearSlide.dump();
             sleep(500);
             linearSlide.undump();
             linearSlide.level0();
             intake.intakeIn();
-            Trajectory traj2 = mechanumDrive.trajectoryBuilder(traj.end())
+            Trajectory traj2 = mecanumDrive.trajectoryBuilder(traj.end())
                     //.forward(25)
-                    .splineToLinearHeading(new Pose2d(7.85780088505222 ,-66.58971899867609, Math.toRadians(180)), Math.toRadians(105))
+                    .splineToLinearHeading(new Pose2d(7.85780088505222 ,-70.58971899867609, Math.toRadians(180)), Math.toRadians(105))
 
                     .build();
-            mechanumDrive.followTrajectory(traj2);
-
-            myLocalizer.setPoseEstimate(new Pose2d(7.85780088505222 ,-66.58971899867609, Math.toRadians(180)));
-
+            mecanumDrive.followTrajectory(traj2);
+            mecanumDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             while(!bucketSensor.freightIn()){
-                myLocalizer.update();
-                mechanumDrive.setWeightedDrivePower(
-                        new Pose2d( -1,
+                mecanumDrive.update();
+                mecanumDrive.setWeightedDrivePower(
+                        new Pose2d( -0.25,
                                 0,
                                 0
                         )
                 );
             }
 
-            mechanumDrive.setPoseEstimate(myLocalizer.getPoseEstimate());
-
-            Trajectory traj4 = mechanumDrive.trajectoryBuilder(myLocalizer.getPoseEstimate())
-                    .strafeLeft(2)
+            intake.stop();
+            mecanumDrive.update();
+            mecanumDrive.setWeightedDrivePower(
+                    new Pose2d( 0,
+                            0.5,
+                            0
+                    )
+            );
+            sleep(1000);
+            mecanumDrive.update();
+            mecanumDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            mecanumDrive.update();
+            Pose2d wareshousePosition = new Pose2d(mecanumDrive.getPoseEstimate().getX(), -70.58971899867609, Math.toRadians(180));
+            mecanumDrive.setPoseEstimate(wareshousePosition);
+            Trajectory splineOutOfWarehouse = mecanumDrive.trajectoryBuilder(wareshousePosition) //.forward(25)
+                    .lineTo(new Vector2d(7.85780088505222, -70.58971899867609))
                     .build();
-            mechanumDrive.followTrajectory(traj4);
 
-            Trajectory traj45 = mechanumDrive.trajectoryBuilder(traj4.end())
-                    .forward(40)
-                    .build();
-            mechanumDrive.followTrajectory(traj45);
+            mecanumDrive.followTrajectory(splineOutOfWarehouse);
 
-            Trajectory traj5 = mechanumDrive.trajectoryBuilder(startPose)
+            Trajectory traj5 = mecanumDrive.trajectoryBuilder(splineOutOfWarehouse.end())
                     //.forward(25)
                     .splineToLinearHeading(new Pose2d(-2.34236636245729 ,-44.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
                     .build();
-            mechanumDrive.followTrajectory(traj5);
+            mecanumDrive.followTrajectory(traj5);
             linearSlide.level1();
             linearSlide.dump();
             sleep(500);
             linearSlide.undump();
             linearSlide.level0();
             intake.intakeIn();
-            Trajectory traj6 = mechanumDrive.trajectoryBuilder(traj.end())
+            Trajectory traj6 = mecanumDrive.trajectoryBuilder(traj.end())
                     //.forward(25)
                     .splineToLinearHeading(new Pose2d(7.85780088505222 ,-70.58971899867609, Math.toRadians(180)), Math.toRadians(105))
 
                     .build();
-            mechanumDrive.followTrajectory(traj6);
+            mecanumDrive.followTrajectory(traj6);
 //
 //
 ////            while (colorSensor.getBlue() < 200) {

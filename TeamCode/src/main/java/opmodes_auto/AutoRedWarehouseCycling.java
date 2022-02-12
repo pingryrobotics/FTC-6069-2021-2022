@@ -41,6 +41,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -179,8 +180,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
     private AutoQueue autoQueue;
     private CappingArm cappingArm;
     private ColorSensorManager colorSensor;
-    private RoadRunnerMechanumDrive mechanumDrive;
-    private StandardTrackingWheelLocalizer myLocalizer;
+    private RoadRunnerMechanumDrive mecanumDrive;
     private BucketSensor bucketSensor;
 
 
@@ -192,16 +192,12 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
         cappingArm = new CappingArm(hardwareMap, telemetry);
         autoQueue = new AutoQueue();
         cvManager = new CVManager(hardwareMap, "Webcam 2", true);
-        intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
         colorSensor = new ColorSensorManager(hardwareMap, "Color Sensor 1");
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
-        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
-        intakeCvManager.initializeCamera(intakePipeline);
-        mechanumDrive = new RoadRunnerMechanumDrive(hardwareMap);
+        mecanumDrive = new RoadRunnerMechanumDrive(hardwareMap);
         bucketSensor = new BucketSensor(hardwareMap, telemetry);
-        cvManager.stopPipeline();
-        myLocalizer = new StandardTrackingWheelLocalizer(hardwareMap);
+
 
 
         cappingArm.spinIn();
@@ -238,6 +234,8 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
             telemetry.addData("Level found", objLevel);
             telemetry.update();
 
+            cvManager.stopPipeline();
+
 
 
 
@@ -245,87 +243,108 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            //Pose2d startPose = new Pose2d(38.49849911441041, -65.08971899867609, Math.toRadians(180));
-            Pose2d startPose = new Pose2d(11.85780088505222, -65.08971899867609, Math.toRadians(90));
-            mechanumDrive.setPoseEstimate(startPose);
-
-            Trajectory traj = mechanumDrive.trajectoryBuilder(startPose)
-                    //.forward(25)
-                    .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-42.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
-                    .build();
-            mechanumDrive.followTrajectory(traj);
+            Pose2d startPose = new Pose2d(11.85780088505222, -68.08971899867609, Math.toRadians(90));
+            mecanumDrive.setPoseEstimate(startPose);
+            Trajectory traj;
             if(objLevel == 0){
                 linearSlide.level1();
+                traj = mecanumDrive.trajectoryBuilder(startPose)
+                        //.forward(25)
+                        .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-41.23525735344351, Math.toRadians(105)),Math.toRadians(90))
+                        .build();
+                mecanumDrive.followTrajectory(traj);
             }
             else if(objLevel == 1){
                 linearSlide.level2();
+                traj = mecanumDrive.trajectoryBuilder(startPose)
+                        //.forward(25)
+                        .splineToLinearHeading(new Pose2d(-4.34236636245729 ,-42.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
+                        .build();
+                mecanumDrive.followTrajectory(traj);
             }
-            else if(objLevel == 2){
+            else{
                 linearSlide.level3();
+                traj = mecanumDrive.trajectoryBuilder(startPose)
+                        //.forward(25)
+                        .splineToLinearHeading(new Pose2d(-5.34236636245729 ,-41.23525735344351,  Math.toRadians(115)),Math.toRadians(90))
+                        .build();
+                mecanumDrive.followTrajectory(traj);
             }
+
+            //Pose2d startPose = new Pose2d(38.49849911441041, -65.08971899867609, Math.toRadians(180));
+
 
             linearSlide.dump();
             sleep(500);
             linearSlide.undump();
             linearSlide.level0();
             intake.intakeIn();
-            Trajectory traj2 = mechanumDrive.trajectoryBuilder(traj.end())
+            Trajectory traj2 = mecanumDrive.trajectoryBuilder(traj.end())
                     //.forward(25)
-                    .splineToLinearHeading(new Pose2d(7.85780088505222 ,-66.58971899867609, Math.toRadians(180)), Math.toRadians(105))
+                    .splineToLinearHeading(new Pose2d(7.85780088505222 ,-70.58971899867609, Math.toRadians(180)), Math.toRadians(105))
 
                     .build();
-            mechanumDrive.followTrajectory(traj2);
+            mecanumDrive.followTrajectory(traj2);
 
-            myLocalizer.setPoseEstimate(new Pose2d(7.85780088505222 ,-66.58971899867609, Math.toRadians(180)));
-
-            for(int i = 0; i < 3; i++){
-                while(!bucketSensor.freightIn()){
-                    myLocalizer.update();
-                    mechanumDrive.setWeightedDrivePower(
-                            new Pose2d( -1,
+            for(int i = 0; i < 2; i++) {
+                mecanumDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                while (!bucketSensor.freightIn()) {
+                    mecanumDrive.update();
+                    mecanumDrive.setWeightedDrivePower(
+                            new Pose2d(-0.5,
                                     0,
                                     0
                             )
                     );
                 }
 
-                mechanumDrive.setPoseEstimate(myLocalizer.getPoseEstimate());
-
-                Trajectory traj4 = mechanumDrive.trajectoryBuilder(myLocalizer.getPoseEstimate())
-                        .strafeLeft(2)
+                intake.intakeOut();
+                mecanumDrive.update();
+                mecanumDrive.setWeightedDrivePower(
+                        new Pose2d(0,
+                                0.5,
+                                0
+                        )
+                );
+                sleep(500);
+                mecanumDrive.update();
+                mecanumDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                mecanumDrive.update();
+                Pose2d wareshousePosition = new Pose2d(mecanumDrive.getPoseEstimate().getX(), -70.58971899867609, Math.toRadians(180));
+                mecanumDrive.setPoseEstimate(wareshousePosition);
+                Trajectory splineOutOfWarehouse = mecanumDrive.trajectoryBuilder(wareshousePosition) //.forward(25)
+                        .splineTo(new Vector2d(7.85780088505222, -70.58971899867609), Math.toRadians(180))
                         .build();
-                mechanumDrive.followTrajectory(traj4);
 
-                Trajectory traj45 = mechanumDrive.trajectoryBuilder(traj4.end())
-                        .forward(40)
-                        .build();
-                mechanumDrive.followTrajectory(traj45);
+                mecanumDrive.followTrajectory(splineOutOfWarehouse);
 
-                Trajectory traj5 = mechanumDrive.trajectoryBuilder(startPose)
+                Trajectory traj8 = mecanumDrive.trajectoryBuilder(splineOutOfWarehouse.end())
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-2.34236636245729 ,-44.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-3.34236636245729 ,-47.23525735344351,  Math.toRadians(110)),Math.toRadians(90))
                         .build();
-                mechanumDrive.followTrajectory(traj5);
+                mecanumDrive.followTrajectory(traj8);
+
                 linearSlide.level1();
                 linearSlide.dump();
                 sleep(500);
                 linearSlide.undump();
                 linearSlide.level0();
                 intake.intakeIn();
-                Trajectory traj6 = mechanumDrive.trajectoryBuilder(traj.end())
+
+                Trajectory traj6 = mecanumDrive.trajectoryBuilder(traj8.end())
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(7.85780088505222 ,-70.58971899867609, Math.toRadians(180)), Math.toRadians(105))
+                        .splineToLinearHeading(new Pose2d(7.85780088505222, -70.58971899867609, Math.toRadians(180)), Math.toRadians(110))
 
                         .build();
-                mechanumDrive.followTrajectory(traj6);
+                mecanumDrive.followTrajectory(traj6);
             }
 
-            Trajectory traj7 = mechanumDrive.trajectoryBuilder(traj.end())
-                    //.forward(25)
-                    .back(40)
 
+            Trajectory traj9 = mecanumDrive.trajectoryBuilder(mecanumDrive.getPoseEstimate())
+                    //.forward(25)
+                    .back(30)
                     .build();
-            mechanumDrive.followTrajectory(traj7);
+            mecanumDrive.followTrajectory(traj9);
 //
 //
 ////            while (colorSensor.getBlue() < 200) {

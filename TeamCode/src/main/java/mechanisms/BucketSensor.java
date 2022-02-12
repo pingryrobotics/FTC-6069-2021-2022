@@ -14,7 +14,7 @@ public class BucketSensor {
     }
 
     public boolean freightIn(){
-        if((colorSensor.argb() < 0 || (colorSensor.red() >= 100 && colorSensor.green() >= 100) && (colorSensor.red() <= 500))){
+        if((colorSensor.argb() < 0 && colorSensor.argb() <= -10000000)|| (colorSensor.argb() >= 1000000000)){
             return true;
         }
         return false;
