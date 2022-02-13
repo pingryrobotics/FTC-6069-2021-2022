@@ -277,7 +277,7 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
 
             mecanumDrive.setWeightedDrivePower(
                     new Pose2d(0,
-                            0.5,
+                            -0.5,
                             0
                     )
             );
