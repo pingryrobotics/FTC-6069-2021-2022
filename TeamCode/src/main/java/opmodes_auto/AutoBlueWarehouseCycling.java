@@ -239,7 +239,7 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
                 linearSlide.level1();
                 traj = mecanumDrive.trajectoryBuilder(startPose)
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-3.34236636245729 , 41.23525735344351, Math.toRadians(255)),Math.toRadians(270))
+                        .splineToLinearHeading(new Pose2d(-3.34236636245729 , 48.23525735344351, Math.toRadians(255)),Math.toRadians(270))
                         .build();
                 mecanumDrive.followTrajectory(traj);
             }
