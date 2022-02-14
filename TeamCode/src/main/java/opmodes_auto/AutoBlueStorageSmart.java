@@ -29,8 +29,6 @@
 
 package opmodes_auto;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -40,7 +38,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -49,7 +46,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import RoadRunner.DriveConstants;
 import localization.FieldMap;
 import localization.SpaceMap;
 import localization.VuforiaManager;
@@ -60,9 +56,7 @@ import mechanisms.Intake;
 import mechanisms.LinearSlide;
 import mechanisms.AutoQueue;
 import mechanisms.LinearSlide.SlideAction.SlideOption;
-import mechanisms.RoadRunnerMecanumDrive;
 import vision.CVManager;
-import vision.ColorSensorManager;
 import vision.ElementCVPipeline;
 import vision.IntakeCVPipeline;
 
@@ -105,9 +99,9 @@ import vision.IntakeCVPipeline;
  */
 
 
-@Autonomous(name="AutoRedStorageSmart", group ="Autonomous")
+@Autonomous(name="AutoBlueStorageSmart", group ="Autonomous")
 
-public class AutoRedStorageSmart extends LinearOpMode {
+public class AutoBlueStorageSmart extends LinearOpMode {
 
     // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -170,11 +164,12 @@ public class AutoRedStorageSmart extends LinearOpMode {
     private LinearSlide linearSlide;
     private Carousel carousel;
     private ElementCVPipeline pipeline;
+    private IntakeCVPipeline intakePipeline;
     private CVManager cvManager;
+    private CVManager intakeCvManager;
     private AutoQueue autoQueue;
     private CappingArm cappingArm;
-    private ColorSensorManager colorSensor;
-    private RoadRunnerMecanumDrive mecanumDrive;
+
 
     public void initialize() {
         driveControl = new DriveControl(hardwareMap, telemetry);
@@ -184,13 +179,11 @@ public class AutoRedStorageSmart extends LinearOpMode {
         cappingArm = new CappingArm(hardwareMap, telemetry);
         autoQueue = new AutoQueue();
         cvManager = new CVManager(hardwareMap, "Webcam 2", true);
-//        intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
-        colorSensor = new ColorSensorManager(hardwareMap, "Color Sensor 1");
+        intakeCvManager = new CVManager(hardwareMap, "Webcam 1", false);
         pipeline = new ElementCVPipeline(cvManager.getWebcam());
-//        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
+        intakePipeline = new IntakeCVPipeline(intakeCvManager.getWebcam());
         cvManager.initializeCamera(pipeline);
-        mecanumDrive = new RoadRunnerMecanumDrive(hardwareMap);
-//        intakeCvManager.initializeCamera(intakePipeline);
+        intakeCvManager.initializeCamera(intakePipeline);
 
     }
 
@@ -205,9 +198,6 @@ public class AutoRedStorageSmart extends LinearOpMode {
         telemetry.addData("Initialization status", "Complete");
         telemetry.update();
 
-        cappingArm.spinIn();
-        linearSlide.tilt();
-        linearSlide.calibrateSlide();
 
         waitForStart();
         if (opModeIsActive()) {
@@ -226,100 +216,60 @@ public class AutoRedStorageSmart extends LinearOpMode {
 
             cvManager.stopPipeline();
 
+
+            cappingArm.spinIn();
+            linearSlide.tilt();
             telemetry.addData("starting angle", driveControl.getGyroAngle());
             telemetry.update();
 
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            Pose2d startPose = new Pose2d(-26.8, -72.1, Math.toRadians(90));
-            mecanumDrive.setPoseEstimate(startPose);
+            autoQueue.addAutoAction(driveControl.getForwardAction(10, 1));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 1));
+            autoQueue.addAutoAction(driveControl.getForwardAction(-27, 1));
 
-            Trajectory toCarousel = mecanumDrive.trajectoryBuilder(startPose)
-                    .splineToLinearHeading(new Pose2d(-70, -67, Math.toRadians(90)), Math.toRadians(90),
-                            mecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                            mecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                    .build();
-
-            mecanumDrive.followTrajectory(toCarousel);
-//            mecanumDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//            mecanumDrive.setWeightedDrivePower(
-//                    new Pose2d(0,
-//                            0.5,
-//                            0
-//                    )
-//            );
-//            sleep(500);
-//            mecanumDrive.setWeightedDrivePower(
-//                    new Pose2d(0,
-//                            0,
-//                            0
-//                    )
-//            );
-//            mecanumDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            carousel.spinPower(-0.25);
-            sleep(4000);
+            runQueue(autoQueue);
+            driveControl.setStrafeVelocity(-.5);
+            sleep(500);
+            driveControl.setStrafeVelocity(0);
+            carousel.spinPower(0.25);
+            sleep(3000);
             carousel.stop();
 
-            mecanumDrive.setPoseEstimate(new Pose2d(-51.761,-64.169, -4.78));
+            //autoQueue.addAutoAction(driveControl.getForwardAction(5, 1));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(37, 1));
+            autoQueue.addAutoAction(driveControl.getTurnPositionAction(90, 1));
+//            autoQueue.addAutoAction(driveControl.getTurnPositionAction(0, 0.8));
+//            autoQueue.addAutoAction(driveControl.getForwardAction(29, 0.8));
+//            autoQueue.addAutoAction(driveControl.getTurnIncrementAction(-90, 0.8));
 
-            Trajectory aroundTSE = mecanumDrive.trajectoryBuilder(mecanumDrive.getPoseEstimate())
-                    .splineToLinearHeading(new Pose2d(-60, -25, Math.toRadians(90)), Math.toRadians(90))
-                    .build();
-            mecanumDrive.followTrajectory(aroundTSE);
 
-            Trajectory dump;
-            if(objLevel == 0){
-                linearSlide.level1();
-                dump = mecanumDrive.trajectoryBuilder(aroundTSE.end())
-                        .splineToLinearHeading(new Pose2d(-20.1,-19.6, Math.toRadians(-20)),Math.toRadians(90))
-                        .build();
+
+            if (objLevel == 0) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(24, 1));
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_1));
+            } else if (objLevel == 1) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(26, 1));
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_2));
+            } else if (objLevel == 2) {
+                autoQueue.addAutoAction(driveControl.getForwardAction(30, 1));
+                autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_3));
             }
-            else if(objLevel == 1){
-                linearSlide.level2();
-                dump = mecanumDrive.trajectoryBuilder(aroundTSE.end())
-                        .splineToLinearHeading(new Pose2d(-19.1 ,-19.6,  Math.toRadians(-20)),Math.toRadians(90))
-                        .build();
-            }
-            else{
-                linearSlide.level3();
-                dump = mecanumDrive.trajectoryBuilder(aroundTSE.end())
-                        .splineToLinearHeading(new Pose2d(-18.1 ,-19.6,  Math.toRadians(-20)),Math.toRadians(90))
-                        .build();
-            }
-            mecanumDrive.followTrajectory(dump);
+            //autoQueue.addAutoAction(driveControl.getForwardAction(inches, 1));
+            runQueue(autoQueue);
+
             linearSlide.dump();
             sleep(500);
-            // serbvo diees around here
             linearSlide.undump();
-            sleep(500);
-            linearSlide.level0();
+            //sleep(500);
+            autoQueue.addAutoAction(linearSlide.getLevelAction(SlideOption.LEVEL_0));
+            runQueue(autoQueue);
 
-            Trajectory straighten = mecanumDrive.trajectoryBuilder(dump.end())
-                    .splineToLinearHeading(new Pose2d(dump.end().getX(), dump.end().getY(), Math.toRadians(0)), Math.toRadians(-20))
-                    .build();
+            autoQueue.addAutoAction(driveControl.getForwardAction(-30, 1));
+            autoQueue.addAutoAction(driveControl.getStrafeAction(-15, 1));
 
-            mecanumDrive.followTrajectory(straighten);
-
-            Trajectory moveLeft = mecanumDrive.trajectoryBuilder(dump.end())
-                    .strafeLeft(35)
-                    .build();
-            mecanumDrive.followTrajectory(moveLeft);
-
-            Trajectory aroundHub = mecanumDrive.trajectoryBuilder(moveLeft.end())
-                    .splineToLinearHeading(new Pose2d(10, 0, Math.toRadians(0)), Math.toRadians(0))
-                    .build();
-            mecanumDrive.followTrajectory(aroundHub);
-
-            Trajectory toBars = mecanumDrive.trajectoryBuilder(aroundHub.end())
-                    .strafeRight(50)
-                    .build();
-            mecanumDrive.followTrajectory(toBars);
-
-            Trajectory finalParkOverBars = mecanumDrive.trajectoryBuilder(toBars.end())
-                    .forward(60)
-                    .build();
-            mecanumDrive.followTrajectory(finalParkOverBars);
+            runQueue(autoQueue);
         }
     }
     /**
