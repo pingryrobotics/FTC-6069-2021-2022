@@ -80,7 +80,7 @@ public class TeleMainOpMode extends OpMode {
     public void start() {
 
         linearSlide.undump();
-        cappingArm.spinIn();
+        cappingArm.defaultPosition();
     }
 
     // code to loop while opmode is running

@@ -39,6 +39,8 @@ public class CappingArm {
         armServo.setPosition(1);
     }
 
+    public void defaultPosition() {armServo.setPosition(0.7);}
+
     public double getServoPos() {
         return armServo.getPosition();
     }

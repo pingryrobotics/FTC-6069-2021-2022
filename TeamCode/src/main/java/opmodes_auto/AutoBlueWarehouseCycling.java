@@ -191,13 +191,12 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
 
 
 
-        cappingArm.spinIn();
+        cappingArm.defaultPosition();
         linearSlide.tilt();
         linearSlide.calibrateSlide();
         colorSensor.ledOff();
         telemetry.addData("starting angle", driveControl.getGyroAngle());
         telemetry.update();
-        cappingArm.spinIn();
     }
 
     @Override
@@ -226,8 +225,7 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
             telemetry.update();
 
             cvManager.stopPipeline();
-
-
+            cappingArm.defaultPosition();
 
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
@@ -239,7 +237,7 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
                 linearSlide.level1();
                 traj = mecanumDrive.trajectoryBuilder(startPose)
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-3.34236636245729 , 48.23525735344351, Math.toRadians(255)),Math.toRadians(270))
+                        .splineToLinearHeading(new Pose2d(-1.34236636245729 , 48.53525735344351, Math.toRadians(255)),Math.toRadians(270))
                         .build();
                 mecanumDrive.followTrajectory(traj);
             }
@@ -247,7 +245,7 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
                 linearSlide.level2();
                 traj = mecanumDrive.trajectoryBuilder(startPose)
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-4.34236636245729 , 42.23525735344351,  Math.toRadians(255)),Math.toRadians(270))
+                        .splineToLinearHeading(new Pose2d(-4.34236636245729 , 45.23525735344351,  Math.toRadians(255)),Math.toRadians(270))
                         .build();
                 mecanumDrive.followTrajectory(traj);
             }
@@ -277,29 +275,33 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
 
             mecanumDrive.setWeightedDrivePower(
                     new Pose2d(0,
-                            -0.5,
+                            -0.55,
                             0
                     )
             );
             sleep(500);
-            int offset = -2;
+            int offset = 2;
             for(int i = 0; i < 2; i++) {
                 mecanumDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                while (!bucketSensor.freightIn()) {
+                ElapsedTime time = new ElapsedTime();
+                while ((!bucketSensor.freightIn() || time.seconds() >= 10) && opModeIsActive()) {
                     mecanumDrive.update();
                     mecanumDrive.setWeightedDrivePower(
-                            new Pose2d(-0.4,
+                            new Pose2d(-0.65,
                                     0,
                                     0
                             )
                     );
+                }
+                if(time.seconds() >= 10){
+                    stop();
                 }
 
                 intake.intakeOut();
                 mecanumDrive.update();
                 mecanumDrive.setWeightedDrivePower(
                         new Pose2d(0,
-                                0.5,
+                                -0.5,
                                 0
                         )
                 );
@@ -314,14 +316,15 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
                         .build();
 
                 mecanumDrive.followTrajectory(splineOutOfWarehouse);
+                linearSlide.level3();
 
                 Trajectory traj8 = mecanumDrive.trajectoryBuilder(splineOutOfWarehouse.end())
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-3.34236636245729 ,48.23525735344351,  Math.toRadians(250)),Math.toRadians(270))
+                        .splineToLinearHeading(new Pose2d(-3.34236636245729 , 51.73525735344351,  Math.toRadians(250)),Math.toRadians(270))
                         .build();
                 mecanumDrive.followTrajectory(traj8);
 
-                linearSlide.level1();
+
                 linearSlide.dump();
                 sleep(500);
                 linearSlide.undump();
@@ -333,22 +336,25 @@ public class AutoBlueWarehouseCycling extends LinearOpMode {
                         .splineToLinearHeading(new Pose2d(7.85780088505222, 70.58971899867609, Math.toRadians(180)), Math.toRadians(250))
                         .build();
                 mecanumDrive.followTrajectory(traj6);
-                offset-=2;
+                offset+=2;
                 mecanumDrive.setWeightedDrivePower(
                         new Pose2d(0,
-                                0.5,
+                                -0.5,
                                 0
                         )
                 );
                 sleep(500);
+                mecanumDrive.update();
             }
 
-
-            Trajectory traj9 = mecanumDrive.trajectoryBuilder(mecanumDrive.getPoseEstimate())
-                    //.forward(25)
-                    .forward(30)
-                    .build();
-            mecanumDrive.followTrajectory(traj9);
+            sleep(500);
+            mecanumDrive.setWeightedDrivePower(
+                    new Pose2d(-0.65,
+                            0,
+                            0
+                    )
+            );
+            sleep(1500);
 
 //
 //
