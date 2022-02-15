@@ -27,11 +27,11 @@ public class LinearSlide {
 
     public double power;
     private int level;
-    private final int LEVEL_CAP = 2248;
-    private final int LEVEL_3 = 2160;
-    private final int LEVEL_2 = 1209;
-    private final int LEVEL_1 = 353;
-    private final int LEVEL_0 = 0;
+    private final int LEVEL_CAP = (int)(((double)312/233) * 2248);
+    private final int LEVEL_3 = (int)(((double)312/233) * 2160);
+    private final int LEVEL_2 = (int)(((double)312/233) * 1209);
+    private final int LEVEL_1 = (int)(((double)312/233) * 353);
+    private final int LEVEL_0 = (int)(((double)312/233) * 0);
     public boolean tilted = false;
 
     public LinearSlide(HardwareMap hardwareMap, Telemetry telemetry) {

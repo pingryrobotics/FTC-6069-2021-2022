@@ -46,6 +46,8 @@ public class TeleMainOpMode extends OpMode {
     private BucketSensor bucketSensor;
     private boolean freightIn = false;
     private Radio radio;
+    private Pose2d curr;
+    private boolean dumped;
 
 
     // code to run once when driver hits init on phone
@@ -208,6 +210,27 @@ public class TeleMainOpMode extends OpMode {
             }
         }
 
+        if (movementController.getButtonState(ToggleButton.DPAD_LEFT) == ButtonState.KEY_DOWN) { // blue side
+            // restrictions: DON'T MOVE AT ALL BETWEEN GOING THERE AND RETURNING
+            // DON'T MOVE BACK MANUALLY
+            if (!dumped) {
+                curr = drive.dumpShared(-1);
+                dumped = true;
+            } else {
+                drive.retractShared(-1, curr);
+                dumped = false;
+            }
+        }
+        if (movementController.getButtonState(ToggleButton.DPAD_RIGHT) == ButtonState.KEY_DOWN) { // red side
+            if (!dumped) {
+                curr = drive.dumpShared(1);
+                dumped = true;
+            } else {
+                drive.retractShared(1, curr);
+                dumped = false;
+            }
+        }
+
 
         // endregion movement
 
@@ -278,7 +301,6 @@ public class TeleMainOpMode extends OpMode {
 
         if (mechanismController.getButtonState(ToggleButton.A) == ButtonState.KEY_DOWN) {
             linearSlide.undump();
-
         }
 
         if(bucketSensor.freightIn() && !freightIn){

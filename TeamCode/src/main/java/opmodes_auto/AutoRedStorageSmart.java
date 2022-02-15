@@ -272,13 +272,13 @@ public class AutoRedStorageSmart extends LinearOpMode {
             if(objLevel == 0){
                 linearSlide.level1();
                 dump = mecanumDrive.trajectoryBuilder(aroundTSE.end())
-                        .splineToLinearHeading(new Pose2d(-20.1,-19.6, Math.toRadians(-20)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-20.1,-19.1, Math.toRadians(-20)),Math.toRadians(90))
                         .build();
             }
             else if(objLevel == 1){
                 linearSlide.level2();
                 dump = mecanumDrive.trajectoryBuilder(aroundTSE.end())
-                        .splineToLinearHeading(new Pose2d(-19.1 ,-19.6,  Math.toRadians(-20)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-19.6 ,-19.3,  Math.toRadians(-20)),Math.toRadians(90))
                         .build();
             }
             else{
@@ -290,10 +290,10 @@ public class AutoRedStorageSmart extends LinearOpMode {
             mecanumDrive.followTrajectory(dump);
             linearSlide.dump();
             sleep(500);
-            // serbvo diees around here
             linearSlide.undump();
             sleep(500);
             linearSlide.level0();
+            sleep(1500);
 
             Trajectory straighten = mecanumDrive.trajectoryBuilder(dump.end())
                     .splineToLinearHeading(new Pose2d(dump.end().getX(), dump.end().getY(), Math.toRadians(0)), Math.toRadians(-20))
@@ -301,7 +301,7 @@ public class AutoRedStorageSmart extends LinearOpMode {
 
             mecanumDrive.followTrajectory(straighten);
 
-            Trajectory moveLeft = mecanumDrive.trajectoryBuilder(dump.end())
+            Trajectory moveLeft = mecanumDrive.trajectoryBuilder(straighten.end())
                     .strafeLeft(35)
                     .build();
             mecanumDrive.followTrajectory(moveLeft);
