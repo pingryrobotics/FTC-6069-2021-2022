@@ -98,3 +98,4 @@ build.common.gradle
 build.gradle
 gradle/wrapper/gradle-wrapper.properties
 TeamCode/build.gradle
+java_pid37703.hprof

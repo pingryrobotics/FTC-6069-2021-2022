@@ -287,7 +287,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
             for(int i = 0; i < 2; i++) {
                 mecanumDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 ElapsedTime time = new ElapsedTime();
-                while ((!bucketSensor.freightIn() || time.seconds() >= 10) && opModeIsActive()) {
+                while ((!bucketSensor.freightIn() || mecanumDrive.getPoseEstimate().getX() < 100) && opModeIsActive()) {
                     mecanumDrive.update();
                     mecanumDrive.setWeightedDrivePower(
                             new Pose2d(-0.5,
@@ -296,7 +296,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
                             )
                     );
                 }
-                if(time.seconds() >= 10){
+                if(mecanumDrive.getPoseEstimate().getX() >= 99){
                     stop();
                 }
                 intake.intakeOut();

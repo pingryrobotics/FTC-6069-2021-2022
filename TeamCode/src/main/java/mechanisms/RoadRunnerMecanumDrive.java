@@ -319,4 +319,32 @@ public class RoadRunnerMecanumDrive extends MecanumDrive {
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
     }
+
+    public Pose2d dumpShared(int direc) {
+        this.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(direc * 90)));
+        final double dist = 22.57;
+        Trajectory goForward = this.trajectoryBuilder(this.getPoseEstimate())
+                .forward(dist)
+                .build();
+        this.followTrajectory(goForward);
+        Pose2d curr = this.getPoseEstimate();
+        final double angle = Math.toRadians(direc * 150);
+        Trajectory toHub = this.trajectoryBuilder(goForward.end())
+                .splineToLinearHeading(new Pose2d(32.59, direc * 11, angle), Math.toRadians(direc * 90))
+                .build();
+        this.followTrajectory(toHub);
+        return curr;
+    }
+    public void retractShared(int direc, Pose2d curr) {
+        final double angle = Math.toRadians(direc * 150);
+        final double dist = 22.57;
+        Trajectory goBack = this.trajectoryBuilder(new Pose2d(32.59, direc * 11, angle))
+                .splineToLinearHeading(curr, Math.toRadians(angle))
+                .build();
+        this.followTrajectory(goBack);
+        Trajectory reverse = this.trajectoryBuilder(goBack.end())
+                .back(dist)
+                .build();
+        this.followTrajectory(reverse);
+    }
 }
