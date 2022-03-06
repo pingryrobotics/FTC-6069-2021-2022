@@ -233,14 +233,14 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
             ElapsedTime rtime = new ElapsedTime();
             rtime.reset();
 
-            Pose2d startPose = new Pose2d(11.85780088505222, -67.08971899867609, Math.toRadians(90));
+            Pose2d startPose = new Pose2d(11.85780088505222, -65.08971899867609, Math.toRadians(90));
             mecanumDrive.setPoseEstimate(startPose);
             Trajectory traj;
             if(objLevel == 0){
                 linearSlide.level1();
                 traj = mecanumDrive.trajectoryBuilder(startPose)
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-5.34236636245729 ,-48.23525735344351, Math.toRadians(105)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-5.34236636245729 ,-45.23525735344351, Math.toRadians(105)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(traj);
             }
@@ -248,7 +248,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
                 linearSlide.level2();
                 traj = mecanumDrive.trajectoryBuilder(startPose)
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-4.34236636245729 ,-46.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-6.34236636245729 ,-43.23525735344351,  Math.toRadians(105)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(traj);
             }
@@ -256,7 +256,7 @@ public class AutoRedWarehouseCycling extends LinearOpMode {
                 linearSlide.level3();
                 traj = mecanumDrive.trajectoryBuilder(startPose)
                         //.forward(25)
-                        .splineToLinearHeading(new Pose2d(-5.34236636245729 ,-41.23525735344351,  Math.toRadians(115)),Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(-5.34236636245729 ,-39.23525735344351,  Math.toRadians(115)),Math.toRadians(90))
                         .build();
                 mecanumDrive.followTrajectory(traj);
             }

@@ -28,8 +28,8 @@ public class LinearSlide {
     public double power;
     private int level;
     private final int LEVEL_CAP = 2248;
-    private final int LEVEL_3 = 2160;
-    private final int LEVEL_2 = 1209;
+    private final int LEVEL_3 = 2900;
+    private final int LEVEL_2 = 1562;
     private final int LEVEL_1 = 353;
     private final int LEVEL_0 = 0;
     public boolean tilted = false;
@@ -41,7 +41,7 @@ public class LinearSlide {
         bucketServo = hardwareMap.get(Servo.class, "bucketServo");
         bucketServo.setDirection(Servo.Direction.FORWARD);
         // functional range: .15 - .55
-        bucketServo.scaleRange(0.19, 0.6);
+        bucketServo.scaleRange(0.2, 0.6);
         //bucketServo.setPosition(0);
 
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
